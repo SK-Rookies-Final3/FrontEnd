@@ -1,0 +1,236 @@
+.login_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.7;
+    /* color: #c4c3ca; */
+    color: white;
+    background-color: #F0EADC;
+    overflow-x: hidden;
+    margin: auto;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.section {
+    /* width: 100%; */
+    /* max-width: 500px; */
+    margin: auto;
+    /* text-align: center; */
+    /* padding: 20px; */
+}
+
+.link {
+    color: #c4c3ca;
+    cursor: pointer;
+}
+
+.link:hover {
+    color: #ffeba7;
+}
+
+.paragraph {
+    font-weight: 500;
+    /* line-height: 1.7; */
+    text-align: right;
+    margin-top: 20px;
+    margin-right: 50px;
+    cursor: pointer;
+}
+
+.business_text {
+    font-size: 16px;
+    margin-bottom: -20px;
+}
+
+.log_text {
+    font-size: 28px;
+}
+
+.switch_text {
+    color: rgb(66, 66, 66);
+}
+
+.switch_text span {
+    margin: 0 8px;
+}
+
+[type="checkbox"]:checked,
+[type="checkbox"]:not(:checked) {
+    position: absolute;
+    /* left: -9999px; */
+}
+
+.checkbox:checked+label,
+.checkbox:not(:checked)+label {
+    position: relative;
+    display: block;
+    /* text-align: center; */
+    width: 60px;
+    height: 16px;
+    border-radius: 8px;
+    /* padding: 0; */
+    margin: auto;
+    cursor: pointer;
+    background-color: #DBC797;
+}
+
+.checkbox:checked+label:before,
+.checkbox:not(:checked)+label:before {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: #754F23;
+    background-color: #D9D9D9;
+    /* 화살표 아이콘 */
+    content: '\2196'; 
+    font-size: 22px;
+    font-weight: 900;
+    z-index: 20;
+    top: -10px;
+    left: -10px;
+    text-align: center;
+    transition: all 0.5s ease;
+
+}
+
+.checkbox:checked+label:before {
+    transform: translateX(44px) rotate(-270deg);
+}
+
+.card-wrap {
+    width: 500px;
+    max-width: 100%;
+    height: 510px;
+    perspective: 800px;
+    margin-top: 60px;
+}
+
+.card-wrapper {
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: all 600ms ease-out;
+}
+
+.card-login,
+.card-signup {
+    width: 100%;
+    height: 100%;
+    background-color: #754F23;
+    position: absolute;
+    border-radius: 20px;
+    transform-style: preserve-3d;
+}
+
+.card-signup {
+    transform: rotateY(180deg);
+}
+
+.checkbox:checked~.card-wrap .card-wrapper {
+    transform: rotateY(180deg);
+}
+
+.center-wrap {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translate3d(0, -50%, 35px) perspective(100px);
+}
+
+.form-style {
+    padding: 13px 20px;
+    height: 34px;
+    width: 70%;
+    border-radius: 10px;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    /* color: #c4c3ca; */
+    background-color: #F0EADC;
+    margin-top: 10px;
+    color: #000000;
+}
+
+.form-style:focus {
+    outline: none;
+}
+
+.btn_sub {
+    margin-top: 20px;
+    border-radius: 5px;
+    height: 45px;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0 30px;
+    border: none;
+    background-color: #ffeba7;
+}
+
+.btn_sub:hover {
+    background-color: #DBC797;
+    cursor: pointer;
+}
+
+/* .btn_sub {
+    margin-top: 20px;
+    padding: 15px 25px;
+    font-size: 16px;
+    background: transparent;
+    text-transform: uppercase;
+    border: none;
+    position: relative;
+    color: black;
+    z-index: 1;
+    cursor: pointer;
+  }
+  
+  .btn_sub::after,
+  .btn_sub::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: -99999;
+    transition: all 0.4s;
+  }
+  
+  .btn_sub::before {
+    transform: translate(0%, 0%);
+    width: 100%;
+    height: 100%;
+    background: #DBC797;
+    border-radius: 10px;
+  }
+  
+  .btn_sub::after {
+    transform: translate(10px, 10px);
+    width: 35px;
+    height: 35px;
+    background: #F0EADC;
+    backdrop-filter: blur(5px);
+    border-radius: 50px;
+  }
+  
+  .btn_sub:hover::before {
+    transform: translate(5%, 20%);
+    width: 110%;
+    height: 110%;
+  }
+  
+  .btn_sub:hover::after {
+    border-radius: 10px;
+    transform: translate(0, 0);
+    width: 100%;
+    height: 100%;
+  }
+  
+  .btn_sub:active::after {
+    transition: 0s;
+    transform: translate(0, 5%);
+  } */

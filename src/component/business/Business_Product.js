@@ -24,6 +24,11 @@ function Sidebar() {
 
 function BusinessProduct() {
     const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate();
+
+    const handleAddButtonClick = () => {
+        navigate('/business/productadd');
+    };
 
     return (
         <div className="business-container">
@@ -43,7 +48,7 @@ function BusinessProduct() {
                         </div>
                     </div>
                     {/* <button className="add-button">물품등록</button> */}
-                    <button className="add-button">
+                    <button className="add-button" onClick={handleAddButtonClick}>
                         <span className="button__icon-wrapper">
                             <FaPlus className="button__icon-svg" />
                             <FaPlus className="button__icon-svg button__icon-svg--copy" />

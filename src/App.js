@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
+import Header from './component/Header';
 import Home from './component/Home';
 import User_Login from './component/login/User_Login';
 import Business_Login from './component/login/Business_Login';
@@ -15,6 +16,7 @@ function App() {
   return (
     <Router>
       <div className="App">
+        <Header />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path='/user/login' element={<User_Login />} />
@@ -24,7 +26,7 @@ function App() {
           <Route path='/business/productadd' element={<Business_ProductAdd />} />
           <Route path='/business/orderlist' element={<Business_OrderList />} />
           <Route path='/business/statistics' element={<Business_Statistics />} />
-          
+
           {/* <Route path='/loading' element={<Loading />} /> */}
         </Routes>
       </div>

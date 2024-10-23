@@ -38,6 +38,8 @@ export default function Header() {
           margin: 0;
           padding: 0;
           list-style-type: none;
+          font-family: "continuous";
+          font-size: 24px;
         }
 
         .nav-item {

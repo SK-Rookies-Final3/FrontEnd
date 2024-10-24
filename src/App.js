@@ -10,6 +10,7 @@ import Business_Product from './component/business/Business_Product';
 import Business_ProductAdd from './component/business/Business_ProductAdd';
 import Business_OrderList from './component/business/Business_OrderList';
 import Business_Statistics from './component/business/Business_Statistics';
+import Shop from './component/pages/Shop';
 // import Loading from './component/Loading';
 
 function App() {
@@ -26,7 +27,7 @@ function App() {
           <Route path='/business/productadd' element={<Business_ProductAdd />} />
           <Route path='/business/orderlist' element={<Business_OrderList />} />
           <Route path='/business/statistics' element={<Business_Statistics />} />
-
+          <Route path='/pages/shop' element={<Shop />}/>
           {/* <Route path='/loading' element={<Loading />} /> */}
         </Routes>
       </div>

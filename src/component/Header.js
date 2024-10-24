@@ -2,7 +2,6 @@ import React from 'react';
 import logo from '../logo/shorthingoo.png';
 import { BsBagHeart } from "react-icons/bs";
 import { RxPerson } from "react-icons/rx";
-import { BiFontSize } from 'react-icons/bi';
 
 export default function Header() {
   return (
@@ -34,60 +33,83 @@ export default function Header() {
         }
 
         .navbar-nav {
-          display: flex; 
-          align-items: center; 
+          display: flex;
+          align-items: center;
           margin: 0;
           padding: 0;
-          list-style-type: none; 
+          list-style-type: none;
+          font-family: "continuous";
+          font-size: 24px;
         }
 
         .nav-item {
-          margin: 0 40px;
-        }
-
-        .nav-item a {
-          display: block;
-          padding: 10px 45px; 
+          margin: 0 100px;
         }
 
         .navbar {
-          padding: 0; 
+          padding: 0;
           margin: 0;
+          width: 100%;
         }
 
         .logo {
-          width: 40px;
-          margin-right: 80px; 
+          width: 180px;
+          margin-left: 30px;
         }
 
+        .icons {
+          display: flex;
+          align-items: center;
+          margin-right: 30px;
+        }
+
+        .icons a {
+          font-size: 24px;
+          margin-left: 20px;
+          cursor: pointer;
+          color: black;
+          text-decoration: none;
+        }
+
+        .container-fluid {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 5px 20px;
+        }
       `}</style>
 
       <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#F0EADC' }}>
-        <div className="container-fluid d-flex justify-content-between align-items-center">
-          <div className="d-flex justify-content-center flex-grow-1">
-            <ul className="navbar-nav d-flex flex-row justify-content-center mb-0"> {/* margin, padding 제거 */}
-              <a className="navbar-brand fw-bold" href="/" style={{ marginLeft: '20px' }}>
-                <img src={logo} alt="SummaryBuddy Logo" style={{ width: '200px'}} />
-              </a>
-              <li className="nav-item" style={{ marginLeft: '100px', marginRight: '100px' }}>
-                <a className="nav-link" href="/">Home</a>
-              </li>
-              <li className="nav-item" style={{ marginLeft: '100px', marginRight: '100px' }}>
-                <a className="nav-link" href="/shop">Shop</a>
-              </li>
-              <li className="nav-item" style={{ marginLeft: '100px', marginRight: '100px' }}>
-                <a className="nav-link" href="/brands">Brands</a>
-              </li>
-              <li className="nav-item" style={{ marginLeft: '100px', marginRight: '100px' }}>
-                <a className="nav-link" href="/aboutus">AboutUs</a>
-              </li>
-              <a href="/mypage/cart" style={{ fontSize: '24px', marginLeft: '20px', cursor: 'pointer' }}>
-                <BsBagHeart />
-              </a>
-              <a href="/mypage/order" style={{ fontSize: '24px', marginLeft: '20px', cursor: 'pointer' }}>
-                <RxPerson />
-              </a>
-            </ul>
+        <div className="container-fluid">
+          {/* 로고 */}
+          <a className="navbar-brand" href="/">
+            <img src={logo} alt="Shorthingoo Logo" className="logo" />
+          </a>
+
+          {/* 네비게이션 메뉴 */}
+          <ul className="navbar-nav d-flex flex-row justify-content-center mb-0">
+            <li className="nav-item">
+              <a className="nav-link" href="/">Home</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/pages/shop">Shop</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/brands">Brands</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/aboutus">About Us</a>
+            </li>
+          </ul>
+
+          {/* 아이콘 */}
+          <div className="icons">
+            <a href="/mypage/cart">
+              <BsBagHeart />
+            </a>
+            <a href="/mypage/order">
+              <RxPerson />
+            </a>
           </div>
         </div>
       </nav>

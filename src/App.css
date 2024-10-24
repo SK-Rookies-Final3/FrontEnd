@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  font-family: "suit";
 }
 
 .App-logo {
@@ -45,4 +46,9 @@
 @font-face {
   font-family: "continuous";
   src: url("./img/continuous.ttf");
+}
+
+@font-face {
+  font-family: "suit";
+  src: url("./img/SUIT-Medium.ttf");
 }

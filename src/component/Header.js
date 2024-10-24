@@ -83,10 +83,10 @@ export default function Header() {
               </li>
               <a href="/mypage/cart" style={{ fontSize: '24px', marginLeft: '20px', cursor: 'pointer' }}>
                 <BsBagHeart />
-              </a> {/* Like 페이지로 이동 */}
+              </a>
               <a href="/mypage/order" style={{ fontSize: '24px', marginLeft: '20px', cursor: 'pointer' }}>
                 <RxPerson />
-              </a> {/* MyPage로 이동 */}
+              </a>
             </ul>
           </div>
         </div>

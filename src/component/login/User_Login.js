@@ -78,7 +78,7 @@ const User_Login = () => {
         const registerData = {
             username,
             password,
-            role: "user"
+            role: "client"
           };
 
         if (password !== repeatPassword) {

@@ -1,0 +1,94 @@
+.shop-container {
+  display: flex;
+  flex-direction: row;
+  background-color: #F0EADC;
+  min-width: 100vh;
+  padding: 20px; /* 여백 추가 (원하는 경우 조정 가능) */
+}
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(10px); /* 유리 효과 */
+  padding: 20px;
+  display: flex;
+  flex-direction: column; /* 사이드바 내 요소를 세로로 정렬 */
+  align-items: flex-end; /* 모든 요소를 오른쪽 정렬 */
+  margin-right: 150px;
+  margin-left: 50px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo h2 {
+  color: #DBC797; /* 원하는 색상으로 변경 */
+  margin: 0; /* 기본 여백 제거 */
+  padding: 0; /* 텍스트 주위에 여백 추가 (원하는 만큼 조정 가능) */
+}
+
+.links {
+  padding: 0;
+  list-style: none; /* 기본 리스트 스타일 제거 */
+}
+
+.links h4 {
+  margin: 20px 0 10px; /* 제목 스타일 */
+  text-align: right; /* 제목을 오른쪽 정렬 */
+}
+
+.links li {
+  display: flex;
+  align-items: center;
+  margin: 10px 0; /* 리스트 아이템 간격 */
+  justify-content: flex-end; /* 항목을 오른쪽 정렬 */
+}
+
+.links li span {
+  text-decoration: none; /* 링크의 기본 밑줄 제거 */
+  color: #754F23; /* 링크 색상 */
+  margin-left: 0; /* 아이콘과 텍스트 사이의 간격 */
+  margin-right: 30px; /* 오른쪽 여백 추가 */
+}
+
+.links li:hover span {
+  color: #b6844b; /* 마우스 오버 시 색상 변화 */
+}
+
+.card {
+  width: 200px; /* 카드의 너비 */
+  height: auto; /* 자동 높이 */
+  margin-top: 100px;
+  margin-left: 50px;
+}
+
+.card-img-top {
+  width: 100%; /* 이미지의 너비를 카드에 맞춤 */
+  height: auto; /* 비율 유지 */
+}
+
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; 
+  padding: 80px 20px 20px;
+  gap: 28px;
+}
+
+.shop-card {
+  margin: 10px; 
+  flex: 1 0 30%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+  border-radius: 8px;
+  overflow: hidden; 
+  transition: transform 0.2s;
+}
+
+.shop-card:hover {
+  transform: scale(1.05);
+}
+

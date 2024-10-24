@@ -7,7 +7,7 @@ import '../css/LoginForm.css';
 const Business_Login = () => {
     const navigate = useNavigate();
     const [isSignup, setIsSignup] = useState(false);
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
 
@@ -22,8 +22,8 @@ const Business_Login = () => {
     const handleLogin = async () => {
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API_BASE_URL}/?`,
-                { email, password }
+                `http://localhost:8080/open-api/login`,
+                { username, password }
             );
             console.log("로그인 성공:", response.data);
 
@@ -44,7 +44,7 @@ const Business_Login = () => {
             });
         } catch (error) {
             console.error("로그인 실패:", error);
-            if (error.response && error.response.status === 401) {
+            if (error.response && error.response.status === 400) {
                 Swal.fire({
                     icon: 'error',
                     title: '아이디 또는 비밀번호가 잘못되었습니다.',
@@ -73,6 +73,14 @@ const Business_Login = () => {
     };
 
     const handleRegister = async () => {
+        const token = localStorage.getItem("token");
+
+        const registerData = {
+            username,
+            password,
+            role: "owner"
+          };
+
         if (password !== repeatPassword) {
             Swal.fire({
                 icon: 'error',
@@ -90,7 +98,13 @@ const Business_Login = () => {
 
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API_BASE_URL}/?`,
+                `http://localhost:8080/open-api/register`,
+                { registerData },
+                {
+                    headers: {
+                        'Authorization': `${token}`,
+                    }
+                }
             );
             console.log("회원가입 성공:", response.data);
             Swal.fire({
@@ -136,8 +150,8 @@ const Business_Login = () => {
                                 <h2 className="business_text">BUSINESS</h2>
                                 <h2 className="log_text">LOG IN</h2>
                                 <input type="email" name="logemail" className="form-style" 
-                                    placeholder="Your Email" id="logemail" autoComplete="off" value={email} 
-                                    onChange={(e) => setEmail(e.target.value)} />
+                                    placeholder="Your Email" id="logemail" autoComplete="off" value={username} 
+                                    onChange={(e) => setUsername(e.target.value)} />
                                 <input type="password" name="logpass" className="form-style" 
                                     placeholder="Your Password" id="logpass" autoComplete="off" value={password} 
                                     onChange={(e) => setPassword(e.target.value)} />
@@ -152,8 +166,8 @@ const Business_Login = () => {
                                 <h2 className="business_text">BUSINESS</h2>
                                 <h2 className="log_text">SIGN UP</h2>
                                 <input type="text" name="logemail" className="form-style" 
-                                    placeholder="Your Email" id="logemail" autoComplete="off" value={email}
-                                    onChange={(e) => setEmail(e.target.value)} />
+                                    placeholder="Your Email" id="logemail" autoComplete="off" value={username}
+                                    onChange={(e) => setUsername(e.target.value)} />
                                 <input type="email" name="logpass" className="form-style" 
                                     placeholder="Your PassWord" id="logpass" autoComplete="off" value={password} 
                                     onChange={(e) => setPassword(e.target.value)} />

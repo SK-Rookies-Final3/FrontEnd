@@ -59,13 +59,6 @@
   color: #b6844b; /* 마우스 오버 시 색상 변화 */
 }
 
-.card {
-  width: 200px; /* 카드의 너비 */
-  height: auto; /* 자동 높이 */
-  margin-top: 100px;
-  margin-left: 50px;
-}
-
 .card-img-top {
   width: 100%; /* 이미지의 너비를 카드에 맞춤 */
   height: auto; /* 비율 유지 */

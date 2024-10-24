@@ -7,7 +7,7 @@ import '../css/LoginForm.css';
 const User_Login = () => {
     const navigate = useNavigate();
     const [isSignup, setIsSignup] = useState(false);
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
 
@@ -22,8 +22,8 @@ const User_Login = () => {
     const handleLogin = async () => {
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API_BASE_URL}/?`,
-                { email, password }
+                `http://localhost:8080/open-api/login`,
+                { username, password }
             );
             console.log("로그인 성공:", response.data);
 
@@ -35,16 +35,16 @@ const User_Login = () => {
                 title: '로그인 성공!',
                 showConfirmButton: true,
                 confirmButtonText: '확인',
-                confirmButtonColor: '#754F23', 
-                background: '#F0EADC', 
-                color: '#754F23',  
+                confirmButtonColor: '#754F23',
+                background: '#F0EADC',
+                color: '#754F23',
                 iconColor: '#DBC797'
             }).then(() => {
                 navigate("/");
             });
         } catch (error) {
             console.error("로그인 실패:", error);
-            if (error.response && error.response.status === 401) {
+            if (error.response && error.response.status === 400) {
                 Swal.fire({
                     icon: 'error',
                     title: '아이디 또는 비밀번호가 잘못되었습니다.',
@@ -73,6 +73,14 @@ const User_Login = () => {
     };
 
     const handleRegister = async () => {
+        const token = localStorage.getItem("token");
+
+        const registerData = {
+            username,
+            password,
+            role: "user"
+          };
+
         if (password !== repeatPassword) {
             Swal.fire({
                 icon: 'error',
@@ -90,7 +98,13 @@ const User_Login = () => {
 
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API_BASE_URL}/?`,
+                `http://localhost:8080/open-api/register`,
+                { registerData },
+                {
+                    headers: {
+                        'Authorization': `${token}`,
+                    }
+                }
             );
             console.log("회원가입 성공:", response.data);
             Swal.fire({
@@ -134,11 +148,11 @@ const User_Login = () => {
                         <div className="card-login">
                             <div className="center-wrap">
                                 <h2 className="log_text">LOG IN</h2>
-                                <input type="email" name="logemail" className="form-style" 
-                                    placeholder="Your Email" id="logemail" autoComplete="off" value={email} 
-                                    onChange={(e) => setEmail(e.target.value)} />
-                                <input type="password" name="logpass" className="form-style" 
-                                    placeholder="Your Password" id="logpass" autoComplete="off" value={password} 
+                                <input type="email" name="logemail" className="form-style"
+                                    placeholder="Your Email" id="logemail" autoComplete="off" value={username}
+                                    onChange={(e) => setUsername(e.target.value)} />
+                                <input type="password" name="logpass" className="form-style"
+                                    placeholder="Your Password" id="logpass" autoComplete="off" value={password}
                                     onChange={(e) => setPassword(e.target.value)} />
                                 <button className="btn_sub" onClick={handleLogin}>Submit</button>
                                 <p className="paragraph">
@@ -149,13 +163,13 @@ const User_Login = () => {
                         <div className="card-signup">
                             <div className="center-wrap">
                                 <h2 className="log_text">SIGN UP</h2>
-                                <input type="text" name="logemail" className="form-style" 
-                                    placeholder="Your Email" id="logemail" autoComplete="off" value={email} 
-                                    onChange={(e) => setEmail(e.target.value)} />
-                                <input type="email" name="logpass" className="form-style" 
-                                    placeholder="Your PassWord" id="logpass" autoComplete="off" value={password} 
+                                <input type="text" name="logemail" className="form-style"
+                                    placeholder="Your Email" id="logemail" autoComplete="off" value={username}
+                                    onChange={(e) => setUsername(e.target.value)} />
+                                <input type="email" name="logpass" className="form-style"
+                                    placeholder="Your PassWord" id="logpass" autoComplete="off" value={password}
                                     onChange={(e) => setPassword(e.target.value)} />
-                                <input type="password" name="logpass" className="form-style" 
+                                <input type="password" name="logpass" className="form-style"
                                     placeholder="Your Repeat Password" id="logpass" autoComplete="off" value={repeatPassword}
                                     onChange={(e) => setRepeatPassword(e.target.value)} />
                                 <button className="btn_sub" onClick={handleRegister}>Submit</button>

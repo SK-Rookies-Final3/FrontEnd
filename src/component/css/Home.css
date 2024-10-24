@@ -48,7 +48,7 @@
 }
 
 .main-title {
-    font-size: 64px;
+    font-size: 60px;
     font-weight: bold;
     color: #2f241f;
     margin-bottom: 50px;
@@ -72,8 +72,8 @@
     justify-content: center;
     align-items: center;
     background-color: #754F23;
-    width: 500px;
-    height: 650px;
+    width: 450px;
+    height: 620px;
     border-radius: 400px 400px 0 0;
     position: relative;
     overflow: visible;
@@ -84,8 +84,8 @@
     justify-content: center;
     align-items: center;
     border: 2px solid #754F23;
-    width: 500px;
-    height: 650px;
+    width: 450px;
+    height: 620px;
     border-radius: 400px 400px 0 0;
     position: relative;
     overflow: visible;

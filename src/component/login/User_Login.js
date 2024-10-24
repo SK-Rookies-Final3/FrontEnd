@@ -16,6 +16,9 @@ const User_Login = () => {
     };
 
     const toggleSwitch = () => {
+        setUsername("");
+        setPassword("");
+        setRepeatPassword("");
         setIsSignup(!isSignup);
     };
 

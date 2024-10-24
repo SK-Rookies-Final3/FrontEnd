@@ -47,8 +47,8 @@ function BusinessProduct() {
                             <FaSearch />
                         </div>
                     </div>
-                    {/* <button className="add-button">물품등록</button> */}
-                    <button className="add-button" onClick={handleAddButtonClick}>
+                    {/* <button className="product-add-button">물품등록</button> */}
+                    <button className="product-add-button" onClick={handleAddButtonClick}>
                         <span className="button__icon-wrapper">
                             <FaPlus className="button__icon-svg" />
                             <FaPlus className="button__icon-svg button__icon-svg--copy" />

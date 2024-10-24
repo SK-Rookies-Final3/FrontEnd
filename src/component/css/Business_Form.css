@@ -61,8 +61,8 @@
     border-radius: 20px;
 }
 
-/* add-button */
-.add-button {
+/* product-add-button */
+.product-add-button {
     scale: 0.8;
     line-height: 1;
     display: inline-flex;
@@ -79,7 +79,7 @@
     margin-right: 20px;
   }
   
-  .add-button .button__icon-wrapper {
+  .product-add-button .button__icon-wrapper {
     /* flex-shrink: 0; */
     width: 25px;
     height: 25px;
@@ -91,25 +91,25 @@
     overflow: hidden;
   }
   
-  .add-button:hover {
+  .product-add-button:hover {
     background-color: #d3c4ac;
   }
   
-  .add-button:hover .button__icon-wrapper {
+  .product-add-button:hover .button__icon-wrapper {
     color: #754F23;
   }
   
-  .add-button .button__icon-svg--copy {
+  .product-add-button .button__icon-svg--copy {
     position: absolute;
     transform: translate(-150%, 150%);
   }
   
-  .add-button:hover .button__icon-svg:first-child {
+  .product-add-button:hover .button__icon-svg:first-child {
     transition: transform 0.3s ease-in-out;
     transform: translate(150%, -150%);
   }
   
-  .add-button:hover .button__icon-svg--copy {
+  .product-add-button:hover .button__icon-svg--copy {
     transition: transform 0.3s ease-in-out 0.1s;
     transform: translate(0);
   }

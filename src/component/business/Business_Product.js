@@ -9,7 +9,7 @@ function Sidebar() {
     const location = useLocation();
 
     return (
-        <div className="sidebar">
+        <div className="business_sidebar">
             <ul>
                 <li className={location.pathname === '/business/product' ? 'active' : ''}
                     onClick={() => navigate('/business/product')}>물품 목록 및 확인</li>

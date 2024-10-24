@@ -155,36 +155,66 @@ const Business_Login = () => {
                 }
             );
 
-            console.log("회원가입 성공:", response.data);
+            if (response.status === 200) {
+                console.log("회원가입 성공:", response.data);
 
-            Swal.fire({
-                icon: 'success',
-                title: '회원가입 성공!',
-                showConfirmButton: true,
-                confirmButtonText: '확인',
-                confirmButtonColor: '#754F23',
-                background: '#F0EADC',
-                color: '#754F23',
-                iconColor: '#DBC797'
-            }).then(() => {
-                setUsername("");
-                setPassword("");
-                setRepeatPassword("");
-                setIsSignup(false);
-            });
+                Swal.fire({
+                    icon: 'success',
+                    title: '회원가입 성공!',
+                    showConfirmButton: true,
+                    confirmButtonText: '확인',
+                    confirmButtonColor: '#754F23',
+                    background: '#F0EADC',
+                    color: '#754F23',
+                    iconColor: '#DBC797'
+                }).then(() => {
+                    setUsername("");
+                    setPassword("");
+                    setRepeatPassword("");
+                    setIsSignup(false);
+                });
+            }
         } catch (error) {
             console.error("회원가입 실패:", error);
-            Swal.fire({
-                icon: 'error',
-                title: '회원가입 실패!',
-                text: '다시 시도해주세요.',
-                showConfirmButton: true,
-                confirmButtonText: '확인',
-                confirmButtonColor: '#754F23',
-                background: '#F0EADC',
-                color: '#754F23',
-                iconColor: '#DBC797'
-            });
+
+            // 서버에서 반환된 에러 코드에 따른 메시지 처리
+            if (error.response && error.response.status === 400) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '잘못된 요청입니다.',
+                    text: '아이디 또는 비밀번호를 확인해주세요.',
+                    showConfirmButton: true,
+                    confirmButtonText: '확인',
+                    confirmButtonColor: '#754F23',
+                    background: '#F0EADC',
+                    color: '#754F23',
+                    iconColor: '#DBC797'
+                });
+            } else if (error.response && error.response.status === 500) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '서버 오류입니다.',
+                    text: '서버에서 문제가 발생했습니다. 다시 시도해주세요.',
+                    showConfirmButton: true,
+                    confirmButtonText: '확인',
+                    confirmButtonColor: '#754F23',
+                    background: '#F0EADC',
+                    color: '#754F23',
+                    iconColor: '#DBC797'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: '알 수 없는 오류가 발생했습니다.',
+                    text: '다시 시도해주세요.',
+                    showConfirmButton: true,
+                    confirmButtonText: '확인',
+                    confirmButtonColor: '#754F23',
+                    background: '#F0EADC',
+                    color: '#754F23',
+                    iconColor: '#DBC797'
+                });
+            }
         }
     };
 

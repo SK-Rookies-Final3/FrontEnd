@@ -55,7 +55,7 @@ const Business_Login = () => {
                     Swal.fire({
                         icon: 'error',
                         title: '로그인 불가',
-                        text: '클라이언트 계정만 로그인할 수 있습니다.',
+                        text: '비즈니스 계정만 로그인할 수 있습니다.',
                         showConfirmButton: true,
                         confirmButtonText: '확인',
                         confirmButtonColor: '#754F23',

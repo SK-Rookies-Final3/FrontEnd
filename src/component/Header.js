@@ -2,8 +2,10 @@ import React from 'react';
 import logo from '../logo/shorthingoo.png';
 import { BsBagHeart } from "react-icons/bs";
 import { RxPerson } from "react-icons/rx";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
+  const navigate = useNavigate();
   return (
     <>
       <style>{`
@@ -104,10 +106,35 @@ export default function Header() {
 
           {/* 아이콘 */}
           <div className="icons">
-            <a href="/mypage/cart">
+            <a onClick={() => {
+              const accessToken = localStorage.getItem("accessToken");
+
+              if (!accessToken) {
+                navigate("user/login");
+              } else {
+                navigate("mypages/cart")
+              }
+            }}
+            >
               <BsBagHeart />
             </a>
-            <a href="/mypage/order">
+            <a onClick={() => {
+              const accessToken = localStorage.getItem("accessToken");
+              const role = localStorage.getItem("role");
+
+              if (!accessToken) {
+                navigate("/user/login");
+              } else {
+                if (role === "CLIENT") {
+                  navigate("/mypages/orderlist");
+                } else if (role === "OWNER") {
+                  navigate("/business/product");
+                } else if (role === "MASTER") {
+                  navigate("/admin/userlist");
+                }
+              }
+            }}
+            >
               <RxPerson />
             </a>
           </div>

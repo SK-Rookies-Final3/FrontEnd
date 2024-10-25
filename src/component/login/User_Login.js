@@ -38,20 +38,38 @@ const User_Login = () => {
             });
             return;
         }
-
+    
         try {
             const response = await axios.post(
                 `http://localhost:8080/open-api/login`,
                 { username, password }
             );
-
+    
             if (response.status === 200) {
                 console.log("로그인 성공:", response.data);
-
+    
+                const { accessToken, role } = response.data.body;
+    
+                // role이 CLIENT가 아니면 로그인 차단
+                if (role !== "CLIENT") {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '로그인 불가',
+                        text: '클라이언트 계정만 로그인할 수 있습니다.',
+                        showConfirmButton: true,
+                        confirmButtonText: '확인',
+                        confirmButtonColor: '#754F23',
+                        background: '#F0EADC',
+                        color: '#754F23',
+                        iconColor: '#DBC797'
+                    });
+                    return;
+                }
+    
                 // 서버로부터 받은 토큰 처리
-                const { accessToken } = response.data.body;
                 localStorage.setItem("accessToken", accessToken);
-
+                localStorage.setItem("role", role);
+    
                 Swal.fire({
                     icon: 'success',
                     title: '로그인 성공!',
@@ -69,7 +87,7 @@ const User_Login = () => {
             }
         } catch (error) {
             console.error("로그인 실패:", error);
-
+    
             // 서버에서 반환된 에러 코드에 따른 메시지 처리
             if (error.response && error.response.status === 400) {
                 Swal.fire({

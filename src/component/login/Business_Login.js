@@ -48,9 +48,27 @@ const Business_Login = () => {
             if (response.status === 200) {
                 console.log("로그인 성공:", response.data);
 
+                const { accessToken, role } = response.data.body;
+
+                // role이 OWNER가 아니면 로그인 차단
+                if (role !== "OWNER") {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '로그인 불가',
+                        text: '클라이언트 계정만 로그인할 수 있습니다.',
+                        showConfirmButton: true,
+                        confirmButtonText: '확인',
+                        confirmButtonColor: '#754F23',
+                        background: '#F0EADC',
+                        color: '#754F23',
+                        iconColor: '#DBC797'
+                    });
+                    return;
+                }
+
                 // 서버로부터 받은 토큰 처리
-                const { accessToken } = response.data.body;
                 localStorage.setItem("accessToken", accessToken);
+                localStorage.setItem("role", role);
 
                 Swal.fire({
                     icon: 'success',

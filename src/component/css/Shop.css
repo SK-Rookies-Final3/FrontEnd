@@ -109,11 +109,13 @@
 
 /* Product list styles */
 .product-list {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* display: flex; */
   flex-wrap: wrap;
   justify-content: center;
-  padding: 80px 20px 20px;
-  gap: 20px;
+  padding: 80px 40px 40px;
+  gap: 40px;
   margin-left: 250px; /* 기본 사이드바 여백 */
   transition: margin-left 0.3s ease;
 }
@@ -123,7 +125,7 @@
 }
 
 .shop-card {
-  flex: 1 0 calc(33.33% - 40px);
+  /* flex: 1 0 calc(33.33% - 40px); */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   overflow: hidden;

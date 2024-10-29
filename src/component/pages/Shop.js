@@ -80,7 +80,7 @@ export default function Shop() {
       </aside>
       <div className="product-list">
         {products.map(product => (
-            <div className="shop-card" key={product.id} style={{ width: "150px" }}> {/* 카드 너비 조정 */}
+            <div className="shop-card" key={product.id}> {/* 카드 너비 조정 */}
             <img 
                 src={product.image} 
                 className='shop-card-img-top' 

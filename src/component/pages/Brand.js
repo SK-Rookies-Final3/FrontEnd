@@ -55,7 +55,7 @@ export default function Brand() {
       </aside>
       <div className="brand-product-list">
         {products.map(product => (
-            <div className="brand-card" key={product.id} style={{ width: "150px" }}> {/* 카드 너비 조정 */}
+            <div className="brand-card" key={product.id} > {/* 카드 너비 조정 */}
             <img 
                 src={product.image} 
                 className='brand-card-img-top' 

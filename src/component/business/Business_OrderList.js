@@ -142,10 +142,11 @@ function OrderTable({ searchQuery }) {
                                 <span className="left-icon"></span>
                                 <span className="right-icon"></span>
                                 <div className="items">
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송대기')} style={{ '--i': 1 }}><span></span>배송대기</a>
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송 중')} style={{ '--i': 2 }}><span></span>배송 중</a>
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '완료')} style={{ '--i': 3 }}><span></span>완료</a>
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '취소')} style={{ '--i': 4 }}><span></span>취소</a>
+                                    <a href="#" onClick={() => handleStatusChange(order.no, '주문완료')} style={{ '--i': 1 }}><span></span>주문완료</a>
+                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송대기')} style={{ '--i': 2 }}><span></span>배송대기</a>
+                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송 중')} style={{ '--i': 3 }}><span></span>배송 중</a>
+                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송완료')} style={{ '--i': 4 }}><span></span>배송완료</a>
+                                    <a href="#" onClick={() => handleStatusChange(order.no, '주문취소')} style={{ '--i': 5 }}><span></span>주문취소</a>
                                 </div>
                             </div>
                         </td>

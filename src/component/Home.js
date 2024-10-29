@@ -27,7 +27,7 @@ function Home() {
 
     // 타이핑 effect short
     const [displayedText, setDisplayedText] = useState('');
-    const texts = ["Discover AI-recommended short-form videos tailored just for you!", "당신에게 꼭 맞는 AI 추천 숏폼을 지금 만나보세요!"];
+    const texts = ["당신에게 꼭 맞는 AI 추천 숏폼을 지금 만나보세요!", "Discover AI-recommended short-form videos tailored just for you!"];
     const [textIndex, setTextIndex] = useState(0);
     const [charIndex, setCharIndex] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -35,7 +35,7 @@ function Home() {
 
     // 타이핑 effect product
     const [newDisplayedText, setNewDisplayedText] = useState('');
-    const newTexts = ["Discover AI-recommended products tailored just for you!", "당신에게 꼭 맞는 AI 추천 상품을 지금 만나보세요!"];
+    const newTexts = ["당신에게 꼭 맞는 AI 추천 상품을 지금 만나보세요!", "Discover AI-recommended products tailored just for you!"];
     const [newTextIndex, setNewTextIndex] = useState(0);
     const [newCharIndex, setNewCharIndex] = useState(0);
     const [newIsDeleting, setNewIsDeleting] = useState(false);

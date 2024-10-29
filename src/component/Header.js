@@ -97,7 +97,7 @@ export default function Header() {
               <a className="nav-link" href="/pages/shop">Shop</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/brands">Brands</a>
+              <a className="nav-link" href="/pages/brands">Brands</a>
             </li>
             <li className="nav-item">
               <a className="nav-link" href="/aboutus">About Us</a>

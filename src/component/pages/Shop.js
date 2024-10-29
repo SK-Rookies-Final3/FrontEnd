@@ -54,7 +54,7 @@ export default function Shop() {
   };
 
   const handleProductClick = (productId) => {
-    navigate('/page/shop/detail'); // 상세 페이지로 이동
+    navigate('/pages/shop/detail'); // 상세 페이지로 이동
   };
 
   return (

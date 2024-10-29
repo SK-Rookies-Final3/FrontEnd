@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ShortModal from './ShortModal';
 import leftImage from '../logo/404logo.png';
@@ -23,6 +23,72 @@ function Home() {
 
     const [showModal, setShowModal] = useState(false);
     const [videoSrc, setVideoSrc] = useState('');
+    const navigate = useNavigate();
+
+    // 타이핑 effect short
+    const [displayedText, setDisplayedText] = useState('');
+    const texts = ["Discover AI-recommended short-form videos tailored just for you!", "당신에게 꼭 맞는 AI 추천 숏폼을 지금 만나보세요!"];
+    const [textIndex, setTextIndex] = useState(0);
+    const [charIndex, setCharIndex] = useState(0);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isPausedShort, setIsPausedShort] = useState(false);
+
+    // 타이핑 effect product
+    const [newDisplayedText, setNewDisplayedText] = useState('');
+    const newTexts = ["Discover AI-recommended products tailored just for you!", "당신에게 꼭 맞는 AI 추천 상품을 지금 만나보세요!"];
+    const [newTextIndex, setNewTextIndex] = useState(0);
+    const [newCharIndex, setNewCharIndex] = useState(0);
+    const [newIsDeleting, setNewIsDeleting] = useState(false);
+    const [isPausedProduct, setIsPausedProduct] = useState(false);
+
+    const typingEffect = (
+        texts, setDisplayedText, charIndex, setCharIndex,
+        isDeleting, setIsDeleting, textIndex, setTextIndex,
+        isPaused, setIsPaused
+    ) => {
+        if (isPaused) return;
+
+        const timeout = setTimeout(() => {
+            if (isDeleting) {
+                if (charIndex > 0) {
+                    setDisplayedText(texts[textIndex].slice(0, charIndex - 1));
+                    setCharIndex((prev) => prev - 1);
+                } else {
+                    setIsDeleting(false);
+                    setTextIndex((prev) => (prev + 1) % texts.length);
+                    setIsPaused(true);
+                    setTimeout(() => setIsPaused(false), 1000);
+                }
+            } else {
+                if (charIndex < texts[textIndex].length) {
+                    setDisplayedText(texts[textIndex].slice(0, charIndex + 1));
+                    setCharIndex((prev) => prev + 1);
+                } else {
+                    setIsDeleting(true);
+                    setIsPaused(true);
+                    setTimeout(() => setIsPaused(false), 1000);
+                }
+            }
+        }, isDeleting ? 50 : 50);
+
+        return () => clearTimeout(timeout);
+    };
+
+    useEffect(() => {
+        return typingEffect(
+            texts, setDisplayedText, charIndex, setCharIndex,
+            isDeleting, setIsDeleting, textIndex, setTextIndex,
+            isPausedShort, setIsPausedShort
+        );
+    }, [charIndex, isDeleting, textIndex, isPausedShort]);
+
+    useEffect(() => {
+        return typingEffect(
+            newTexts, setNewDisplayedText, newCharIndex, setNewCharIndex,
+            newIsDeleting, setNewIsDeleting, newTextIndex, setNewTextIndex,
+            isPausedProduct, setIsPausedProduct
+        );
+    }, [newCharIndex, newIsDeleting, newTextIndex, isPausedProduct]);
 
     const handleVideoClick = (url) => {
         setVideoSrc(url);
@@ -33,8 +99,6 @@ function Home() {
         setShowModal(false);
         setVideoSrc('');
     };
-
-    const navigate = useNavigate();
 
     const handleViewAllClick = () => {
         navigate('/pages/shop');
@@ -61,29 +125,59 @@ function Home() {
             {/* Short Form */}
             <div className="form-container">
                 <h2 className="form-title">Short Form</h2>
+                <div className="typed-text">_ {displayedText}</div>
                 <div className="short-form-videos">
-                    <div className="video-card" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
-                        <img src={short} alt="Video1" className="video-thumbnail" />
-                        <p className="sub-form-title">비비안웨스트우드 24SS</p>
+
+                    <div className="has-glow">
+                        <div className="glow">
+                            <div className="glow-bg"></div>
+                        </div>
+                        <div className="white-clip"></div>
+                        <div className="content">
+                            <div className="video-card" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
+                                <img src={short} alt="Video3" className="video-thumbnail" />
+                                <p className="sub-form-title">아디다스 캠퍼스 00's 언박싱</p>
+                            </div>
+                        </div>
                     </div>
-                    <div className="video-card" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
-                        <img src={short} alt="Video2" className="video-thumbnail" />
-                        <p className="sub-form-title">폴로가디건 화이트 데일리룩</p>
+
+                    <div className="has-glow">
+                        <div className="glow">
+                            <div className="glow-bg"></div>
+                        </div>
+                        <div className="white-clip"></div>
+                        <div className="content">
+                            <div className="video-card" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
+                                <img src={short} alt="Video3" className="video-thumbnail" />
+                                <p className="sub-form-title">아디다스 캠퍼스 00's 언박싱</p>
+                            </div>
+                        </div>
                     </div>
-                    <div className="video-card" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
-                        <img src={short} alt="Video3" className="video-thumbnail" />
-                        <p className="sub-form-title">아디다스 캠퍼스 00's 언박싱</p>
+
+                    <div className="has-glow">
+                        <div className="glow">
+                            <div className="glow-bg"></div>
+                        </div>
+                        <div className="white-clip"></div>
+                        <div className="content">
+                            <div className="video-card" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
+                                <img src={short} alt="Video3" className="video-thumbnail" />
+                                <p className="sub-form-title">아디다스 캠퍼스 00's 언박싱</p>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
+
+
                 <ShortModal showModal={showModal} videoSrc={videoSrc} onClose={handleCloseModal} />
             </div>
 
 
             {/* Product Form */}
             <div className='form-container'>
-
                 <h2 className="form-title">Recommended Products</h2>
-
+                <div className="typed-text">_ {newDisplayedText}</div>
                 <div class="product-form-container">
                     <div class="card">
                         <div class="imgBx">

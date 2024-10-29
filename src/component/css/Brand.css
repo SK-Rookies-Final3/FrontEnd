@@ -147,7 +147,7 @@ html, body {
 .brand-card-img-top {
   width: 100%;
   height: auto; /* 자동으로 높이를 설정 */
-  max-height: 280px; /* 최대 높이를 늘림 */
+  max-height: 80%; /* 최대 높이를 늘림 */
   object-fit: cover;
 }
 

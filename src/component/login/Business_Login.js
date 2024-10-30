@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import '../css/LoginForm.css';
 
 const Business_Login = () => {
@@ -10,6 +11,8 @@ const Business_Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showRepeatPassword, setShowRepeatPassword] = useState(false);
 
     const goBusinessLogin = () => {
         navigate('/user/login');
@@ -19,7 +22,17 @@ const Business_Login = () => {
         setUsername("");
         setPassword("");
         setRepeatPassword("");
+        setShowPassword(false);
+        setShowRepeatPassword(false);
         setIsSignup(!isSignup);
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const toggleRepeatPasswordVisibility = () => {
+        setShowRepeatPassword(!showRepeatPassword);
     };
 
     const handleLogin = async () => {
@@ -41,7 +54,7 @@ const Business_Login = () => {
 
         try {
             const response = await axios.post(
-                `http://localhost:8080/open-api/login`,
+                `${process.env.REACT_APP_API_BASE_URL}/open-api/login`,
                 { username, password }
             );
 
@@ -164,7 +177,7 @@ const Business_Login = () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post(
-                `http://localhost:8080/open-api/register`,
+                `${process.env.REACT_APP_API_BASE_URL}/open-api/register`,
                 { username, password, role: 'OWNER' },
                 {
                     headers: {
@@ -250,12 +263,28 @@ const Business_Login = () => {
                             <div className="center-wrap">
                                 <h2 className="business_text">BUSINESS</h2>
                                 <h2 className="log_text">LOG IN</h2>
-                                <input type="text" name="logeid" className="form-style"
-                                    placeholder="Your ID" id="logeid" autoComplete="off" value={username}
-                                    onChange={(e) => setUsername(e.target.value)} />
-                                <input type="password" name="logpass" className="form-style"
-                                    placeholder="Your Password" id="logpass" autoComplete="off" value={password}
-                                    onChange={(e) => setPassword(e.target.value)} />
+                                <div className="input-container">
+                                    <FaUser className="input-icon" />
+                                    <input type="text" name="logeid" className="form-style"
+                                        placeholder="Your ID" id="logeid" autoComplete="off" value={username}
+                                        onChange={(e) => setUsername(e.target.value)} />
+                                </div>
+                                <div className="input-container">
+                                    <FaLock className="input-icon" />
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="logpass"
+                                        className="form-style"
+                                        placeholder="Your Password"
+                                        id="logpass"
+                                        autoComplete="off"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                    <span className="toggle-password" onClick={togglePasswordVisibility}>
+                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                </div>
                                 <button className="btn_sub" onClick={handleLogin}>Submit</button>
                                 <p className="paragraph">
                                     <span className="link" onClick={goBusinessLogin}>User</span>
@@ -266,13 +295,44 @@ const Business_Login = () => {
                             <div className="center-wrap">
                                 <h2 className="business_text">BUSINESS</h2>
                                 <h2 className="log_text">SIGN UP</h2>
-                                <input type="text" name="logeid" className="form-style"
-                                    placeholder="Your ID" id="logeid" autoComplete="off" value={username}
-                                    onChange={(e) => setUsername(e.target.value)} />
-                                <input type="password" name="logpass" className="form-style"
-                                    placeholder="Your PassWord" id="logpass" autoComplete="off" value={password}
-                                    onChange={(e) => setPassword(e.target.value)} />
-                                <input type="password" name="logpass" className="form-style" placeholder="Your Repeat Password" id="logpass" autoComplete="off" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} />
+                                <div className="input-container">
+                                    <FaUser className="input-icon" />
+                                    <input type="text" name="logeid" className="form-style"
+                                        placeholder="Your ID" id="logeid" autoComplete="off" value={username}
+                                        onChange={(e) => setUsername(e.target.value)} />
+                                </div>
+                                <div className="input-container">
+                                    <FaLock className="input-icon" />
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="logpass"
+                                        className="form-style"
+                                        placeholder="Your Password"
+                                        id="logpass"
+                                        autoComplete="off"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                    <span className="toggle-password" onClick={togglePasswordVisibility}>
+                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                </div>
+                                <div className="input-container">
+                                    <FaLock className="input-icon" />
+                                    <input
+                                        type={showRepeatPassword ? "text" : "password"}
+                                        name="logpass"
+                                        className="form-style"
+                                        placeholder="Your Repeat Password"
+                                        id="logpass"
+                                        autoComplete="off"
+                                        value={repeatPassword}
+                                        onChange={(e) => setRepeatPassword(e.target.value)}
+                                    />
+                                    <span className="toggle-password" onClick={toggleRepeatPasswordVisibility}>
+                                        {showRepeatPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                </div>
                                 <button className="btn_sub" onClick={handleRegister}>Submit</button>
                                 <p className="paragraph">
                                     <span className="link" onClick={goBusinessLogin}>User</span>

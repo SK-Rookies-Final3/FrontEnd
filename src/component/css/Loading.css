@@ -1,0 +1,31 @@
+.load_container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+    background-color: #F0EADC;
+    font-family: "continuous";
+}
+
+.load_text {
+	font-size: 2vw;
+	letter-spacing: 2px;
+	animation: weight 2s infinite;
+}
+
+@keyframes weight {
+	from {
+		font-weight: 100;
+		transform: scale(1);
+	}
+
+	50% {
+		font-weight: 600;
+		transform: scale(1.1);
+	}
+
+	to {
+		font-weight: 100;
+		transform: scale(1);
+	}
+}

@@ -1,14 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../css/Mypage_Form.css'; 
+import '../css/Mypage_Form.css';
 import Swal from 'sweetalert2';
 import { BsPersonBoundingBox } from "react-icons/bs";
 import { FaRegHandPointRight } from "react-icons/fa";
 import { FaRegHandPointLeft } from "react-icons/fa";
+import axios from "axios";
 
-function Sidebar() {
+function Sidebar({ handleDeleteAccount, handleLogout }) {
     const navigate = useNavigate();
     const location = useLocation();
+
+    return (
+        <div className="order_sidebar">
+            <ul>
+                <li
+                    className={location.pathname === '/mypages/orderlist' ? 'active' : ''}
+                    onClick={() => navigate('/mypages/orderlist')}
+                >
+                    주문 조회
+                </li>
+                <li
+                    className={location.pathname === '/mypages/like' ? 'active' : ''}
+                    onClick={() => navigate('/mypages/like')}
+                >
+                    위시 리스트
+                </li>
+                <li
+                    className={location.pathname === '/mypages/question' ? 'active' : ''}
+                    onClick={() => navigate('/mypages/question')}
+                >
+                    1:1 문의
+                </li>
+                <li
+                    className={location.pathname === '/mypages/change' ? 'active' : ''}
+                    onClick={() => navigate('/mypages/change')}
+                >
+                    정보수정
+                </li>
+                <li onClick={handleLogout}>
+                    로그아웃
+                </li>
+                <li onClick={handleDeleteAccount}>
+                    회원 탈퇴
+                </li>
+            </ul>
+        </div>
+    );
+}
+
+function OrderContainer() {
+    const [nickname, setNickname] = useState('');
+    const [Id, setId] = useState('');
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user`, {
+                headers: {
+                    Authorization: `${accessToken}`
+                }
+            })
+                .then(response => {
+                    console.log(response.data.body)
+                    if (response.data && response.data.body) {
+                        setNickname(response.data.body.nickname);
+                        setId(response.data.body.id);
+                    } else {
+                        console.log("응답에 닉네임 데이터가 없습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error.response?.data || error.message);
+                });
+        } else {
+            console.log("사용자 인증 토큰을 찾을 수 없습니다.");
+        }
+    }, []);
 
     const handleLogout = () => {
         Swal.fire({
@@ -24,7 +93,6 @@ function Sidebar() {
             if (result.isConfirmed) {
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("role");
-                localStorage.removeItem("username");
                 console.log("로그아웃되었습니다.");
                 navigate('/');
             }
@@ -45,13 +113,11 @@ function Sidebar() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 const token = localStorage.getItem('accessToken');
-                const username = localStorage.getItem('username');
-                
                 try {
-                    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/open-api/user/${username}`, {
+                    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/exit/${Id}`, {
                         method: 'DELETE',
                         headers: {
-                            Authorization: `Bearer ${token}`,
+                            Authorization: `${token}`,
                         },
                     });
 
@@ -66,7 +132,9 @@ function Sidebar() {
                             color: '#754F23',
                             iconColor: '#DBC797'
                         }).then(() => {
-                            handleLogout();
+                            localStorage.removeItem("accessToken");
+                            localStorage.removeItem("role");
+                            navigate('/');
                         });
                     } else {
                         throw new Error('회원 탈퇴 실패');
@@ -89,62 +157,12 @@ function Sidebar() {
     };
 
     return (
-        <div className="order_sidebar">
-            <ul>
-                <li 
-                    className={location.pathname === '/mypages/orderlist' ? 'active' : ''} 
-                    onClick={() => navigate('/mypages/orderlist')}
-                >
-                    주문 조회
-                </li>
-                <li 
-                    className={location.pathname === '/mypages/like' ? 'active' : ''} 
-                    onClick={() => navigate('/mypages/like')}
-                >
-                    위시 리스트
-                </li>
-                <li 
-                    className={location.pathname === '/mypages/question' ? 'active' : ''} 
-                    onClick={() => navigate('/mypages/question')}
-                >
-                    1:1 문의
-                </li>
-                <li 
-                    className={location.pathname === '/mypages/change' ? 'active' : ''} 
-                    onClick={() => navigate('/mypages/change')}
-                >
-                    정보수정
-                </li>
-                <li onClick={handleLogout} >
-                    로그아웃
-                </li>
-                <li onClick={handleDeleteAccount}>
-                    회원 탈퇴
-                </li>
-            </ul>
-        </div>
-    );
-}
-
-function OrderContainer() {
-    const [username, setUsername] = useState('');
-
-    useEffect(() => {
-        const fetchedUsername = localStorage.getItem('username');
-        if (fetchedUsername) {
-            setUsername(fetchedUsername);
-        } else {
-            console.log("사용자 ID를 찾을 수 없습니다.");
-        }
-    }, []);
-
-    return (
         <div className="order-container">
-            <Sidebar />
+            <Sidebar handleDeleteAccount={handleDeleteAccount} handleLogout={handleLogout} />
             <div className="order-content-area">
                 <div className="order-rectangle">
                     <div className="order-circle"><BsPersonBoundingBox size={38} color='#333' /></div>
-                    <span className="order-text">{username} 님 안녕하세요!</span>
+                    <span className="order-text">{nickname} 님 안녕하세요!</span>
                 </div>
                 <div className="order-title">
                     <span><FaRegHandPointRight />    ------------------    주문 조회    ------------------    <FaRegHandPointLeft /></span>

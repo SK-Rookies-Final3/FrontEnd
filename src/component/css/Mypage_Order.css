@@ -81,7 +81,7 @@
     position: relative;
     -webkit-transition: background .4s;
     transition: background .4s;
-    margin-left: auto;
+    margin: auto;
     margin-top: 5px;
 }
 

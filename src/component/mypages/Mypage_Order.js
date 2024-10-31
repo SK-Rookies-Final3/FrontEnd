@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../css/Mypage_Form.css';
+import '../css/Mypage_myorder.css';
 import Swal from 'sweetalert2';
 import { BsPersonBoundingBox } from "react-icons/bs";
-import { FaRegHandPointRight } from "react-icons/fa";
-import { FaRegHandPointLeft } from "react-icons/fa";
+import { FaRegHandPointRight, FaRegHandPointLeft } from "react-icons/fa";
+import { FcCalendar } from "react-icons/fc";
 import axios from "axios";
+import nikeImage from '../../img/Nike.PNG'; // Import your image here
 
 function Sidebar({ handleDeleteAccount, handleLogout }) {
     const navigate = useNavigate();
@@ -52,6 +54,7 @@ function Sidebar({ handleDeleteAccount, handleLogout }) {
 function OrderContainer() {
     const [nickname, setNickname] = useState('');
     const [Id, setId] = useState('');
+    const [orderDate, setOrderDate] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -62,20 +65,29 @@ function OrderContainer() {
                     Authorization: `${accessToken}`
                 }
             })
-                .then(response => {
-                    console.log(response.data.body)
-                    if (response.data && response.data.body) {
-                        setNickname(response.data.body.nickname);
-                        setId(response.data.body.id);
-                    } else {
-                        console.log("응답에 닉네임 데이터가 없습니다.");
-                    }
-                })
-                .catch(error => {
-                    console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error.response?.data || error.message);
-                });
-        } else {
-            console.log("사용자 인증 토큰을 찾을 수 없습니다.");
+            .then(response => {
+                if (response.data && response.data.body) {
+                    setNickname(response.data.body.nickname);
+                    setId(response.data.body.id);
+                }
+            })
+            .catch(error => {
+                console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
+            });
+
+            axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/orders`, {
+                headers: {
+                    Authorization: `${accessToken}`
+                }
+            })
+            .then(response => {
+                if (response.data && response.data.orders) {
+                    setOrderDate(response.data.orders[0].orderDate);
+                }
+            })
+            .catch(error => {
+                console.log("주문 날짜를 가져오는 중 오류가 발생했습니다.", error);
+            });
         }
     }, []);
 
@@ -166,6 +178,20 @@ function OrderContainer() {
                 </div>
                 <div className="order-title">
                     <span><FaRegHandPointRight />    ------------------    주문 조회    ------------------    <FaRegHandPointLeft /></span>
+                    <div className='myorder-day'>
+                        {orderDate} 24.10.31   <FcCalendar />
+                    </div>
+                    <div className="myorder-rectangle">
+                        <div className="myorder-product-image">
+                            <img src={nikeImage} alt="Nike Product" /> {/* Use the imported image */}
+                        </div>
+                        <div className="myorder-product-info">
+                            <span className="myorder-product-name">나이키 에어 포스 1 "07</span> {/* Replace with actual product name */}
+                        </div>
+                        <div className="myorder-product-price">
+                            KRW 169,000 {/* Replace with actual price */}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

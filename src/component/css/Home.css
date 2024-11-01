@@ -98,6 +98,17 @@
   position: absolute;
   bottom: 0;
   right: 0;
+  animation: scaleAnimation 3s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+@keyframes scaleAnimation {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
 }
 
 .form-container {
@@ -119,6 +130,18 @@
 
 .typed-text {
   font-size: 25px;
+}
+
+.typed-text::after {
+  content: '|';
+  display: inline-block;
+  animation: blink 0.8s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
 }
 
 .short-form-title::after {
@@ -190,7 +213,7 @@
   position: absolute;
   /* background: white; */
   background: #F0EADC;
-  filter: blur(6px);
+  filter: blur(10px);
   border-radius: 8px;
   width: 100%;
   height: 100%;

@@ -27,7 +27,7 @@ function Home() {
 
     // 타이핑 effect short
     const [displayedText, setDisplayedText] = useState('');
-    const texts = ["당신에게 꼭 맞는 AI 추천 숏폼을 지금 만나보세요!", "Discover AI-recommended short-form videos tailored just for you!"];
+    const texts = ["당신에게 꼭 맞는 AI 추천 숏폼을 지금 만나보세요!", "Discover AI-recommended shorts tailored just for you!  "];
     const [textIndex, setTextIndex] = useState(0);
     const [charIndex, setCharIndex] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -57,7 +57,7 @@ function Home() {
                     setIsDeleting(false);
                     setTextIndex((prev) => (prev + 1) % texts.length);
                     setIsPaused(true);
-                    setTimeout(() => setIsPaused(false), 1000);
+                    setTimeout(() => setIsPaused(false), 1500);
                 }
             } else {
                 if (charIndex < texts[textIndex].length) {
@@ -66,7 +66,7 @@ function Home() {
                 } else {
                     setIsDeleting(true);
                     setIsPaused(true);
-                    setTimeout(() => setIsPaused(false), 1000);
+                    setTimeout(() => setIsPaused(false), 1500);
                 }
             }
         }, isDeleting ? 50 : 50);

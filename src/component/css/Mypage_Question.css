@@ -31,7 +31,7 @@
 
 
 /* FaPhone */
-.icon {
+.phone-icon {
     margin-top: 0.4rem;
     margin-bottom: 1.4rem;
 }
@@ -56,7 +56,7 @@
     animation: oscillate-rotation 1s infinite ease-in-out;
 }
 
-.icon {
+.phone-icon {
     font-size: 2.5rem;
 }
 

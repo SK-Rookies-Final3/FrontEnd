@@ -3,9 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import '../css/Mypage_Form.css';
 import '../css/Mypage_myorder.css';
 import Swal from 'sweetalert2';
-import { BsPersonBoundingBox } from "react-icons/bs";
 import { FaRegHandPointRight, FaRegHandPointLeft } from "react-icons/fa";
 import { FcCalendar } from "react-icons/fc";
+import { MdOutlineWavingHand } from "react-icons/md";
 import axios from "axios";
 import nikeImage from '../../img/Nike.PNG'; // Import your image here
 
@@ -173,7 +173,7 @@ function OrderContainer() {
             <Sidebar handleDeleteAccount={handleDeleteAccount} handleLogout={handleLogout} />
             <div className="order-content-area">
                 <div className="order-rectangle">
-                    <div className="order-circle"><BsPersonBoundingBox size={38} color='#333' /></div>
+                    <div className="order-circle"><MdOutlineWavingHand size={38} color='#333' /></div>
                     <span className="order-text">{nickname} 님 안녕하세요!</span>
                 </div>
                 <div className="order-title">

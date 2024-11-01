@@ -14,7 +14,9 @@ phases:
       - nohup /usr/local/bin/dockerd > /dev/null 2>&1 &
       - timeout 15 sh -c "until docker info; do echo 'Waiting for Docker to start...'; sleep 1; done"
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 565393064007.dkr.ecr.ap-northeast-2.amazonaws.com
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL
+      - echo Cloning HelmChart repository...
+      - git clone $HELMCHART_URL
 
   build:
     commands:
@@ -22,14 +24,24 @@ phases:
       - npm run build
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t frontend-ecr:latest .
-      - docker tag frontend-ecr:latest 565393064007.dkr.ecr.ap-northeast-2.amazonaws.com/frontend-ecr:latest
+      - docker build -t $ECR_REPO:latest .
+      - docker tag $ECR_REPO:latest $ECR_URL/$ECR_REPO:latest
 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push 565393064007.dkr.ecr.ap-northeast-2.amazonaws.com/frontend-ecr:latest
+      - docker push $ECR_URL/$ECR_REPO:latest
+      - echo Updating frontendTimestamp in values.yaml...
+      - sed -i "s/frontendTimestamp:.*/frontendTimestamp:\"$(date +%Y%m%d%H%M%S)\"/" HelmChart-for-Argo/helm-charts/values.yaml
+      - echo Committing changes to values.yaml...
+      - git config --global user.name "CodeBuild"
+      - git config --global user.email "codebuild@example.com"
+      - cd helm-argocd
+      - git checkout main || git checkout -b main 
+      - git add helm-charts/values.yaml
+      - git commit -m "Update frontendTimestamp to $(date +%Y%m%d%H%M%S)" || echo "No changes to commit"
+      - git push origin main || echo "No changes to push"
 
 artifacts:
   files:

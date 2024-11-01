@@ -1,3 +1,10 @@
+html, body {
+  margin: 0; /* 기본 마진 제거 */
+  padding: 0; /* 기본 패딩 제거 */
+  height: 100%; /* 전체 높이 설정 */
+  background-color: #F0EADC; /* 배경색 설정 */
+}
+
 .shop-container {
   display: flex;
   flex-direction: row;
@@ -20,7 +27,7 @@
 }
 
 .shop-sidebar:hover {
-  width: 260px;
+  width: 220px;
 }
 
 .shop-sidebar .logo {
@@ -34,11 +41,17 @@
   font-size: 1.15rem;
   font-weight: 600;
   margin-left: 15px;
-  display: none;
+  margin-left: 50px;
+  /* display: none; */
 }
 
 .shop-sidebar:hover .logo h2 {
   display: block;
+}
+
+.shop-sidebar:hover li {
+  width: 120px;
+  height: 50px;
 }
 
 .shop-links {

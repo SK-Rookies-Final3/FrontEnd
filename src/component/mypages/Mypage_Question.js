@@ -206,7 +206,7 @@ function QuestionContainer() {
                     </div>
                     <div className="footer-content">
                         <div className="footer-info">
-                            <FaPhone className="icon bgc-blue c-white circle p-5 osc-rotation" />
+                            <FaPhone className="phone-icon bgc-blue c-white circle p-5 osc-rotation" />
                             <p>전화 문의</p>
                             <p>제품 및 주문 | 9:00 – 18:00, 월요일 – 일요일(설/추석 연휴 제외)</p>
                             <p>080-0000-0000</p>

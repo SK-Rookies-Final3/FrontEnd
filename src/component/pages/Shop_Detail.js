@@ -90,7 +90,7 @@ const ShopDetail = () => {
             });
             return;
         }
-        
+
         setCartClicked(true);
         setTimeout(() => setCartClicked(false), 2000);
     };
@@ -295,9 +295,18 @@ const ShopDetail = () => {
     return (
         <div className="shop-detail">
             <div className="product-images">
-                <img src={product} alt="Product 1" />
+                <div className='product-image-ani'>
+                    <img src={product} alt="Product 1" />
+                </div>
+                <div className='product-image-ani'>
+                    <img src={product} alt="Product 1" />
+                </div>
+                <div className='product-image-ani'>
+                    <img src={product} alt="Product 1" />
+                </div>
+                {/* <img src={product} alt="Product 1" />
                 <img src={product} alt="Product 2" />
-                <img src={product} alt="Product 3" />
+                <img src={product} alt="Product 3" /> */}
             </div>
 
             <div className="product-info">

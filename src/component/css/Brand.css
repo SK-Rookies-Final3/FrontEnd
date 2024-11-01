@@ -42,11 +42,17 @@ html, body {
   font-size: 1.15rem;
   font-weight: 600;
   margin-left: 15px;
-  display: none;
+  margin-left: 50px;
+  /* display: none; */
 }
 
 .brand-sidebar:hover .logo h2 {
   display: block;
+}
+
+.brand-sidebar:hover li {
+  width: 110px;
+  height: 50px;
 }
 
 .brand-links {
@@ -127,7 +133,7 @@ html, body {
 }
 
 .brand-sidebar:hover ~ .product-list {
-  margin-left: 270px; /* 사이드바가 펼쳐질 때의 여백 */
+  margin-left: 220px; /* 사이드바가 펼쳐질 때의 여백 */
 }
 
 .brand-card {

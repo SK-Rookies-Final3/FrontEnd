@@ -27,7 +27,7 @@ html, body {
 }
 
 .shop-sidebar:hover {
-  width: 260px;
+  width: 220px;
 }
 
 .shop-sidebar .logo {
@@ -41,11 +41,17 @@ html, body {
   font-size: 1.15rem;
   font-weight: 600;
   margin-left: 15px;
-  display: none;
+  margin-left: 50px;
+  /* display: none; */
 }
 
 .shop-sidebar:hover .logo h2 {
   display: block;
+}
+
+.shop-sidebar:hover li {
+  width: 120px;
+  height: 50px;
 }
 
 .shop-links {

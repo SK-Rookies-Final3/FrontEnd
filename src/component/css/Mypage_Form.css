@@ -65,13 +65,34 @@
   background-color: #E5E5E5;
   border-radius: 50%;
   position: absolute;
-  top: 50%;
+  top: 25%;
   left: 50px;
   transform: translateY(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
+  animation: hand-shake 2s infinite;
 }
+
+@keyframes hand-shake {
+	0% {
+		transform: rotate(-5deg);		
+	}
+	25% {
+		transform: rotate(15deg);
+	}
+	50% {
+		transform: rotate(-10deg);
+	}
+	75% {
+		transform: rotate(15deg);
+	}
+	100% {
+		transform: rotate(-5deg);
+	}
+}
+
+
 
 .order-text {
   font-size: 16px;

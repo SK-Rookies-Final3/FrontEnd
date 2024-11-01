@@ -40,7 +40,7 @@ phases:
       - echo Committing changes to values.yaml...
       - git config --global user.name "CodeBuild"
       - git config --global user.email "codebuild@example.com"
-      - cd helm-argocd
+      - cd HelmChart-for-Argo
       - git checkout main || git checkout -b main 
       - git add helm-charts/values.yaml
       - git commit -m "Update frontendTimestamp to $(date +%Y%m%d%H%M%S)" || echo "No changes to commit"

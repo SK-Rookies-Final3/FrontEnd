@@ -30,24 +30,24 @@ phases:
       - echo Uploading frontend build to S3...
       - aws s3 sync ./build s3://shortpingoo-frontendbucket/FrontEnd_image/ --delete
       - echo Building the Docker image...
-      - docker build -t $ECR_REPO:$TIMESTAMP .
-      - docker tag $ECR_REPO:$TIMESTAMP $ECR_URL/$ECR_REPO:$TIMESTAMP
+      - docker build -t $ECR_REPO:$(date +%Y%m%d%H%M%S) .
+      - docker tag $ECR_REPO:$(date +%Y%m%d%H%M%S) $ECR_URL/$ECR_REPO:$(date +%Y%m%d%H%M%S)
 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $ECR_URL/$ECR_REPO:$TIMESTAMP
+      - docker push $ECR_URL/$ECR_REPO:$(date +%Y%m%d%H%M%S)
       - echo Updating frontendTimestamp and frontend image tag in values.yaml...
-      - sed -i "s/frontendTimestamp:.*/frontendTimestamp:\"$TIMESTAMP\"/" HelmChart-for-Argo/helm-charts/values.yaml
-      - sed -i "s/tag:.*/tag:\"$TIMESTAMP\"/" HelmChart-for-Argo/helm-charts/values.yaml
+      - sed -i "s/frontendTimestamp:.*/frontendTimestamp:\"$(date +%Y%m%d%H%M%S)\"/" HelmChart-for-Argo/helm-charts/values.yaml
+      - sed -i "s/tag:.*/tag:\"$(date +%Y%m%d%H%M%S)\"/" HelmChart-for-Argo/helm-charts/values.yaml
       - echo Committing changes to values.yaml...
       - git config --global user.name "CodeBuild"
       - git config --global user.email "codebuild@example.com"
       - cd HelmChart-for-Argo
       - git checkout main || git checkout -b main 
       - git add helm-charts/values.yaml
-      - git commit -m "Update frontendTimestamp and image tag to $TIMESTAMP" || echo "No changes to commit"
+      - git commit -m "Update frontendTimestamp and image tag to $(date +%Y%m%d%H%M%S)" || echo "No changes to commit"
       - git push origin main || echo "No changes to push"
 
 artifacts:

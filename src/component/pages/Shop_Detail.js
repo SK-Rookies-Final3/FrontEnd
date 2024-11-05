@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ShortModal from '../ShortModal';
+import ImageModal from './ImageModal';
 import Swal from 'sweetalert2';
 import StarRatings from 'react-star-ratings';
-import { FaTrash, FaShoppingCart, FaBox, FaHeart } from 'react-icons/fa';
+import { FaTrash, FaShoppingCart, FaBox, FaHeart, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import '../css/Shop_Detail.css';
 import product from '../../img/product.jpg';
 import product_d from '../../img/product-d.jpg';
@@ -21,7 +22,16 @@ const ShopDetail = () => {
     const [averageRating, setAverageRating] = useState(0);
     const [wishlistClicked, setWishlistClicked] = useState(false);
     const [cartClicked, setCartClicked] = useState(false);
+    const [images, setImages] = useState([]);
+    const [fileKey, setFileKey] = useState(Date.now());
+    const [fileNames, setFileNames] = useState([]);
+    const [nickname, setNickname] = useState('');
 
+    // ImageModal 상태 관리
+    const [showImageModal, setShowImageModal] = useState(false);
+    const [selectedImages, setSelectedImages] = useState([]);
+    const [initialImageIndex, setInitialImageIndex] = useState(0);
+    
     // Size 관련 상태
     const [isSizeActive, setIsSizeActive] = useState(false);
     const [selectedSize, setSelectedSize] = useState("Choose a size");
@@ -36,6 +46,24 @@ const ShopDetail = () => {
         const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
         return (totalRating / reviews.length).toFixed(1);
     };
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user`, {
+                headers: {
+                    Authorization: `${accessToken}`,
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data && data.body) {
+                        setNickname(data.body.nickname);
+                    }
+                })
+                .catch((error) => console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error));
+        }
+    }, []);
 
     // 리뷰가 업데이트될 때마다 평균 별점 재계산
     useEffect(() => {
@@ -95,6 +123,44 @@ const ShopDetail = () => {
         setTimeout(() => setCartClicked(false), 2000);
     };
 
+    const handleImageUpload = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+
+        if (selectedFiles.length > 3) {
+            Swal.fire({
+                title: '최대 3개까지 업로드 가능합니다.',
+                text: '이미지를 업로드하려면 일부를 제거해주세요.',
+                icon: 'warning',
+                confirmButtonText: '확인',
+                confirmButtonColor: '#754F23',
+                background: '#F0EADC',
+                color: '#754F23',
+            });
+            e.target.value = "";
+            return;
+        }
+
+        const imageUrls = selectedFiles.map((file) => URL.createObjectURL(file));
+        setImages(imageUrls);
+        setFileNames(selectedFiles.map(file => file.name));
+    };
+
+    const handleImageNavigation = (reviewId, direction) => {
+        setReviews((prevReviews) =>
+            prevReviews.map((review) =>
+                review.id === reviewId
+                    ? {
+                        ...review,
+                        currentImageIndex:
+                            direction === 'next'
+                                ? (review.currentImageIndex + 1) % review.images.length
+                                : (review.currentImageIndex - 1 + review.images.length) % review.images.length,
+                    }
+                    : review
+            )
+        );
+    };
+
     const handleSubmitReview = () => {
         const accessToken = localStorage.getItem('accessToken');
 
@@ -131,8 +197,10 @@ const ShopDetail = () => {
             height: height || '미공개 ',
             weight: weight || '미공개 ',
             description,
-            userId: 'username',
+            userId: nickname,
             date: new Date().toISOString().slice(0, 10),
+            images,
+            currentImageIndex: 0,
         };
 
         setReviews([...reviews, newReview]);
@@ -142,6 +210,9 @@ const ShopDetail = () => {
         setWeight('');
         setDescription('');
         setRatingKey(Date.now());
+        setImages([]);
+        setFileKey(Date.now());
+        setFileNames([]);
     };
 
     const handleDeleteReview = (reviewId) => {
@@ -167,6 +238,19 @@ const ShopDetail = () => {
                 }, 1000);
             }
         });
+    };
+
+    // review-image 클릭 시 ImageModal 표시
+    const handleImageClick = (images, index) => {
+        setSelectedImages(images);
+        setInitialImageIndex(index);
+        setShowImageModal(true);
+    };
+
+    // ImageModal 닫기
+    const handleCloseImageModal = () => {
+        setShowImageModal(false);
+        setSelectedImages([]);
     };
 
     const renderContent = () => {
@@ -212,6 +296,25 @@ const ShopDetail = () => {
                                     />
                                 </div>
                                 <div className="user-info">
+                                    <div className="file-input-container">
+                                        <div className="file-names">
+                                            {fileNames.length > 0
+                                                ? fileNames.length > 1
+                                                    ? `${fileNames.length}개의 파일 선택됨`
+                                                    : fileNames[0]
+                                                : "선택된 파일 없음"}
+                                        </div>
+                                        <label className="file-input-label">
+                                            <input
+                                                key={fileKey}
+                                                type="file"
+                                                accept="image/*"
+                                                multiple
+                                                onChange={handleImageUpload}
+                                            />
+                                            이미지 첨부
+                                        </label>
+                                    </div>
                                     <input
                                         type="number"
                                         placeholder="키"
@@ -245,35 +348,57 @@ const ShopDetail = () => {
                         <div className="review-list">
                             {reviews.map((review) => (
                                 <div key={review.id} className={`review-item ${review.isDeleting ? 'fade-out' : ''}`}>
-                                    <div className="review-top">
-                                        <StarRatings
-                                            rating={review.rating}
-                                            starRatedColor="gold"
-                                            numberOfStars={5}
-                                            starDimension="20px"
-                                            starSpacing="3px"
-                                            name="review-rating"
-                                        />
-                                    </div>
-                                    <div className="review-middle">
-                                        <span>{review.height} cm / {review.weight} kg</span>
-                                    </div>
-                                    <div className="review-description">
-                                        <p>{review.description}</p>
-                                    </div>
-                                    <div className="review-bottom">
-                                        <div>
-                                            <span>ID: {review.userId} / {review.date}</span>
+                                    {review.images.length > 0 && (
+                                        <div className="review-images">
+                                            <img
+                                                src={review.images[review.currentImageIndex]}
+                                                alt={`Review image ${review.currentImageIndex + 1}`}
+                                                className="review-image"
+                                                onClick={() => handleImageClick(review.images, review.currentImageIndex)}
+                                            />
+                                            {review.images.length > 1 && (
+                                                <div className="image-navigation">
+                                                    <button onClick={() => handleImageNavigation(review.id, 'prev')}><FaArrowLeft /></button>
+                                                    <button onClick={() => handleImageNavigation(review.id, 'next')}><FaArrowRight /></button>
+                                                </div>
+                                            )}
                                         </div>
-                                        {review.userId === 'username' && (
-                                            <button className="delete-button" onClick={() => handleDeleteReview(review.id)}>
-                                                <FaTrash />
-                                            </button>
-                                        )}
+                                    )}
+                                    <div className="review-content">
+                                        <div className="review-top">
+                                            <StarRatings
+                                                rating={review.rating}
+                                                starRatedColor="gold"
+                                                numberOfStars={5}
+                                                starDimension="20px"
+                                                starSpacing="3px"
+                                                name="review-rating"
+                                            />
+                                        </div>
+                                        <div className="review-middle">
+                                            <span>{review.height} cm / {review.weight} kg</span>
+                                        </div>
+                                        <div className="review-description">
+                                            <p>{review.description}</p>
+                                        </div>
+                                        <div className="review-bottom">
+                                            <span>ID: {review.userId} / {review.date}</span>
+                                            {review.userId === nickname && (
+                                                <button className="delete-button" onClick={() => handleDeleteReview(review.id)}>
+                                                    <FaTrash />
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
+                        <ImageModal
+                            showModal={showImageModal}
+                            images={selectedImages}
+                            initialIndex={initialImageIndex}
+                            onClose={handleCloseImageModal}
+                        />
                     </div>
                 );
             default:
@@ -304,9 +429,6 @@ const ShopDetail = () => {
                 <div className='product-image-ani'>
                     <img src={product} alt="Product 1" />
                 </div>
-                {/* <img src={product} alt="Product 1" />
-                <img src={product} alt="Product 2" />
-                <img src={product} alt="Product 3" /> */}
             </div>
 
             <div className="product-info">

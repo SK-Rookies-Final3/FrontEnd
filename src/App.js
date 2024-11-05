@@ -22,6 +22,7 @@ import Mypage_Question from './component/mypages/Mypage_Question';
 import Mypage_Change from './component/mypages/Mypage_Change';
 import Brand from './component/pages/Brand';
 import Loading from './component/Loading';
+import AboutUs from './component/AboutUs';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
           <Route path='/mypages/change' element={<Mypage_Change />}/>
 
           <Route path='/loading' element={<Loading />} />
+          <Route path='/aboutus' element={<AboutUs />} />
         </Routes>
       </div>
     </Router>

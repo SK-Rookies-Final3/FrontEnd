@@ -15,7 +15,7 @@ export default function Header() {
     } else {
       setShowTooltip(true); // 토큰이 없으면 Tooltip 표시
     }
-  },[]);
+  });
 
   const toggleTooltip = () => {
     setShowTooltip(!showTooltip);

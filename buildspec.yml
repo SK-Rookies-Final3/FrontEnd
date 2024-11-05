@@ -25,12 +25,11 @@ phases:
     commands:
       - echo Building the React project...
       - npm run build
-      - echo Build started on `date`
+      - echo Uploading frontend build to S3...
+      - aws s3 sync ./build s3://shortpingoo-frontendbucket/FrontEnd_image/ --delete
       - echo Building the Docker image...
       - docker build -t $ECR_REPO:latest .
       - docker tag $ECR_REPO:latest $ECR_URL/$ECR_REPO:latest
-      - echo Checking if ./build directory exists...
-      - if [ ! -d "./build" ]; then echo "./build directory does not exist. Exiting."; exit 1; fi
 
   post_build:
     commands:
@@ -47,8 +46,6 @@ phases:
       - git add helm-charts/values.yaml
       - git commit -m "Update frontendTimestamp to $(date +%Y%m%d%H%M%S)" || echo "No changes to commit"
       - git push origin main || echo "No changes to push"
-      - echo Uploading frontend build to S3...
-      - aws s3 sync ./build s3://shortpingoo-frontendbucket/FrontEnd_image/ --delete
 
 artifacts:
   files:

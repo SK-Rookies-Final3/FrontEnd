@@ -1,0 +1,124 @@
+.main-admin-content {
+    padding: 20px;
+    width: 80%;
+}
+
+.admin-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.content-wrapper {
+    display: flex;
+    /* align-items: flex-start; */
+    margin-top: 20px;
+    justify-content: space-between;
+    width: 90%;
+}
+
+.admin-user-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    margin-bottom: 20px;
+    width: 90%;
+}
+
+.user-search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #EAE1D3;
+    height: 40px;
+    border-radius: 40px;
+    transition: 0.4s;
+    margin-right: 30px;
+}
+
+.user-search-box:hover .user-search-text {
+    width: 400px;
+    padding: 20px;
+}
+
+.user-search-btn {
+    color: black;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.4s;
+    cursor: pointer;
+    opacity: 1;
+}
+
+.user-search-box:hover .user-search-btn {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.user-search-text {
+    border: none;
+    background: none;
+    outline: none;
+    color: black;
+    font-size: 16px;
+    transition: 0.6s;
+    width: 0px;
+}
+
+.filter-buttons {
+    margin-top: 10px;
+    margin-left: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.filter-buttons button {
+    display: block;
+    padding: 18px 65px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 30px;
+    background-color: #DBC797;
+    color: black;
+    cursor: pointer;
+    text-align: left;
+    font-size: 16px;
+
+}
+
+.filter-buttons button:hover {
+    background-color: #c0986e;
+}
+
+.filter-buttons button.active {
+    background-color: #dbc797;
+    color: #754F23;
+}
+
+.users-table {
+    width: 80%;
+    border-collapse: collapse;
+    background-color: #EAE1D3;
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
+.users-table th,
+.users-table td {
+    padding: 10px;
+    text-align: center;
+}
+
+.users-table th {
+    border-bottom: 1px solid gray;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.users-table td {
+    font-size: 16px;
+}

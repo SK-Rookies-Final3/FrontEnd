@@ -29,6 +29,8 @@ phases:
       - echo Building the Docker image...
       - docker build -t $ECR_REPO:latest .
       - docker tag $ECR_REPO:latest $ECR_URL/$ECR_REPO:latest
+      - echo Checking if ./build directory exists...
+      - if [ ! -d "./build" ]; then echo "./build directory does not exist. Exiting."; exit 1; fi
 
   post_build:
     commands:

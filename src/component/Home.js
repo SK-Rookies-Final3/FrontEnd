@@ -28,6 +28,8 @@ function Home() {
     // 타이핑 effect short
     const [displayedText, setDisplayedText] = useState('');
     const texts = ["당신에게 꼭 맞는 AI 추천 숏폼을 지금 만나보세요!", "Discover AI-recommended shorts tailored just for you!  "];
+    const texts_be = ["사랑받은 아이템으로 맞춘 AI 추천 컬렉션, 지금 만나보세요!", "AI Recommendation Collection Made with Loved Items, Meet It Now!"]
+    const [textSet, setTextSet] = useState(texts);
     const [textIndex, setTextIndex] = useState(0);
     const [charIndex, setCharIndex] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -36,10 +38,18 @@ function Home() {
     // 타이핑 effect product
     const [newDisplayedText, setNewDisplayedText] = useState('');
     const newTexts = ["당신에게 꼭 맞는 AI 추천 상품을 지금 만나보세요!", "Discover AI-recommended products tailored just for you!"];
+    const newTexts_be = ["사랑받은 아이템으로 맞춘 AI 추천 컬렉션, 지금 만나보세요!", "AI Recommendation Collection Made with Loved Items, Meet It Now!"]
+    const [newTextSet, setNewTextSet] = useState(newTexts);
     const [newTextIndex, setNewTextIndex] = useState(0);
     const [newCharIndex, setNewCharIndex] = useState(0);
     const [newIsDeleting, setNewIsDeleting] = useState(false);
     const [isPausedProduct, setIsPausedProduct] = useState(false);
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        setTextSet(accessToken ? texts : texts_be);
+        setNewTextSet(accessToken ? newTexts : newTexts_be);
+    }, []);
 
     const typingEffect = (
         texts, setDisplayedText, charIndex, setCharIndex,
@@ -76,19 +86,19 @@ function Home() {
 
     useEffect(() => {
         return typingEffect(
-            texts, setDisplayedText, charIndex, setCharIndex,
+            textSet, setDisplayedText, charIndex, setCharIndex,
             isDeleting, setIsDeleting, textIndex, setTextIndex,
             isPausedShort, setIsPausedShort
         );
-    }, [charIndex, isDeleting, textIndex, isPausedShort]);
+    }, [charIndex, isDeleting, textIndex, isPausedShort, textSet]);
 
     useEffect(() => {
         return typingEffect(
-            newTexts, setNewDisplayedText, newCharIndex, setNewCharIndex,
+            newTextSet, setNewDisplayedText, newCharIndex, setNewCharIndex,
             newIsDeleting, setNewIsDeleting, newTextIndex, setNewTextIndex,
             isPausedProduct, setIsPausedProduct
         );
-    }, [newCharIndex, newIsDeleting, newTextIndex, isPausedProduct]);
+    }, [newCharIndex, newIsDeleting, newTextIndex, isPausedProduct, newTextSet]);
 
     const handleVideoClick = (url) => {
         setVideoSrc(url);
@@ -221,47 +231,6 @@ function Home() {
                         </div>
                     </div>
 
-                    <div class="card">
-                        <div class="imgBx">
-                            <img src={product} alt="Product" className="image-thumbnail" />
-                        </div>
-                        <div class="contentBx">
-                            <h2>비비안웨스트우드</h2>
-                            <div class="price">
-                                <h3>Price :</h3>
-                                <span>150,000</span>
-                            </div>
-                            <a href="#">Buy Now</a>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="imgBx">
-                            <img src={product} alt="Product" className="image-thumbnail" />
-                        </div>
-                        <div class="contentBx">
-                            <h2>비비안웨스트우드</h2>
-                            <div class="price">
-                                <h3>Price :</h3>
-                                <span>150,000</span>
-                            </div>
-                            <a href="#">Buy Now</a>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="imgBx">
-                            <img src={product} alt="Product" className="image-thumbnail" />
-                        </div>
-                        <div class="contentBx">
-                            <h2>비비안웨스트우드</h2>
-                            <div class="price">
-                                <h3>Price :</h3>
-                                <span>150,000</span>
-                            </div>
-                            <a href="#">Buy Now</a>
-                        </div>
-                    </div>
                     <button className="view-all-button" onClick={handleViewAllClick}>
                         <span className="button_all_icon-wrapper">
                             <VscArrowRight className="button_all_icon-svg" />

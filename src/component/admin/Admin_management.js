@@ -9,6 +9,25 @@ import '../css/Admin_management.css';
 function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
+    const handleLogout = () => {
+      Swal.fire({
+          title: '정말 로그아웃하시겠습니까?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: '로그아웃',
+          cancelButtonText: '취소',
+          confirmButtonColor: '#754F23',
+          background: '#F0EADC',
+          iconColor: '#DBC797'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              localStorage.removeItem("accessToken");
+              localStorage.removeItem("role");
+              navigate('/');
+          }
+      });
+  };
+
 
     return (
         <div className="business_sidebar">
@@ -21,6 +40,7 @@ function Sidebar() {
                     onClick={() => navigate('/admin/allproduct')}>물품 목록 및 확인</li>
                 <li className={location.pathname === '/admin/statistics' ? 'active' : ''}
                     onClick={() => navigate('/admin/statistics')}>통계</li>
+                <li onClick={handleLogout}>로그아웃</li>
             </ul>
         </div>
     );

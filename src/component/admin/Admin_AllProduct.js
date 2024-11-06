@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../css/Business_Form.css';
+import '../css/Admin_List.css';
 import { FaSearch } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -64,10 +65,10 @@ function AdminProduct() {
     const outOfStockProducts = products.filter(product => product.status === '품절').length;
 
     return (
-        <div className="business-container">
+        <div className="admin-container">
             <Sidebar />
-            <div className="main-content">
-                <div className="header">
+            <div className="main-admin-content">
+                <div className="admin-user-header">
                     <span className="productall-text" style={{
                         marginLeft: '30px',
                         fontSize: '20px',

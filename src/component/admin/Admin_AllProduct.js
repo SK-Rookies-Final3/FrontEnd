@@ -8,10 +8,29 @@ function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const handleLogout = () => {
+        Swal.fire({
+            title: '정말 로그아웃하시겠습니까?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '로그아웃',
+            cancelButtonText: '취소',
+            confirmButtonColor: '#754F23',
+            background: '#F0EADC',
+            iconColor: '#DBC797'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("role");
+                navigate('/');
+            }
+        });
+    };
+
     return (
         <div className="business_sidebar">
             <ul>
-            <li className={location.pathname === '/admin/userlist' ? 'active' : ''}
+                <li className={location.pathname === '/admin/userlist' ? 'active' : ''}
                     onClick={() => navigate('/admin/userlist')}>사용자 목록</li>
                 <li className={location.pathname === '/admin/management' ? 'active' : ''}
                     onClick={() => navigate('/admin/management')}>기업 승인 및 거절</li>
@@ -19,6 +38,7 @@ function Sidebar() {
                     onClick={() => navigate('/admin/allproduct')}>물품 목록 및 확인</li>
                 <li className={location.pathname === '/admin/statistics' ? 'active' : ''}
                     onClick={() => navigate('/admin/statistics')}>통계</li>
+                <li onClick={handleLogout}>로그아웃</li>
             </ul>
         </div>
     );
@@ -48,7 +68,7 @@ function AdminProduct() {
             <Sidebar />
             <div className="main-content">
                 <div className="header">
-                    <span className="productall-text" style={{ 
+                    <span className="productall-text" style={{
                         marginLeft: '30px',
                         fontSize: '20px',
                         fontWeight: 'bold',

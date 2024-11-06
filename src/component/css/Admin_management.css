@@ -111,7 +111,8 @@
 }
 
 .companys-table {
-  width: calc(100% - 130px); /* 검색바와 같은 너비 - 여백을 고려 */
+  /* width: calc(100% - 130px); 검색바와 같은 너비 - 여백을 고려 */
+  width: 100%;
     border-collapse: collapse;
     background-color: #EAE1D3;
     margin-top: 20px; /* 검색바와 테이블 간격 */

@@ -61,6 +61,7 @@ export default function Header() {
 
         .nav-item {
           margin: 0 100px;
+          cursor: pointer;
         }
 
         .navbar {
@@ -155,16 +156,16 @@ export default function Header() {
           {/* 네비게이션 메뉴 */}
           <ul className="navbar-nav d-flex flex-row justify-content-center mb-0">
             <li className="nav-item">
-              <a className="nav-link" href="/">Home</a>
+              <span className="nav-link" onClick={() => navigate("/")}>Home</span>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/pages/shop">Shop</a>
+              <span className="nav-link" onClick={() => navigate("/pages/shop")}>Shop</span>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/pages/brands">Brands</a>
+              <span className="nav-link" onClick={() => navigate("/pages/brands")}>Brands</span>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/aboutus">About Us</a>
+              <span className="nav-link" onClick={() => navigate("/aboutus")}>About Us</span>
             </li>
           </ul>
 

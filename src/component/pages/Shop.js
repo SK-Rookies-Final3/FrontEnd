@@ -18,14 +18,14 @@ export default function Shop() {
   const navigate = useNavigate();
 
   const categories = [
-    { icon: <TbJacket />, label: '아우터', hoverText: 'Outerwear' },
+    { icon: <TbJacket />, label: '겉옷', hoverText: 'Outerwear' },
     { icon: <PiTShirt />, label: '상의', hoverText: 'Tops' },
     { icon: <PiPants />, label: '하의', hoverText: 'Bottoms' },
     { icon: <GiSkirt />, label: '치마', hoverText: 'Skirts' },
     { icon: <IoFootstepsOutline />, label: '신발', hoverText: 'Shoes' },
     { icon: <FaRedhat />, label: '모자', hoverText: 'Hats' },
     { icon: <IoBagHandleOutline />, label: '가방', hoverText: 'Bags' },
-    { icon: <GiBigDiamondRing />, label: '악세사리', hoverText: 'Accessories' },
+    { icon: <GiBigDiamondRing />, label: '장신구', hoverText: 'Accessories' },
   ];
 
   const products = [ // 상품 데이터 배열
@@ -54,16 +54,16 @@ export default function Shop() {
   };
 
   const handleProductClick = (productId) => {
-    navigate('/page/shop/detail'); // 상세 페이지로 이동
+    navigate('/pages/shop/detail'); // 상세 페이지로 이동
   };
 
   return (
     <div className="shop-container">
-      <aside className="sidebar">
+      <aside className="shop-sidebar">
         <div className="logo">
           <h2>Category</h2>
         </div>
-        <ul className="links">
+        <ul className="shop-links">
           {categories.map((category, index) => (
             <li
               key={index}
@@ -80,10 +80,10 @@ export default function Shop() {
       </aside>
       <div className="product-list">
         {products.map(product => (
-            <div className="shop-card" key={product.id} style={{ width: "150px" }}> {/* 카드 너비 조정 */}
+            <div className="shop-card" key={product.id}> {/* 카드 너비 조정 */}
             <img 
                 src={product.image} 
-                className='card-img-top' 
+                className='shop-card-img-top' 
                 alt={product.title} 
                 onClick={() => handleProductClick(product.id)} 
                 style={{ cursor: 'pointer' }} 

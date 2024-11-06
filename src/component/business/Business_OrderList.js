@@ -8,6 +8,25 @@ function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const handleLogout = () => {
+        Swal.fire({
+            title: '정말 로그아웃하시겠습니까?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '로그아웃',
+            cancelButtonText: '취소',
+            confirmButtonColor: '#754F23',
+            background: '#F0EADC',
+            iconColor: '#DBC797'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("role");
+                navigate('/');
+            }
+        });
+    };
+
     return (
         <div className="business_sidebar">
             <ul>
@@ -17,6 +36,7 @@ function Sidebar() {
                     onClick={() => navigate('/business/orderlist')}>주문 목록 확인</li>
                 <li className={location.pathname === '/business/statistics' ? 'active' : ''}
                     onClick={() => navigate('/business/statistics')}>통계</li>
+                <li onClick={handleLogout}>로그아웃</li>
             </ul>
         </div>
     );
@@ -142,10 +162,11 @@ function OrderTable({ searchQuery }) {
                                 <span className="left-icon"></span>
                                 <span className="right-icon"></span>
                                 <div className="items">
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송대기')} style={{ '--i': 1 }}><span></span>배송대기</a>
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송 중')} style={{ '--i': 2 }}><span></span>배송 중</a>
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '완료')} style={{ '--i': 3 }}><span></span>완료</a>
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '취소')} style={{ '--i': 4 }}><span></span>취소</a>
+                                    <a href="#" onClick={() => handleStatusChange(order.no, '주문완료')} style={{ '--i': 1 }}><span></span>주문완료</a>
+                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송대기')} style={{ '--i': 2 }}><span></span>배송대기</a>
+                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송 중')} style={{ '--i': 3 }}><span></span>배송 중</a>
+                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송완료')} style={{ '--i': 4 }}><span></span>배송완료</a>
+                                    <a href="#" onClick={() => handleStatusChange(order.no, '주문취소')} style={{ '--i': 5 }}><span></span>주문취소</a>
                                 </div>
                             </div>
                         </td>

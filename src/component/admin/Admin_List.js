@@ -10,6 +10,25 @@ function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const handleLogout = () => {
+        Swal.fire({
+            title: '정말 로그아웃하시겠습니까?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '로그아웃',
+            cancelButtonText: '취소',
+            confirmButtonColor: '#754F23',
+            background: '#F0EADC',
+            iconColor: '#DBC797'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("role");
+                navigate('/');
+            }
+        });
+    };
+
     return (
         <div className="business_sidebar">
             <ul>
@@ -21,6 +40,7 @@ function Sidebar() {
                     onClick={() => navigate('/admin/allproduct')}>물품 목록 및 확인</li>
                 <li className={location.pathname === '/admin/statistics' ? 'active' : ''}
                     onClick={() => navigate('/admin/statistics')}>통계</li>
+                <li onClick={handleLogout}>로그아웃</li>
             </ul>
         </div>
     );
@@ -34,20 +54,20 @@ function AdminList() {
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
         if (accessToken) {
-            axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/users/master`, {
+            axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user/master`, {
                 headers: {
                     Authorization: `${accessToken}`
                 }
             })
-            .then(response => {
-                console.log(response.data);
-                if (response.data) {
-                    setUsers(response.data);
-                }
-            })
-            .catch(error => {
-                console.log("데이터를 가져오는 중 오류가 발생했습니다.", error);
-            });
+                .then(response => {
+                    console.log(response.data);
+                    if (response.data) {
+                        setUsers(response.data);
+                    }
+                })
+                .catch(error => {
+                    console.log("데이터를 가져오는 중 오류가 발생했습니다.", error);
+                });
         }
     }, []);
 
@@ -83,7 +103,7 @@ function AdminList() {
 }
 
 function UserTable({ users, searchQuery, filterRole, setUsers }) {
-    const handleDeleteButtonClick = async (userId, username, event) => {
+    const handleDeleteButtonClick = async (username, event, targetId) => {
         const token = localStorage.getItem('accessToken');
         if (!token) {
             console.log("토큰이 없습니다.");
@@ -104,7 +124,7 @@ function UserTable({ users, searchQuery, filterRole, setUsers }) {
 
         if (result.isConfirmed) {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/exit/${userId}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/master/exit/${targetId}`, {
                     method: 'DELETE',
                     headers: {
                         Authorization: `${token}`,
@@ -123,7 +143,7 @@ function UserTable({ users, searchQuery, filterRole, setUsers }) {
                     }, 2000);
 
                     setTimeout(() => {
-                        const updatedUsers = users.filter((user) => user.id !== userId);
+                        const updatedUsers = users.filter((user) => user.id !== targetId);
                         setUsers(updatedUsers);
                     }, 2500);
                 } else {
@@ -160,9 +180,9 @@ function UserTable({ users, searchQuery, filterRole, setUsers }) {
                         <td>{user.username}</td>
                         <td>{user.nickname}</td>
                         <td>{user.role}</td>
-                        <td>{user.createdAt}</td>
+                        <td>{user.createdAt.slice(0, 19).replace('T', ' ')}</td>
                         <td>
-                            <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(user.id, user.username, e)}>
+                            <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(user.username, e, user.id)}>
                                 <span className="button-text">Delete</span>
                                 <span className="animation">
                                     <span className="paper-wrapper">

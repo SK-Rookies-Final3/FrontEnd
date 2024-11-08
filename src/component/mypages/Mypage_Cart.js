@@ -9,9 +9,9 @@ import { FaTrashAlt } from 'react-icons/fa';
 
 // 상품 가격 배열
 const STOCK_PRICE = [
-    { id: 1, name: "Item 1", price: 1000, image: test1 },
-    { id: 2, name: "Item 2", price: 2000, image: test2 },
-    { id: 3, name: "Item 3", price: 3000, image: test3 },
+    { id: 1, name: "신발", price: 1000, image: test1, size: 260, color: "BROWN", amount: 1 },
+    { id: 2, name: "상하의", price: 2000, image: test2, size: "S", color: "WHITE", amount: 3 },
+    { id: 3, name: "셔츠", price: 3000, image: test3, size: "M", color: "GRAY", amount: 8 },
 ];
 
 function Mypage_Cart() {
@@ -26,6 +26,13 @@ function Mypage_Cart() {
     const circleRefs = useRef({});
     const circleLoaderRefs = useRef({});
     const tabRefs = useRef({});
+
+    // 상품 목록을 관리하기 위한 상태 추가
+    const [stock, setStock] = useState(STOCK_PRICE);
+
+    // 선택된 항목을 저장하는 상태
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectAll, setSelectAll] = useState(false); // 전체 선택 상태
 
     let posX = 0;
     let posY = 0;
@@ -231,29 +238,29 @@ function Mypage_Cart() {
         const boxRect = targetBoxRef.current.getBoundingClientRect();
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-    
-        if (boxRect.left < e.clientX && 
-            e.clientX < boxRect.right && 
-            boxRect.top < e.clientY && 
+
+        if (boxRect.left < e.clientX &&
+            e.clientX < boxRect.right &&
+            boxRect.top < e.clientY &&
             e.clientY < boxRect.bottom) {
-            
+
             setTargets((targets) => {
                 const newTargets = targets.map((target) =>
                     target.stamp_id === targetId
-                        ? { 
-                            ...target, 
+                        ? {
+                            ...target,
                             top: e.clientY + scrollTop - boxRect.top,
-                            left: e.clientX + scrollLeft - boxRect.left -10
-                          }
+                            left: e.clientX + scrollLeft - boxRect.left - 10
+                        }
                         : target
                 );
-    
+
                 // positionRef 업데이트
                 positionRef.current[targetId] = {
                     top: e.clientY + scrollTop - boxRect.top,
-                    left: e.clientX + scrollLeft - boxRect.left-10
+                    left: e.clientX + scrollLeft - boxRect.left - 10
                 };
-    
+
                 return newTargets;
             });
         } else {
@@ -304,6 +311,67 @@ function Mypage_Cart() {
         setActiveTab(null);
         setTargets([]);
     };
+
+    // 전체 선택 체크박스 핸들러
+    const handleSelectAllChange = () => {
+        if (selectAll) {
+            setSelectedItems([]); // 전체 해제
+        } else {
+            setSelectedItems(STOCK_PRICE.map(item => item.id));
+        }
+        setSelectAll(!selectAll);
+    };
+
+    // 개별 체크박스 핸들러
+    const handleCheckboxChange = (itemId) => {
+        setSelectedItems((prevSelectedItems) => {
+            const newSelectedItems = prevSelectedItems.includes(itemId)
+                ? prevSelectedItems.filter((id) => id !== itemId)
+                : [...prevSelectedItems, itemId];
+            setSelectAll(newSelectedItems.length === STOCK_PRICE.length);
+            return newSelectedItems;
+        });
+    };
+
+    // 수량 업데이트
+    const [amount, setAmount] = useState(
+        STOCK_PRICE.reduce((acc, item) => {
+            acc[item.id] = item.amount;
+            return acc;
+        }, {})
+    );
+
+    // 선택된 상품 삭제
+    const deleteSelectedItems = () => {
+        // 선택된 항목들에 대해 fade-out 클래스 추가
+        selectedItems.forEach((itemId) => {
+            const row = document.querySelector(`tr[data-id='${itemId}']`);
+            if (row) {
+                row.classList.add('fade-out');
+            }
+        });
+    
+        // 일정 시간 후에 항목 삭제
+        setTimeout(() => {
+            setStock((prevStock) => prevStock.filter((item) => !selectedItems.includes(item.id)));
+            setSelectedItems([]);
+            setSelectAll(false);
+        }, 500); // 0.5초 후 삭제 (애니메이션 시간과 맞춤)
+    };
+
+    // 수량 변경
+    const handleAmountChange = (itemId, newAmount) => {
+        setAmount((prevAmount) => ({
+            ...prevAmount,
+            [itemId]: newAmount,
+        }));
+    };
+
+    // 선택된 항목들의 총 가격 계산
+    const selectedTotalPrice = STOCK_PRICE.reduce((acc, item) => {
+        return selectedItems.includes(item.id) ? acc + item.price * amount[item.id] : acc;
+    }, 0);
+
 
     return (
         <>
@@ -430,6 +498,93 @@ function Mypage_Cart() {
                         </div>
                     </div>
                 </div>
+
+
+                <div className="cart-list-container">
+                    <h2>Cart</h2>
+                    <p className="delivery-info">
+                        *배송은 2-5일 정도 소요되며 택배사의 상황에 따라 지연될 수 있습니다. Blotter Card는 우편 발송으로 영업일 기준 5일 이상 소요됩니다.
+                    </p>
+
+                    <table className="cart-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectAll}
+                                        onChange={handleSelectAllChange}
+                                    />
+                                </th>
+                                <th>상품 사진</th>
+                                <th>상품 이름</th>
+                                <th>상품 상세</th>
+                                <th>수량</th>
+                                <th>주문금액</th>
+                                <th>배송 정보</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+    {stock.map((item) => (
+        <tr key={item.id} data-id={item.id}>
+            <td>
+                <input
+                    type="checkbox"
+                    checked={selectedItems.includes(item.id)}
+                    onChange={() => handleCheckboxChange(item.id)}
+                />
+            </td>
+            <td>
+                <img src={item.image} alt={item.name} className="product-image" />
+            </td>
+            <td>
+                <span>{item.name}</span>
+            </td>
+            <td>
+                <span>{item.size} / </span>
+                <span>{item.color}</span>
+            </td>
+            <td>
+                <select
+                    value={amount[item.id]}
+                    onChange={(e) => handleAmountChange(item.id, parseInt(e.target.value))}
+                >
+                    {[...Array(10).keys()].map((num) => (
+                        <option key={num + 1} value={num + 1}>
+                            {num + 1}
+                        </option>
+                    ))}
+                </select>
+            </td>
+            <td>
+                <span>{item.price} KRW</span>
+            </td>
+            <td>
+                무료 택배
+            </td>
+        </tr>
+    ))}
+</tbody>
+                    </table>
+
+                    <div className="cart-actions">
+                        <button className="action-button" onClick={deleteSelectedItems}>선택상품 삭제</button>
+                    </div>
+
+                    <div className="total-summary">
+                        <p>총 주문 상품 {selectedItems.length}개</p>
+                        <p>
+                            {selectedTotalPrice} KRW + 0 KRW = {selectedTotalPrice} KRW
+                        </p>
+                    </div>
+
+                    <button className="order-button">주문하기</button>
+
+                    <p className="payment-info">
+                        일부 상품은 배송비가 추가될 수 있습니다.
+                    </p>
+                </div>
+
             </div>
         </>
     );

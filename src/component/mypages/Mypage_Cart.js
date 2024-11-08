@@ -350,7 +350,7 @@ function Mypage_Cart() {
                 row.classList.add('fade-out');
             }
         });
-    
+
         // 일정 시간 후에 항목 삭제
         setTimeout(() => {
             setStock((prevStock) => prevStock.filter((item) => !selectedItems.includes(item.id)));
@@ -525,46 +525,46 @@ function Mypage_Cart() {
                             </tr>
                         </thead>
                         <tbody>
-    {stock.map((item) => (
-        <tr key={item.id} data-id={item.id}>
-            <td>
-                <input
-                    type="checkbox"
-                    checked={selectedItems.includes(item.id)}
-                    onChange={() => handleCheckboxChange(item.id)}
-                />
-            </td>
-            <td>
-                <img src={item.image} alt={item.name} className="product-image" />
-            </td>
-            <td>
-                <span>{item.name}</span>
-            </td>
-            <td>
-                <span>{item.size} / </span>
-                <span>{item.color}</span>
-            </td>
-            <td>
-                <select
-                    value={amount[item.id]}
-                    onChange={(e) => handleAmountChange(item.id, parseInt(e.target.value))}
-                >
-                    {[...Array(10).keys()].map((num) => (
-                        <option key={num + 1} value={num + 1}>
-                            {num + 1}
-                        </option>
-                    ))}
-                </select>
-            </td>
-            <td>
-                <span>{item.price} KRW</span>
-            </td>
-            <td>
-                무료 택배
-            </td>
-        </tr>
-    ))}
-</tbody>
+                            {stock.map((item) => (
+                                <tr key={item.id} data-id={item.id}>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedItems.includes(item.id)}
+                                            onChange={() => handleCheckboxChange(item.id)}
+                                        />
+                                    </td>
+                                    <td>
+                                        <img src={item.image} alt={item.name} className="product-image" />
+                                    </td>
+                                    <td>
+                                        <span>{item.name}</span>
+                                    </td>
+                                    <td>
+                                        <span>{item.size} / </span>
+                                        <span>{item.color}</span>
+                                    </td>
+                                    <td>
+                                        <select
+                                            value={amount[item.id]}
+                                            onChange={(e) => handleAmountChange(item.id, parseInt(e.target.value))}
+                                        >
+                                            {[...Array(10).keys()].map((num) => (
+                                                <option key={num + 1} value={num + 1}>
+                                                    {num + 1}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <span>{item.price} KRW</span>
+                                    </td>
+                                    <td>
+                                        무료 택배
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
                     </table>
 
                     <div className="cart-actions">

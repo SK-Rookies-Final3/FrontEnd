@@ -30,6 +30,10 @@ const ShopDetail = () => {
     const [isColorActive, setIsColorActive] = useState(false);
     const [selectedColor, setSelectedColor] = useState("Choose a color");
 
+    // 수량 관련 상태
+    const [isAmountActive, setIsAmountActive] = useState(false);
+    const [selectedAmount, setSelectedAmount] = useState("Choose a amount");
+
     // 별점 평균 계산 함수
     const calculateAverageRating = () => {
         if (reviews.length === 0) return 0;
@@ -55,6 +59,7 @@ const ShopDetail = () => {
     const handleSizeSelectClick = () => {
         setIsSizeActive(!isSizeActive);
         setIsColorActive(false);
+        setIsAmountActive(false);
     };
 
     const handleSizeOptionClick = (size) => {
@@ -65,11 +70,23 @@ const ShopDetail = () => {
     const handleColorSelectClick = () => {
         setIsColorActive(!isColorActive);
         setIsSizeActive(false);
+        setIsAmountActive(false);
     };
 
     const handleColorOptionClick = (color) => {
         setSelectedColor(color);
         setIsColorActive(false);
+    };
+
+    const handleAmountSelectClick = () => {
+        setIsAmountActive(!isAmountActive);
+        setIsColorActive(false);
+        setIsSizeActive(false);
+    };
+
+    const handleAmountOptionClick = (amount) => {
+        setSelectedAmount(amount);
+        setIsAmountActive(false);
     };
 
     const addWish = () => {
@@ -78,10 +95,10 @@ const ShopDetail = () => {
     };
 
     const addCart = () => {
-        if (selectedSize === "Choose a size" || selectedColor === "Choose a color") {
+        if (selectedSize === "Choose a size" || selectedColor === "Choose a color" || selectedAmount === "Choose a amount") {
             Swal.fire({
-                title: '사이즈와 색상을 모두 선택해주세요!',
-                text: '상품을 장바구니에 추가하려면 사이즈와 색상을 선택해야 합니다.',
+                title: '선택사항을 모두 선택해주세요!',
+                text: '상품을 장바구니에 추가하려면 모든 선택사항을 선택해야 합니다.',
                 icon: 'warning',
                 confirmButtonText: '확인',
                 confirmButtonColor: '#754F23',
@@ -375,6 +392,31 @@ const ShopDetail = () => {
                         </div>
                     )}
                 </div>
+
+                {/* 수량 선택 드롭다운 */}
+                <div className={`form-select-container ${isAmountActive ? "active" : ""}`}>
+                    <div className="form-select" onClick={handleAmountSelectClick}>
+                        <div className="form-option-placeholder">
+                            {selectedAmount}
+                        </div>
+                    </div>
+                    {isAmountActive && (
+                        <div className="form-option-wrapper">
+                            <div className="form-option-container">
+                                {["1", "2", "3"].map((item) => (
+                                    <div
+                                        key={item}
+                                        className={`form-option ${selectedAmount === item ? "active" : ""}`}
+                                        onClick={() => handleAmountOptionClick(item)}
+                                    >
+                                        {item}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
             </div>
 
             <div className="wishlist-cart-container">

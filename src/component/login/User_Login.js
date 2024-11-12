@@ -174,6 +174,7 @@ const User_Login = () => {
             return;
         }
 
+        console.log(`${process.env.REACT_APP_API_BASE_URL}`)
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post(
@@ -183,6 +184,7 @@ const User_Login = () => {
                     headers: {
                         Authorization: `${token}`,
                     },
+                    withCredentials : true,
                 }
             );
 

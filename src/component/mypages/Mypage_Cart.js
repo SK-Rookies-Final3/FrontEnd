@@ -36,8 +36,12 @@ function Mypage_Cart() {
 
     let posX = 0;
     let posY = 0;
-    let originalX = 0;
-    let originalY = 0;
+    // let originalX = 0;
+    // let originalY = 0;
+    const originalX = useRef(0);
+    const originalY = useRef(0);
+    const offsetX = useRef(0);
+    const offsetY = useRef(0);
 
     useEffect(() => {
         const updateBox = () => {
@@ -110,21 +114,48 @@ function Mypage_Cart() {
 
     const dragEndHandler = (e) => {
         if (box.left < e.clientX && e.clientX < box.right && box.top < e.clientY && e.clientY < box.bottom) {
-            setTargets((targets) => {
-                const newTargets = [...targets];
-                const targetId = parseInt(e.target.id);
-                const details = STOCK_PRICE.find((item) => item.id === targetId);
-                newTargets.push({
-                    stamp_id: parseInt(e.timeStamp),
-                    top: e.clientY - box.top,
-                    left: e.clientX - box.left,
-                    details: details,
-                });
-                return newTargets;
-            });
+            const targetId = parseInt(e.target.id);
+            const details = STOCK_PRICE.find((item) => item.id === targetId);
+
+            const newTargetItem = {
+                stamp_id: parseInt(e.timeStamp),
+                top: e.clientY - box.top,
+                left: e.clientX - box.left,
+                details: details,
+            };
+
+            if (activeTab) {
+                setTargets((prevTargets) => [...prevTargets, newTargetItem]);
+            } else {
+                setTargets((prevTargets) => [...prevTargets, newTargetItem]);
+            }
+
+            e.target.style.left = "0px";
+            e.target.style.top = "0px";
         }
-        e.target.style.left = "0px";
-        e.target.style.top = "0px";
+    };
+
+    const editTabChanges = () => {
+        if (activeTab) {
+            const updatedTab = {
+                ...activeTab,
+                items: targets.map(target => ({
+                    tabId: activeTab.id,
+                    stamp_id: target.stamp_id,
+                    top: positionRef.current[target.stamp_id]?.top || target.top,
+                    left: positionRef.current[target.stamp_id]?.left || target.left,
+                    details: target.details,
+                }))
+            };
+
+            setSavedTabs(prevTabs =>
+                prevTabs.map(tab => (tab.id === activeTab.id ? updatedTab : tab))
+            );
+
+            setActiveTab(null);
+            setTargets([]);
+            console.log("Edited tab targets:", updatedTab.items);
+        }
     };
 
     // const targetDragStartHandler = (e) => {
@@ -201,37 +232,81 @@ function Mypage_Cart() {
     // };
 
     const targetDragStartHandler = (e, targetId) => {
-        posX = e.clientX;
-        posY = e.clientY;
+        e.preventDefault();
 
-        const handleMouseMove = (moveEvent) => {
-            // 드래그 위치 업데이트
-            const dx = moveEvent.clientX - posX;
-            const dy = moveEvent.clientY - posY;
-            posX = moveEvent.clientX;
-            posY = moveEvent.clientY;
+        // 배열에서 드래그 중인 아이템을 마지막으로 이동
+        setTargets((prevTargets) => {
+            const targetIndex = prevTargets.findIndex((target) => target.stamp_id === targetId);
+            if (targetIndex !== -1) {
+                const targetItem = prevTargets[targetIndex];
+                const updatedTargets = [...prevTargets];
+                updatedTargets.splice(targetIndex, 1);
+                updatedTargets.push(targetItem);
+                return updatedTargets;
+            }
+            return prevTargets;
+        });
 
-            setTargets((targets) =>
-                targets.map((target) =>
-                    target.stamp_id === targetId
-                        ? { ...target, top: target.top + dy, left: target.left + dx }
-                        : target
-                )
-            );
-        };
+        const targetItem = targets.find((target) => target.stamp_id === targetId);
+        if (targetItem) {
+            const itemElement = document.getElementById(targetId);
+            const itemRect = itemElement.getBoundingClientRect();
+            const boxRect = targetBoxRef.current.getBoundingClientRect();
 
-        const handleMouseUp = (upEvent) => {
-            // targetDragEndHandler를 호출하여 최종 위치 확인 및 복귀 처리
-            targetDragEndHandler(upEvent, targetId);
+            // 마우스 포인터와 아이템의 좌상단 사이의 오프셋 계산
+            offsetX.current = e.clientX - itemRect.left;
+            offsetY.current = e.clientY - itemRect.top;
 
-            // 이벤트 리스너 제거
-            document.removeEventListener("mousemove", handleMouseMove);
-            document.removeEventListener("mouseup", handleMouseUp);
-        };
+            // 아이템의 원래 위치 저장
+            originalX.current = targetItem.left;
+            originalY.current = targetItem.top;
 
-        // 이벤트 리스너 추가
-        document.addEventListener("mousemove", handleMouseMove);
-        document.addEventListener("mouseup", handleMouseUp);
+            const handleMouseMove = (moveEvent) => {
+                moveEvent.preventDefault();
+
+                const newLeft = moveEvent.clientX - boxRect.left - offsetX.current;
+                const newTop = moveEvent.clientY - boxRect.top - offsetY.current;
+
+                setTargets((prevTargets) =>
+                    prevTargets.map((target) =>
+                        target.stamp_id === targetId
+                            ? { ...target, left: newLeft, top: newTop }
+                            : target
+                    )
+                );
+            };
+
+            const handleMouseUp = (upEvent) => {
+                document.removeEventListener("mousemove", handleMouseMove);
+                document.removeEventListener("mouseup", handleMouseUp);
+
+                // 마우스 위치 체크 및 위치 복귀
+                const boxRect = targetBoxRef.current.getBoundingClientRect();
+                const mouseX = upEvent.clientX;
+                const mouseY = upEvent.clientY;
+
+                if (
+                    mouseX >= boxRect.left &&
+                    mouseX <= boxRect.right &&
+                    mouseY >= boxRect.top &&
+                    mouseY <= boxRect.bottom
+                ) {
+                    // target-box 내부에 놓였을 때 위치 유지
+                } else {
+                    // target-box 외부에 놓였을 때 이전 위치로 복귀
+                    setTargets((prevTargets) =>
+                        prevTargets.map((target) =>
+                            target.stamp_id === targetId
+                                ? { ...target, left: originalX.current, top: originalY.current }
+                                : target
+                        )
+                    );
+                }
+            };
+
+            document.addEventListener("mousemove", handleMouseMove);
+            document.addEventListener("mouseup", handleMouseUp);
+        }
     };
 
     const targetDragEndHandler = (e, targetId) => {
@@ -250,7 +325,7 @@ function Mypage_Cart() {
                         ? {
                             ...target,
                             top: e.clientY + scrollTop - boxRect.top,
-                            left: e.clientX + scrollLeft - boxRect.left - 10
+                            left: e.clientX + scrollLeft - boxRect.left
                         }
                         : target
                 );
@@ -258,7 +333,7 @@ function Mypage_Cart() {
                 // positionRef 업데이트
                 positionRef.current[targetId] = {
                     top: e.clientY + scrollTop - boxRect.top,
-                    left: e.clientX + scrollLeft - boxRect.left - 10
+                    left: e.clientX + scrollLeft - boxRect.left
                 };
 
                 return newTargets;
@@ -449,12 +524,19 @@ function Mypage_Cart() {
                             </div>
                         ))} */}
 
+                        <button
+                            className="reset-button"
+                            onClick={() => setTargets([])}
+                        >
+                            <FaTrashAlt />
+                        </button>
+
                         {targets.map((target) => (
                             <div
                                 key={target.stamp_id}
                                 id={target.stamp_id}
                                 className="target-item"
-                                style={{ top: `${target.top}px`, left: `${target.left - 80}px` }}
+                                style={{ top: `${target.top}px`, left: `${target.left}px` }}
 
                             >
                                 <div className="icon-row">
@@ -480,6 +562,7 @@ function Mypage_Cart() {
 
                         {activeTab && (
                             <div className="active-tab">
+                                <button className="cartedit-button" onClick={editTabChanges}>Edit</button>
                                 <button className="close-tab-button" onClick={closeActiveTab}>
                                     <IoMdCloseCircleOutline />
                                 </button>

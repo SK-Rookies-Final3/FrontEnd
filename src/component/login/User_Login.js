@@ -178,7 +178,6 @@ const User_Login = () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post(
-                console.log(`${process.env.REACT_APP_API_BASE_URL}`)
                 `${process.env.REACT_APP_API_BASE_URL}/open-api/register`,
                 { username, password, role: 'CLIENT' },
                 {

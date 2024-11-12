@@ -55,7 +55,7 @@ function App() {
           <Route path='/mypages/question' element={<Mypage_Question />}/>
           <Route path='/mypages/change' element={<Mypage_Change />}/>
           <Route path='/mypages/cart' element={<Mypage_Cart />}/>
-          <Route phat='/mypages/pay' element={<Mypage_Pay />} />
+          <Route path='/mypages/pay' element={<Mypage_Pay />} />
 
           <Route path='/loading' element={<Loading />} />
           <Route path='/aboutus' element={<AboutUs />} />

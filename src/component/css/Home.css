@@ -118,6 +118,18 @@
   width: 80%;
 }
 
+.form-title-con {
+  display: flex;
+  align-items: center;
+}
+
+.form-title-con h3 {
+  margin-left: 10px;
+  margin-top: 50px;
+  font-family: "suit";
+  letter-spacing: 1px;
+}
+
 .form-title {
   font-size: 45px;
   font-weight: bold;
@@ -126,6 +138,25 @@
   display: inline-block;
   font-family: "SugarMagic";
   margin-top: 100px;
+}
+
+.highlight {
+  animation: highlightAnimation 2.5s ease infinite;
+}
+
+@keyframes highlightAnimation {
+  0% {
+    background-color: rgba(242, 195, 107, 0);
+    font-size: 1em;
+  }
+  50% {
+    background-color: rgba(242, 195, 107, 1);
+    font-size: 1.2em;
+  }
+  100% {
+    background-color: rgba(242, 195, 107, 0);
+    font-size: 1em;
+  }
 }
 
 .typed-text {
@@ -269,7 +300,7 @@
   height: 0;
 }
 
-.product-form-container .card .imgBx {  
+.product-form-container .card .imgBx {
   position: absolute;  
   top: 0;
   left: 0;
@@ -279,13 +310,43 @@
   justify-content: center;
   align-items: center;
   margin-top: -20px;
+  overflow: hidden;
+  transition: margin-top 0.5s ease, transform 0.5s ease;
 }
 
-.product-form-container .card:hover .imgBx {  
-  top: 0%;  
+.product-form-container .card .imgBx::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color 0.5s ease;
+  z-index: 1;
+}
+
+.product-form-container .card .imgBx img {
+  width: 90%;
+  height: 90%;
+  object-fit: cover;
+  border-radius: 10px;
   transition: transform 0.5s ease-in-out;
-  transform: translateY(-5px);
-}  
+  transform-origin: center;
+  z-index: 0;
+}
+
+.product-form-container .card:hover .imgBx {
+  margin-top: 0;
+}
+
+.product-form-container .card:hover .imgBx::before {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.product-form-container .card:hover .imgBx img {
+  transform: scale(1.1);
+}
 
 .product-form-container .card .imgBx img {  
   width: 90%;
@@ -301,11 +362,12 @@
   height: 70px;  
   text-align: center;  
   transition: 1s;
+  z-index: 2;
 }
 
 .product-form-container .card:hover .contentBx {  
   height: 200px;  
-  background-color: #b0a695d2;
+  background-color: #f0eadcd2;
   border-radius: 20px;
 }
 
@@ -357,7 +419,7 @@
 .product-form-container .card .contentBx a {  
   display: inline-block;  
   padding: 10px 20px;  
-  background: #ebe3d5;  
+  background: #FFF7D1;  
   border-radius: 4px;  
   margin-top: 10px;  
   text-decoration: none;  

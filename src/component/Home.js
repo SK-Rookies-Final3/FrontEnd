@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ShortModal from './ShortModal';
 import leftImage from '../logo/404logo.png';
@@ -49,6 +49,27 @@ function Home() {
         const accessToken = localStorage.getItem('accessToken');
         setTextSet(accessToken ? texts : texts_be);
         setNewTextSet(accessToken ? newTexts : newTexts_be);
+    }, []);
+
+    // highlight 기능 함수 정의
+    const h3Ref = useRef(null); // h3 요소에 ref 설정
+    const highlightStrong = (element) => {
+        const strongTags = element.querySelectorAll("strong");
+        let index = 0;
+        const intervalId = setInterval(() => {
+            if (index < strongTags.length) {
+                const strongTag = strongTags[index];
+                strongTag.className = "highlight";
+                index++;
+            } else {
+                clearInterval(intervalId);
+            }
+        }, 1000);
+    };
+    useEffect(() => {
+        if (h3Ref.current) {
+            highlightStrong(h3Ref.current);
+        }
     }, []);
 
     const typingEffect = (
@@ -134,7 +155,12 @@ function Home() {
 
             {/* Short Form */}
             <div className="form-container">
-                <h2 className="form-title">Short Form</h2>
+                <div className='form-title-con'>
+                    <h2 className="form-title">Short Form</h2>
+                    <h3 ref={h3Ref}>
+                        <strong>AI filtering</strong> 완료!
+                    </h3>
+                </div>
                 <div className="typed-text">_ {displayedText}</div>
                 <div className="short-form-videos">
 

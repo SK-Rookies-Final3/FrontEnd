@@ -1,0 +1,187 @@
+html, body {
+  margin: 0; /* 기본 마진 제거 */
+  padding: 0; /* 기본 패딩 제거 */
+  height: 100%; /* 전체 높이 설정 */
+  background-color: #F0EADC; /* 배경색 설정 */
+}
+
+.brand-container {
+  display: flex;
+  height: auto;
+  flex-direction: row;
+  background-color: #F0EADC;
+  min-width: 100vh;
+  padding: 20px;
+}
+
+.brand-sidebar {
+  position: fixed;
+  top: 90px;
+  left: 0;
+  width: 110px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #F0EADC;
+  padding: 20px;
+}
+
+.brand-sidebar:hover {
+  width: 260px;
+}
+
+.brand-sidebar .logo {
+  color: #DBC797;
+  display: flex;
+  align-items: center;
+  padding: 25px 10px 15px;
+}
+
+.brand-sidebar .logo h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-left: 15px;
+  margin-left: 50px;
+  /* display: none; */
+}
+
+.brand-sidebar:hover .logo h2 {
+  display: block;
+}
+
+.brand-sidebar:hover li {
+  width: 110px;
+  height: 50px;
+}
+
+.brand-links {
+  list-style: none;
+  margin-top: 20px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  height: calc(100% - 140px);
+}
+
+.brand-links::-webkit-scrollbar {
+  display: none;
+}
+
+.brand-links li {
+  display: flex;
+  border-radius: 4px;
+  align-items: center;
+}
+
+.brand-links li:hover {
+  cursor: pointer;
+  background: #DBC797;
+  color: #754F23;
+}
+
+.brand-links h4 {
+  color: #222;
+  font-weight: 500;
+  display: none;
+  margin-bottom: 10px;
+}
+
+.brand-sidebar:hover .brand-links h4 {
+  display: block;
+}
+
+.brand-links hr {
+  margin: 10px 8px;
+  border: 1px solid #4c4c4c;
+}
+
+.brand-sidebar:hover .brand-links hr {
+  border-color: transparent;
+}
+
+.brand-links li span {
+  
+  padding: 15px 3px;
+}
+
+.brand-links li a {
+  padding: 10px;
+  color: #000;
+  display: none;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.brand-sidebar:hover .brand-links li a {
+  display: block;
+}
+
+.brand-links .logout-link {
+  margin-top: 20px;
+}
+
+/* Product list styles */
+.brand-product-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 80px 20px 20px;
+  gap: 20px;
+  margin-left: 250px; /* 기본 사이드바 여백 */
+  transition: margin-left 0.3s ease;
+}
+
+.brand-sidebar:hover ~ .product-list {
+  margin-left: 220px; /* 사이드바가 펼쳐질 때의 여백 */
+}
+
+.brand-card {
+  flex: 1 0 calc(33.33% - 40px);
+  aspect-ratio: 1 / 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s;
+  margin: 10px;
+}
+
+.brand-card:hover {
+  transform: scale(1.05);
+}
+
+.brand-card-img-top {
+  width: 100%;
+  height: auto; /* 자동으로 높이를 설정 */
+  max-height: 80%; /* 최대 높이를 늘림 */
+  object-fit: cover;
+}
+
+.brand-card-body {
+  padding: 1px;
+  background-color: #F0EADC;
+  text-align: left;
+  display: flex;
+  flex-direction: column; 
+  justify-content: flex-start; 
+  max-height: 80px; /* 최대 높이를 설정 */
+  flex-grow: 0; 
+  overflow: hidden; /* 내용이 넘칠 경우 숨김 처리 */
+}
+
+
+.brand-card-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 10px 0 5px;
+  margin: 0;
+  margin-left: 10px;
+  color: #333; /* 필요에 따라 조정 */
+}
+
+.brand-card-text {
+  font-size: 0.8rem; /* 필요에 따라 조정 */
+  color: #555; /* 필요에 따라 조정 */
+  margin: 5px 0 0; /* 텍스트를 더 아래로 내리기 위한 조정 */
+  margin-left: 10px;
+}

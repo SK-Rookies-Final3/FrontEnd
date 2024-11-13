@@ -39,17 +39,18 @@ phases:
       - echo Pushing the Docker image...
       - docker push $ECR_URL/$ECR_REPO:latest
       - echo Updating frontendTimestamp in values.yaml...
-      - sed -i "s/frontendTimestamp:.*/frontendTimestamp:\"$(date +%Y%m%d%H%M%S)\"/" HelmChart-for-Argo/helm-charts/values.yaml
+      - yq eval '.frontendTimestamp = "'$(date +%Y%m%d%H%M%S)'"' -i HelmChart-for-Argo/helm-charts/values.yaml
       - echo Packaging Helm chart...
-      - helm package HelmChart-for-Argo/helm-charts -d output
+      - cd HelmChart-for-Argo
+      - helm package ./helm-charts -d output
       - echo Generating Helm repository index...
-      - helm repo index output --url https://$S3_BUCKET.s3.$AWS_REGION.amazonaws.com/path/to/charts
+      - helm repo index output --url http://argocd-helm-repo.s3-website.ap-northeast-2.amazonaws.com
       - echo Uploading Helm chart and index to S3...
-      - aws s3 cp output/ s3://$S3_BUCKET/path/to/charts --recursive --acl public-read
+      - aws s3 cp output/ s3://argocd-helm-repo/ --recursive --acl public-read
       - echo Committing changes to values.yaml...
       - git config --global user.name "CodeBuild"
       - git config --global user.email "codebuild@example.com"
-      - git add helm-charts/values.yaml
+      - git add ./helm-charts/values.yaml
       - git commit -m "Update frontendTimestamp to $(date +%Y%m%d%H%M%S)" || echo "No changes to commit"
       - git push origin main || echo "No changes to push"
 

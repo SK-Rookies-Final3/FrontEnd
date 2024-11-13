@@ -21,7 +21,7 @@ phases:
       - git config --global credential.helper store
       - echo "${GITHUB_USERNAME}:${GITHUB_TOKEN}" > ~/.git-credentials
       - echo Cloning HelmChart repository from GitHub...
-      - git clone $HELMCHART_URL HelmChart-for-Argo
+      - git clone https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/SK-Rookies-Final3/HelmChart-for-Argo.git HelmChart-for-Argo
 
   build:
     commands:

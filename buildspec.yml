@@ -9,6 +9,8 @@ phases:
       - npm install
       - echo Installing missing Babel dependency...
       - npm install @babel/plugin-proposal-private-property-in-object --save-dev
+      - echo Installing Helm...
+      - curl -sSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
   pre_build:
     commands:

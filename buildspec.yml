@@ -32,30 +32,33 @@ phases:
     commands:
       - echo "Generating unique IMAGE_TAG based on timestamp..."
       - export IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-
-      - echo "Building and tagging Docker image with tag $IMAGE_TAG..."
+      - echo Building the React project...
+      - npm run build
+      - echo Building the Docker image...
       - docker build -t $ECR_REPO:$IMAGE_TAG .
       - docker tag $ECR_REPO:$IMAGE_TAG $ECR_URL/$ECR_REPO:$IMAGE_TAG
 
   post_build:
     commands:
       - echo Build completed on date
-      - echo "Pushing Docker image to ECR with tag $IMAGE_TAG..."
+      - echo Pushing Docker image to ECR with tag $IMAGE_TAG...
       - docker push $ECR_URL/$ECR_REPO:$IMAGE_TAG
-
-      - echo "Updating backend and frontend image tags in values.yaml to $IMAGE_TAG..."
-      - yq eval '.backend.image.tag = "'$IMAGE_TAG'"' -i HelmChart-for-Argo/helm-charts/values.yaml
+      - echo Updating frontendTimestamp in values.yaml...
       - yq eval '.frontend.image.tag = "'$IMAGE_TAG'"' -i HelmChart-for-Argo/helm-charts/values.yaml
-
-      - echo "Packaging Helm chart..."
+      - yq eval '.frontendTimestamp = "'$(date +%Y%m%d%H%M%S)'"' -i HelmChart-for-Argo/helm-charts/values.yaml
+      - echo Packaging Helm chart...
       - cd HelmChart-for-Argo
       - helm package ./helm-charts -d output
-
-      - echo "Generating Helm repository index..."
+      - echo Generating Helm repository index...
       - helm repo index output --url http://argocd-helm-repo.s3-website.ap-northeast-2.amazonaws.com
-
-      - echo "Uploading Helm chart and index to S3..."
+      - echo Uploading Helm chart and index to S3...
       - aws s3 cp output/ s3://argocd-helm-repo/ --recursive
+      - echo Committing changes to values.yaml...
+      - git config --global user.name "CodeBuild"
+      - git config --global user.email "codebuild@example.com"
+      - git add ./helm-charts/values.yaml
+      - git commit -m "Update frontendTimestamp to $IMAGE_TAG" || echo "No changes to commit"
+      - git push origin main || echo "No changes to push"
 
 artifacts:
   files:

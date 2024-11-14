@@ -43,6 +43,9 @@ phases:
       - echo Build completed on date
       - echo Pushing Docker image to ECR with tag $IMAGE_TAG...
       - docker push $ECR_URL/$ECR_REPO:$IMAGE_TAG
+      - echo Updating Chart version in Chart.yaml...
+      - sed -i "s/^version:.*/version: \"$(date +%Y.%m.%d.%H%M)\"/" HelmChart-for-Argo/helm-charts/Chart.yaml
+      
       - echo Updating frontendTimestamp in values.yaml...
       - yq eval '.frontend.image.tag = "'$IMAGE_TAG'"' -i HelmChart-for-Argo/helm-charts/values.yaml
       - yq eval '.frontendTimestamp = "'$(date +%Y%m%d%H%M%S)'"' -i HelmChart-for-Argo/helm-charts/values.yaml

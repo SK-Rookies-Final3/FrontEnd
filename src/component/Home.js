@@ -14,7 +14,7 @@ function Bottom() {
     return (
         <div className="bottom">
             <img src={leftImage} alt='Left' className='bottom-image' />
-            <img src={rightImage} alt='Right' className='bottom-image-r' />
+            {/* <img src={rightImage} alt='Right' className='bottom-image-r' /> */}
         </div>
     );
 }

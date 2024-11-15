@@ -1,0 +1,65 @@
+.error2 {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #F0EADC, #fbd786, #f7798a);
+    display: flex;
+    flex-direction: column;
+}
+
+.sky2 {
+    flex: 9;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.sky2 h2,
+.sky2 h3 {
+    margin: 0;
+}
+
+.sky2 h2 {
+    font-size: 6em;
+    color: #fff;
+    text-shadow: 15px 15px 0 rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.sky2 h3 {
+    font-size: 3em;
+    color: #fff;
+    text-shadow: 15px 15px 0 rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    margin-top: 20px;
+}
+
+.sky2 span {
+    margin-right: 10px;
+    margin-bottom: 50px;
+}
+
+.sky2 h2 span {
+    display: inline-block;
+    animation: animate 2s ease-in-out infinite;
+}
+
+.sky2 h3 span {
+    display: inline-block;
+    animation: animate 2s ease-in-out infinite;
+}
+
+
+
+@keyframes animate {
+
+    0%,
+    100% {
+        transform: translateY(-50px);
+    }
+
+    50% {
+        transform: translateY(50px);
+    }
+}

@@ -244,7 +244,7 @@ function Home() {
 
 
             {/* Product Form */}
-            <div className='p-form-container section'>
+            <div className='p-form-container sections'>
                 <h2 className="form-title">Recommended Products</h2>
                 <div className="typed-text">_ {newDisplayedText}</div>
                 <div className="product-form-container">

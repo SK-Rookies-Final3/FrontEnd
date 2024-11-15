@@ -111,13 +111,13 @@
   }
 }
 
-.section {
+.sections {
   opacity: 0;
   transform: translateY(50px) scale(0.85);
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
-.section.animate {
+.sections.animate {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
@@ -128,7 +128,7 @@
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
-.section.animate .item {
+.sections.animate .item {
   opacity: 1;
   transform: translateY(0) scale(1);
 }

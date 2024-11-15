@@ -8,8 +8,27 @@ function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const handleLogout = () => {
+        Swal.fire({
+            title: '정말 로그아웃하시겠습니까?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '로그아웃',
+            cancelButtonText: '취소',
+            confirmButtonColor: '#754F23',
+            background: '#F0EADC',
+            iconColor: '#DBC797'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("role");
+                navigate('/');
+            }
+        });
+    };
+
     return (
-        <div className="sidebar">
+        <div className="business_sidebar">
             <ul>
                 <li className={location.pathname === '/business/product' ? 'active' : ''}
                     onClick={() => navigate('/business/product')}>물품 목록 및 확인</li>
@@ -17,6 +36,7 @@ function Sidebar() {
                     onClick={() => navigate('/business/orderlist')}>주문 목록 확인</li>
                 <li className={location.pathname === '/business/statistics' ? 'active' : ''}
                     onClick={() => navigate('/business/statistics')}>통계</li>
+                <li onClick={handleLogout}>로그아웃</li>
             </ul>
         </div>
     );
@@ -47,8 +67,8 @@ function BusinessProduct() {
                             <FaSearch />
                         </div>
                     </div>
-                    {/* <button className="add-button">물품등록</button> */}
-                    <button className="add-button" onClick={handleAddButtonClick}>
+                    {/* <button className="product-add-button">물품등록</button> */}
+                    <button className="product-add-button" onClick={handleAddButtonClick}>
                         <span className="button__icon-wrapper">
                             <FaPlus className="button__icon-svg" />
                             <FaPlus className="button__icon-svg button__icon-svg--copy" />

@@ -1,0 +1,164 @@
+.company-content {
+  padding: 20px;
+  width: 80%;
+}
+
+.admin-container {
+  display: flex;
+  justify-content: center;
+}
+
+.company-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: left;
+  margin-bottom: 20px;
+  width: 90%;
+}
+
+.company-text {
+  margin-left: 30px;
+  font-size: 24px;
+  font-weight: bold;
+  background-color: #EAE1D3;
+  padding: 5px 15px; /* 패딩 조정 */
+  border-radius: 20px;
+}
+
+.company-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #EAE1D3;
+  height: 40px;
+  border-radius: 40px;
+  transition: 0.4s;
+  margin-right: 30px;
+}
+
+.company-search-box:hover .company-search-text {
+  width: 400px;
+  padding: 20px;
+}
+
+.company-search-btn {
+  color: black;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.4s;
+  cursor: pointer;
+  opacity: 1;
+}
+
+.company-search-box:hover .company-search-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.company-search-text {
+  border: none;
+  background: none;
+  outline: none;
+  color: black;
+  font-size: 16px;
+  transition: 0.6s;
+  width: 0px;
+}
+
+.company-table {
+  width: 100%; /* 전체 너비 */
+  border-collapse: collapse; /* 테두리 겹치기 방지 */
+  margin-top: 20px; /* 테이블과 헤더 간격 */
+}
+
+.company-table th,
+.company-table td {
+  border: 1px solid #ccc; /* 테두리 색상 */
+  padding: 10px; /* 셀 패딩 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+.company-table th {
+  background-color: #EAE1D3; /* 헤더 배경색 */
+  font-weight: bold; /* 헤더 글씨 두껍게 */
+}
+
+.approve-btn,
+.reject-btn {
+  padding: 5px 10px; /* 버튼 패딩 */
+  border: none; /* 테두리 없음 */
+  border-radius: 5px; /* 모서리 둥글게 */
+  cursor: pointer; /* 마우스 포인터 변경 */
+}
+
+.approve-btn {
+  background-color: #4CAF50; /* 승인 버튼 색상 */
+  color: white; /* 텍스트 색상 */
+}
+
+.reject-btn {
+  background-color: #f44336; /* 거절 버튼 색상 */
+  color: white; /* 텍스트 색상 */
+}
+
+.approve-btn:hover,
+.reject-btn:hover {
+  opacity: 0.8; /* 호버 시 투명도 변경 */
+}
+
+.companys-table {
+  /* width: calc(100% - 130px); 검색바와 같은 너비 - 여백을 고려 */
+  width: 95%;
+  margin: auto;
+    border-collapse: collapse;
+    background-color: #EAE1D3;
+    margin-top: 20px; /* 검색바와 테이블 간격 */
+    border-radius: 10px; /* 테이블 전체 둥글게 */
+    overflow: hidden;
+}
+
+.companys-table th,
+.companys-table td {
+  padding: 10px;
+  text-align: center;
+}
+
+.companys-table th {
+  border-bottom: 1px solid gray;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.companys-table td {
+  font-size: 16px;
+  padding: 15px;
+}
+
+.approve-btn,
+.reject-btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.approve-btn {
+    background-color: #AD8E6A;
+    color: white;
+}
+
+.reject-btn {
+    background-color: #DBC797;
+    color: white;
+}
+
+.fade-out {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.5s ease, transform 1s ease;
+}

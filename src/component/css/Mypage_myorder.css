@@ -1,0 +1,56 @@
+.myorder-day {
+  font-size: 20px;
+  color: #333;
+  margin-top: 70px;
+  text-align: start;
+}
+
+.myorder-rectangle {
+  width: 800px;
+  height: 130px;
+  margin-top: 20px;
+  background-color: #EAE1D3;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 요소 사이의 공간을 생성 */
+  padding-left: 20px; /* 왼쪽 여백 */
+  padding-right: 20px; /* 오른쪽 여백 추가 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.myorder-product-image {
+  width: 100px; /* 이미지 크기 */
+  height: 100px; /* 이미지 크기 */
+  margin-right: 20px; /* 이미지와 정보 사이의 여백 */
+}
+
+.myorder-product-image img {
+  width: 100%; /* 이미지가 정사각형이 되도록 */
+  height: 100%; /* 이미지가 정사각형이 되도록 */
+  border-radius: 8px; /* 모서리 둥글게 */
+}
+
+.myorder-product-info {
+  text-align: start;
+  flex-grow: 1; /* 사용 가능한 공간을 차지하도록 설정 */
+}
+
+.myorder-product-name {
+  font-size: 18px; /* 제품 이름 크기 */
+  color: #333; /* 제품 이름 색상 */
+}
+
+.myorder-product-price {
+  font-size: 20px; /* 가격 크기 조정 */
+  color: #333; /* 가격 색상 */
+  margin-left: auto; /* 가격을 오른쪽으로 밀기 */
+}
+
+.no-orders {
+  font-size: 18px;
+  color: #333;
+  margin-top: 20px;
+  text-align: center; /* 중앙 정렬 */
+}

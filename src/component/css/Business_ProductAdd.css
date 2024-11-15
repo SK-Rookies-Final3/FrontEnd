@@ -69,8 +69,8 @@
   display: flex; 
   justify-content: space-between; 
   align-items: center;
-  gap: 30px;;
-  margin-bottom: 10px;
+  gap: 5px;;
+  margin-bottom: 5px;
 }
 
 .wrap-input-2 {
@@ -111,13 +111,19 @@
   left: 0;
 }
 
+.wrap-input-2.stock-quantity {
+  flex: 0.5; /* 너비를 줄임 (0.5는 50%의 너비) */
+  min-width: 80px; /* 최소 너비 조정 */
+  position: relative;
+}
+
 .add-dropdown {
   position: relative;
-  width: 130px;
-  height: 35px;
+  width: 100px;
+  height: 30px;
   background: #e6d0b8;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 14px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -178,7 +184,7 @@
   position: relative;
   right: 100%;
   display: flex;
-  font-size: 16px;
+  font-size: 14px;
   background: #F0EADC;
   color: black;
   text-decoration: none;
@@ -234,7 +240,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-right: 20px;
+  margin-right: 5px;
 }
 
 .file-upload label:last-of-type {
@@ -297,3 +303,10 @@
   background-color: #f5f6fd;
 }
 
+.color-circle {
+  width: 12px; /* 동그라미 크기 */
+  height: 12px;
+  border-radius: 50%; /* 동그라미 모양 */
+  display: inline-block; /* 인라인 블록으로 동그라미가 수평으로 정렬됨 */
+  margin-right: 8px; /* 동그라미와 텍스트 사이의 간격 */
+} 

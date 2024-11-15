@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ShortModal from './ShortModal';
 import leftImage from '../logo/404logo.png';
 import rightImage from '../logo/made_404logo.png';
-import personImage from '../img/person.png'
-import short from '../img/shorts.png'
-import product from '../img/product.jpg'
-import './css/Home.css'
+import personImage from '../img/person.png';
+import short from '../img/shorts.png';
+import product from '../img/product.jpg';
+import './css/Home.css';
 import { VscArrowRight } from "react-icons/vsc";
-
 
 function Bottom() {
     return (
@@ -38,7 +37,7 @@ function Home() {
     // 타이핑 effect product
     const [newDisplayedText, setNewDisplayedText] = useState('');
     const newTexts = ["당신에게 꼭 맞는 AI 추천 상품을 지금 만나보세요!", "Discover AI-recommended products tailored just for you!"];
-    const newTexts_be = ["사랑받은 아이템으로 맞춘 AI 추천 컬렉션, 지금 만나보세요!", "AI Recommendation Collection Made with Loved Items, Meet It Now!"]
+    const newTexts_be = ["사랑받은 아이템으로 맞춘 AI 추천 컬렉션, 지금 만나보세요!", "AI Recommendation Collection Made with Loved Items, Meet It Now!"];
     const [newTextSet, setNewTextSet] = useState(newTexts);
     const [newTextIndex, setNewTextIndex] = useState(0);
     const [newCharIndex, setNewCharIndex] = useState(0);
@@ -49,6 +48,63 @@ function Home() {
         const accessToken = localStorage.getItem('accessToken');
         setTextSet(accessToken ? texts : texts_be);
         setNewTextSet(accessToken ? newTexts : newTexts_be);
+    }, []);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollTop = window.scrollY;
+    
+            const homeTopContainer = document.querySelector('.home_top-container');
+            if (homeTopContainer) {
+                const scaleValue = Math.max(1 - (scrollTop / 1000), 0.8);
+                const rotateValue = Math.min((scrollTop / 1000) * 5, 5);
+                const opacityValue = Math.max(1 - (scrollTop / 1000) * 0.3, 0.7);
+                const translateY = Math.min(scrollTop * 0.1, 50);
+    
+                homeTopContainer.style.perspective = '1000px';
+                homeTopContainer.style.transform = `
+                    scale(${scaleValue}) 
+                    rotate(${rotateValue}deg)
+                    translateY(-${translateY}px)
+                `;
+                homeTopContainer.style.opacity = opacityValue;
+                homeTopContainer.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+            }
+        };
+    
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // Intersection Observer를 사용하여 스크롤 애니메이션 적용
+    useEffect(() => {
+        const options = {
+            threshold: 0.1,
+        };
+
+        const callback = (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                } else {
+                    entry.target.classList.remove('animate');
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(callback, options);
+
+        const sections = document.querySelectorAll('.section');
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        return () => {
+            sections.forEach(section => {
+                observer.unobserve(section);
+            });
+        };
     }, []);
 
     // highlight 기능 함수 정의
@@ -137,7 +193,7 @@ function Home() {
 
     return (
         <div className='home-container'>
-            <div className='home_top-container'>
+            <div className='home_top-container section'>
                 <div className="text-container">
                     <h1 className="main-title">Crafting Elegance<br />One Story at a Time</h1>
                     <p className="sub-title">우아함과 이야기의 결합을 통해 브랜드의 세련된 감성을 전달합니다</p>
@@ -154,7 +210,7 @@ function Home() {
             </div>
 
             {/* Short Form */}
-            <div className="form-container">
+            <div className="s-form-container section">
                 <div className='form-title-con'>
                     <h2 className="form-title">Short Form</h2>
                     <h3 ref={h3Ref}>
@@ -164,44 +220,21 @@ function Home() {
                 <div className="typed-text">_ {displayedText}</div>
                 <div className="short-form-videos">
 
-                    <div className="has-glow">
-                        <div className="glow">
-                            <div className="glow-bg"></div>
-                        </div>
-                        <div className="white-clip"></div>
-                        <div className="content">
-                            <div className="video-card" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
-                                <img src={short} alt="Video3" className="video-thumbnail" />
-                                <p className="sub-form-title">아디다스 캠퍼스 00's 언박싱</p>
+                    {/* 비디오 카드 */}
+                    {[1, 2, 3].map((item, index) => (
+                        <div className="has-glow item" key={index}>
+                            <div className="glow">
+                                <div className="glow-bg"></div>
+                            </div>
+                            <div className="white-clip"></div>
+                            <div className="content">
+                                <div className="video-card" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
+                                    <img src={short} alt={`Video${item}`} className="video-thumbnail" />
+                                    <p className="sub-form-title">아디다스 캠퍼스 00's 언박싱</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div className="has-glow">
-                        <div className="glow">
-                            <div className="glow-bg"></div>
-                        </div>
-                        <div className="white-clip"></div>
-                        <div className="content">
-                            <div className="video-card" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
-                                <img src={short} alt="Video3" className="video-thumbnail" />
-                                <p className="sub-form-title">아디다스 캠퍼스 00's 언박싱</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="has-glow">
-                        <div className="glow">
-                            <div className="glow-bg"></div>
-                        </div>
-                        <div className="white-clip"></div>
-                        <div className="content">
-                            <div className="video-card" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
-                                <img src={short} alt="Video3" className="video-thumbnail" />
-                                <p className="sub-form-title">아디다스 캠퍼스 00's 언박싱</p>
-                            </div>
-                        </div>
-                    </div>
+                    ))}
 
                 </div>
 
@@ -211,51 +244,25 @@ function Home() {
 
 
             {/* Product Form */}
-            <div className='form-container'>
+            <div className='p-form-container section'>
                 <h2 className="form-title">Recommended Products</h2>
                 <div className="typed-text">_ {newDisplayedText}</div>
-                <div class="product-form-container">
-                    <div class="card">
-                        <div class="imgBx">
-                            <img src={product} alt="Product" className="image-thumbnail" />
-                        </div>
-                        <div class="contentBx">
-                            <h2>비비안웨스트우드</h2>
-                            <div class="price">
-                                <h3>Price :</h3>
-                                <span>150,000</span>
+                <div className="product-form-container">
+                    {[1, 2, 3].map((item, index) => (
+                        <div className="card item" key={index}>
+                            <div className="imgBx">
+                                <img src={product} alt={`Product${item}`} className="image-thumbnail" />
                             </div>
-                            <a href="#">Buy Now</a>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="imgBx">
-                            <img src={product} alt="Product" className="image-thumbnail" />
-                        </div>
-                        <div class="contentBx">
-                            <h2>비비안웨스트우드</h2>
-                            <div class="price">
-                                <h3>Price :</h3>
-                                <span>150,000</span>
+                            <div className="contentBx">
+                                <h2>비비안웨스트우드</h2>
+                                <div className="price">
+                                    <h3>Price :</h3>
+                                    <span>150,000</span>
+                                </div>
+                                <a href="#">Buy Now</a>
                             </div>
-                            <a href="#">Buy Now</a>
                         </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="imgBx">
-                            <img src={product} alt="Product" className="image-thumbnail" />
-                        </div>
-                        <div class="contentBx">
-                            <h2>비비안웨스트우드</h2>
-                            <div class="price">
-                                <h3>Price :</h3>
-                                <span>150,000</span>
-                            </div>
-                            <a href="#">Buy Now</a>
-                        </div>
-                    </div>
+                    ))}
 
                     <button className="view-all-button" onClick={handleViewAllClick}>
                         <span className="button_all_icon-wrapper">

@@ -94,7 +94,7 @@ function Home() {
 
         const observer = new IntersectionObserver(callback, options);
 
-        const sections = document.querySelectorAll('.section');
+        const sections = document.querySelectorAll('.sections');
 
         sections.forEach(section => {
             observer.observe(section);
@@ -193,7 +193,7 @@ function Home() {
 
     return (
         <div className='home-container'>
-            <div className='home_top-container section'>
+            <div className='home_top-container sections'>
                 <div className="text-container">
                     <h1 className="main-title">Crafting Elegance<br />One Story at a Time</h1>
                     <p className="sub-title">우아함과 이야기의 결합을 통해 브랜드의 세련된 감성을 전달합니다</p>
@@ -210,7 +210,7 @@ function Home() {
             </div>
 
             {/* Short Form */}
-            <div className="s-form-container section">
+            <div className="s-form-container sections">
                 <div className='form-title-con'>
                     <h2 className="form-title">Short Form</h2>
                     <h3 ref={h3Ref}>

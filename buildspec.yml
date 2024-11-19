@@ -2,13 +2,7 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      nodejs: 14
     commands:
-      - echo Installing dependencies...
-      - npm install
-      - echo Installing missing Babel dependency...
-      - npm install @babel/plugin-proposal-private-property-in-object --save-dev
       - echo Installing Helm...
       - curl -sSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
       - echo Installing yq...
@@ -32,8 +26,8 @@ phases:
     commands:
       - echo "Generating unique IMAGE_TAG based on timestamp..."
       - export IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-      - echo Building the React project...
-      - npm run build
+      - echo Building the backend JAR...
+      - ./gradlew clean bootJar --exclude-task test
       - echo Building the Docker image...
       - docker build -t $ECR_REPO:$IMAGE_TAG .
       - docker tag $ECR_REPO:$IMAGE_TAG $ECR_URL/$ECR_REPO:$IMAGE_TAG
@@ -43,11 +37,9 @@ phases:
       - echo Build completed on date
       - echo Pushing Docker image to ECR with tag $IMAGE_TAG...
       - docker push $ECR_URL/$ECR_REPO:$IMAGE_TAG
-      - echo Updating Chart version in Chart.yaml...
-      - yq eval '.version = "'$(date +%Y%m%d%H%M)'"' -i HelmChart-for-Argo/helm-charts/Chart.yaml
-      - echo Updating frontendTimestamp in values.yaml...
-      - yq eval '.frontend.image.tag = "'$IMAGE_TAG'"' -i HelmChart-for-Argo/helm-charts/values.yaml
-      - yq eval '.frontendTimestamp = "'$(date +%Y%m%d%H%M%S)'"' -i HelmChart-for-Argo/helm-charts/values.yaml
+      - echo Updating backend image tag in values.yaml...
+      - yq eval '.backend.image.tag = "'$IMAGE_TAG'"' -i HelmChart-for-Argo/helm-charts/values.yaml
+      - yq eval '.backendTimestamp = "'$(date +%Y%m%d%H%M%S)'"' -i HelmChart-for-Argo/helm-charts/values.yaml
       - echo Packaging Helm chart...
       - cd HelmChart-for-Argo
       - helm package ./helm-charts -d output
@@ -59,7 +51,7 @@ phases:
       - git config --global user.name "CodeBuild"
       - git config --global user.email "codebuild@example.com"
       - git add ./helm-charts/values.yaml
-      - git commit -m "Update frontendTimestamp to $IMAGE_TAG" || echo "No changes to commit"
+      - git commit -m "Update backendTimestamp to $IMAGE_TAG" || echo "No changes to commit"
       - git push origin main || echo "No changes to push"
 
 artifacts:

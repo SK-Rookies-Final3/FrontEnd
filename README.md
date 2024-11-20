@@ -2,7 +2,7 @@
 
 안녕하세요! TEAM SOCCER 프로젝트는 지역 축구팀의 홍보와 선수 모집을 돕는 온라인 플랫폼입니다.
 
-| ![강민수](https://avatars.githubusercontent.com/u/150498634?v=4) | ![강민수](https://avatars.githubusercontent.com/u/150498634?v=4) | 
+| ![강민수](https://avatars.githubusercontent.com/u/150498634?v=4) | ![장나영](https://avatars.githubusercontent.com/u/112605030?v=4) | 
 | :-------------------------------------------------------------: | :-------------------------------------------------------------: |
 |             [강민수](https://github.com/HanUL220)              |              [장나영](https://github.com/skdod2453)               | 
 

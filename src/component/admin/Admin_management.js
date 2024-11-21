@@ -80,7 +80,7 @@ function CompanyTable() {
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/store/`);
+                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store/`);
                 console.log(response.data);
 
                 if (response.data) {
@@ -119,7 +119,7 @@ function CompanyTable() {
             if (result.isConfirmed) {
                 try {
                     const response = await axios.put(
-                        `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/store/master/${storeId}/status`,
+                        `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/store/master/${storeId}/status`,
                         { status: 1 },
                         {
                             headers: {
@@ -153,7 +153,7 @@ function CompanyTable() {
             if (result.isConfirmed) {
                 try {
                     const response = await axios.put(
-                        `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/store/master/${storeId}/status`,
+                        `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/store/master/${storeId}/status`,
                         { status: 2 },
                         {
                             headers: {

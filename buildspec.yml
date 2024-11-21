@@ -32,7 +32,7 @@ phases:
     commands:
       - echo "Generating unique IMAGE_TAG based on timestamp..."
       - export IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-      - echo "Generated IMAGE_TAG: $IMAGE_TAG"
+      - echo "Generated IMAGE_TAG"
       - echo Building the React project...
       - npm run build
       - echo Building the Docker image...

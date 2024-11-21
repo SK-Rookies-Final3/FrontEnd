@@ -28,13 +28,16 @@ const AboutUs = () => {
             <div className="more-info">
               <h1 style={{ fontFamily: 'continuous' }}>Mentor</h1>
               <div className="coords">
-                <span>멘토님 소개</span>
+                <span>Mentor</span>
               </div>
             </div>
           </div>
           <div className="general">
             <h1 style={{ fontFamily: 'continuous' }} >Mentor</h1>
-            <p>멘토님 소개</p>
+            <p>안녕하세요, 여러분의 멘토 한정헌입니다. 
+              이번 프로젝트에서 멘티 여러분들이 열정을 다해 성장해가는 모습을 보며 큰 보람을 느꼈습니다. 
+              서로에게 긍정적인 영향을 주고받으며 멋진 결과물을 완성한 여러분이 자랑스럽습니다. 
+              앞으로도 여러분의 앞날을 응원하겠습니다!</p>
           </div>
         </div>
 

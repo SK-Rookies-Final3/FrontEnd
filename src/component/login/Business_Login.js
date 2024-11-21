@@ -212,8 +212,8 @@ const Business_Login = () => {
             if (error.response && error.response.status === 400) {
                 Swal.fire({
                     icon: 'error',
-                    title: '잘못된 요청입니다.',
-                    text: '아이디 또는 비밀번호를 확인해주세요.',
+                    title: '중복된 아이디 입니다.',
+                    text: '아이디를 변경해주세요',
                     showConfirmButton: true,
                     confirmButtonText: '확인',
                     confirmButtonColor: '#754F23',

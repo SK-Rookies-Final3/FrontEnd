@@ -22,7 +22,7 @@ const Business_Request = () => {
             console.log("accessToken:", accessToken);
             
             const response = await axios.post(
-                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/store/owner/register`,
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/store/owner/register`,
                 { name: storename, licenseNumber: parseInt(storenum, 10) },
                 {
                     headers: {

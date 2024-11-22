@@ -201,26 +201,45 @@ export default function Header() {
               } else {
                 if (role === "CLIENT") {
                   navigate("/mypages/orderlist");
-                }  else if (role === "OWNER") {
+                } else if (role === "OWNER") {
                   try {
                     // API 호출
                     const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/store/owner/status/${userId}`, {
                       method: 'GET',
                       headers: {
                         Authorization: `${accessToken}`,
-                    },
+                      },
                     });
-            
+
                     if (!response.ok) {
                       throw new Error("API 호출 실패");
                     }
-            
+
                     const data = await response.json();
                     const status = data;
                     console.log("status:", status);
-            
+
                     if (status === 0) {
-                      navigate("/business/request");
+                      Swal.fire({
+                        title: "아직 승인 대기 중 입니다.",
+                        text: "로그아웃 하시겠습니까?",
+                        icon: "info",
+                        showCancelButton: true,
+                        confirmButtonText: "확인",
+                        cancelButtonText: "취소",
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          localStorage.removeItem("role");
+                          localStorage.removeItem("accessToken");
+                          localStorage.removeItem("id");
+                          navigate("/");
+                          Swal.fire({
+                            title: "로그아웃 되었습니다.",
+                            icon: "success",
+                            confirmButtonText: "확인",
+                          });
+                        }
+                      });
                     } else if (status === 1) {
                       navigate("/business/product");
                     } else if (status === 2) {
@@ -233,6 +252,7 @@ export default function Header() {
                         localStorage.removeItem("accessToken");
                         localStorage.removeItem("role");
                         localStorage.removeItem("id");
+                        navigate("/");
                       });
                     }
                   } catch (error) {
@@ -243,8 +263,8 @@ export default function Header() {
                       icon: "error",
                       confirmButtonText: "확인",
                     });
-                  } 
-                }else if (role === "MASTER") {
+                  }
+                } else if (role === "MASTER") {
                   navigate("/admin/userlist");
                 }
               }

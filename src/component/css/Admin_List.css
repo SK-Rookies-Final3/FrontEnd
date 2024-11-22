@@ -14,7 +14,8 @@
     /* align-items: flex-start; */
     margin-top: 20px;
     justify-content: space-between;
-    /* width: 90%; */
+    width: 90%;
+    margin: auto;
 }
 
 .admin-user-header {
@@ -22,8 +23,8 @@
     justify-content: space-between;
     align-items: left;
     margin-bottom: 20px !important;
-    /* width: 90%; */
-    /* margin: auto; */
+    width: 90%;
+    margin: auto;
 }
 
 .user-search-box {

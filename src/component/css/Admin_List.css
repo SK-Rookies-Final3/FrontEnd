@@ -1,6 +1,7 @@
 .main-admin-content {
     padding: 20px;
-    width: 80%;
+    /* width: 80%; */
+    width: 100%;
 }
 
 .admin-container {
@@ -14,14 +15,16 @@
     margin-top: 20px;
     justify-content: space-between;
     width: 90%;
+    margin: auto;
 }
 
 .admin-user-header {
     display: flex;
     justify-content: space-between;
     align-items: left;
-    margin-bottom: 20px;
+    margin-bottom: 20px !important;
     width: 90%;
+    margin: auto;
 }
 
 .user-search-box {
@@ -105,6 +108,7 @@
     background-color: #EAE1D3;
     border-radius: 20px;
     margin-right: 10px;
+    height: auto;
 }
 
 .users-table th,
@@ -121,4 +125,6 @@
 
 .users-table td {
     font-size: 16px;
+    height: 40px;
+    border-bottom: 1px solid lightgray;
 }

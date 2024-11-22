@@ -61,7 +61,7 @@ const Business_Login = () => {
             if (response.status === 200) {
                 console.log("로그인 성공:", response.data);
 
-                const { accessToken, role } = response.data.body;
+                const { accessToken, role, userId } = response.data.body;
 
                 // role이 OWNER가 아니면 로그인 차단
                 if (role !== "OWNER") {
@@ -82,6 +82,7 @@ const Business_Login = () => {
                 // 서버로부터 받은 토큰 처리
                 localStorage.setItem("accessToken", accessToken);
                 localStorage.setItem("role", role);
+                localStorage.setItem("userId", userId);
 
                 Swal.fire({
                     icon: 'success',

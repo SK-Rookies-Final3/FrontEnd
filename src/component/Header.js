@@ -5,6 +5,7 @@ import { RxPerson } from "react-icons/rx";
 import { TbBellRinging } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import NotificationModal from './NotificationModal';
+import Swal from "sweetalert2";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -189,18 +190,61 @@ export default function Header() {
             }}>
               <BsBagHeart />
             </a>
-            <a onClick={() => {
+            <a onClick={async () => {
               const accessToken = localStorage.getItem("accessToken");
               const role = localStorage.getItem("role");
+              const userId = localStorage.getItem("id");
+              console.log(userId)
 
               if (!accessToken) {
                 navigate("/user/login");
               } else {
                 if (role === "CLIENT") {
                   navigate("/mypages/orderlist");
-                } else if (role === "OWNER") {
-                  navigate("/business/product");
-                } else if (role === "MASTER") {
+                }  else if (role === "OWNER") {
+                  try {
+                    // API 호출
+                    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/store/owner/status/${userId}`, {
+                      method: 'GET',
+                      headers: {
+                        Authorization: `${accessToken}`,
+                    },
+                    });
+            
+                    if (!response.ok) {
+                      throw new Error("API 호출 실패");
+                    }
+            
+                    const data = await response.json();
+                    const status = data;
+                    console.log("status:", status);
+            
+                    if (status === 0) {
+                      navigate("/business/request");
+                    } else if (status === 1) {
+                      navigate("/business/product");
+                    } else if (status === 2) {
+                      Swal.fire({
+                        title: "거절되었습니다.",
+                        text: "자동 로그아웃합니다.",
+                        icon: "error",
+                        confirmButtonText: "확인",
+                      }).then(() => {
+                        localStorage.removeItem("accessToken");
+                        localStorage.removeItem("role");
+                        localStorage.removeItem("id");
+                      });
+                    }
+                  } catch (error) {
+                    console.error("API 호출 중 오류 발생:", error);
+                    Swal.fire({
+                      title: "오류",
+                      text: "상태 정보를 불러올 수 없습니다.",
+                      icon: "error",
+                      confirmButtonText: "확인",
+                    });
+                  } 
+                }else if (role === "MASTER") {
                   navigate("/admin/userlist");
                 }
               }

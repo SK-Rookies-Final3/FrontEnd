@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/Business_Form.css';
 import '../css/Admin_List.css';
 import { FaSearch } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import axios from "axios";
 
 function Sidebar() {
     const navigate = useNavigate();
@@ -48,6 +49,27 @@ function Sidebar() {
 function AdminList() {
     const [searchQuery, setSearchQuery] = useState('');
     const [filterRole, setFilterRole] = useState('ALL');
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user/master`, {
+                headers: {
+                    Authorization: `${accessToken}`
+                }
+            })
+                .then(response => {
+                    console.log(response.data);
+                    if (response.data) {
+                        setUsers(response.data);
+                    }
+                })
+                .catch(error => {
+                    console.log("데이터를 가져오는 중 오류가 발생했습니다.", error);
+                });
+        }
+    }, []);
 
     return (
         <div className="admin-container">
@@ -73,28 +95,24 @@ function AdminList() {
                         <button onClick={() => setFilterRole('CLIENT')}>일반 사용자</button>
                         <button onClick={() => setFilterRole('OWNER')}>기업 사용자</button>
                     </div>
-                    <UserTable searchQuery={searchQuery} filterRole={filterRole} />
+                    <UserTable users={users} searchQuery={searchQuery} filterRole={filterRole} setUsers={setUsers} />
                 </div>
             </div>
         </div>
     );
 }
 
-function UserTable({ searchQuery, filterRole }) {
-    const [users, setUsers] = useState([
-        { no: 1, name: 'a', nickname: '150,000', role: 'CLIENT', registered: '2024.10.11' },
-        { no: 2, name: 'b', nickname: '150,000', role: 'CLIENT', registered: '2024.10.11' },
-        { no: 3, name: 'c', nickname: '150,000', role: 'CLIENT', registered: '2024.10.11' },
-        { no: 4, name: 'd', nickname: '150,000', role: 'OWNER', registered: '2024.10.11' },
-        { no: 5, name: 'e', nickname: '150,000', role: 'CLIENT', registered: '2024.10.11' },
-        { no: 6, name: 'f', nickname: '150,000', role: 'CLIENT', registered: '2024.10.11' },
-        { no: 7, name: 'g', nickname: '150,000', role: 'OWNER', registered: '2024.10.11' },
-    ]);
+function UserTable({ users, searchQuery, filterRole, setUsers }) {
+    const handleDeleteButtonClick = async (username, event, targetId) => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            console.log("토큰이 없습니다.");
+            return;
+        }
 
-    const handleDeleteButtonClick = (userNo, event) => {
-        Swal.fire({
+        const result = await Swal.fire({
             icon: 'warning',
-            title: '정말 삭제하시겠습니까?',
+            title: `ID : ${username} 을(를) 정말 강제 탈퇴 시키겠습니까?`,
             showCancelButton: true,
             confirmButtonText: '삭제',
             cancelButtonText: '취소',
@@ -102,28 +120,43 @@ function UserTable({ searchQuery, filterRole }) {
             background: '#F0EADC',
             color: '#754F23',
             iconColor: '#DBC797'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const button = event.target.closest('.delete_btn');
-                const animation = button.querySelector('.animation');
-                const row = button.closest('tr');
-                animation.style.display = 'flex';
-                button.classList.add('click');
-
-                setTimeout(() => {
-                    row.classList.add('fade-out');
-                }, 2000);
-
-                setTimeout(() => {
-                    const updatedUsers = users.filter((user) => user.no !== userNo);
-                    setUsers(updatedUsers);
-                }, 2500);
-            }
         });
+
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/master/exit/${targetId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        Authorization: `${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const button = event.target.closest('.delete_btn');
+                    const animation = button.querySelector('.animation');
+                    const row = button.closest('tr');
+                    animation.style.display = 'flex';
+                    button.classList.add('click');
+
+                    setTimeout(() => {
+                        row.classList.add('fade-out');
+                    }, 2000);
+
+                    setTimeout(() => {
+                        const updatedUsers = users.filter((user) => user.id !== targetId);
+                        setUsers(updatedUsers);
+                    }, 2500);
+                } else {
+                    console.log("사용자 삭제에 실패했습니다.");
+                }
+            } catch (error) {
+                console.log("API 요청 중 오류가 발생했습니다:", error);
+            }
+        }
     };
 
     const filteredUsers = users.filter((user) => {
-        const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSearch = user.username.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesRole = filterRole === 'ALL' || user.role === filterRole;
         return matchesSearch && matchesRole;
     });
@@ -141,15 +174,15 @@ function UserTable({ searchQuery, filterRole }) {
                 </tr>
             </thead>
             <tbody>
-                {filteredUsers.map((user) => (
-                    <tr key={user.no}>
-                        <td>{user.no}</td>
-                        <td>{user.name}</td>
+                {filteredUsers.map((user, index) => (
+                    <tr key={user.id}>
+                        <td>{user.id}</td>
+                        <td>{user.username}</td>
                         <td>{user.nickname}</td>
                         <td>{user.role}</td>
-                        <td>{user.registered}</td>
+                        <td>{user.createdAt.slice(0, 19).replace('T', ' ')}</td>
                         <td>
-                            <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(user.no, e)}>
+                            <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(user.username, e, user.id)}>
                                 <span className="button-text">Delete</span>
                                 <span className="animation">
                                     <span className="paper-wrapper">

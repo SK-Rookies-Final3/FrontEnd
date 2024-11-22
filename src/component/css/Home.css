@@ -24,23 +24,23 @@
   margin-right: 50px;
 }
 
-.home-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-direction: column;
-  background-color: #F0EADC;
-  min-height: 100vh;
-  margin: auto;
-}
-
 .home_top-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 80%;
-  margin: auto;
-  margin-top: 100px;
+  height: 100vh; /* 화면 전체 높이 */
+  transition: transform 0.3s ease;
+  transform-origin: center;
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #F0EADC;
+  min-height: 100vh;
+  overflow: hidden; /* 초기 스크롤 방지 */
 }
 
 .text-container {
@@ -111,11 +111,64 @@
   }
 }
 
-.form-container {
+.sections {
+  opacity: 0;
+  transform: translateY(50px) scale(0.85);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.sections.animate {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.item {
+  opacity: 0;
+  transform: translateY(30px) scale(0.85);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.sections.animate .item {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.item:nth-child(1) {
+  transition-delay: 0.1s;
+}
+
+.item:nth-child(2) {
+  transition-delay: 0.2s;
+}
+
+.item:nth-child(3) {
+  transition-delay: 0.3s;
+}
+
+.s-form-container {
   width: 100%;
   text-align: left;
   margin: auto;
   width: 80%;
+}
+
+.p-form-container {
+  width: 100%;
+  text-align: left;
+  margin: auto;
+  width: 80%;
+}
+
+.form-title-con {
+  display: flex;
+  align-items: center;
+}
+
+.form-title-con h3 {
+  margin-left: 10px;
+  margin-top: 50px;
+  font-family: "suit";
+  letter-spacing: 1px;
 }
 
 .form-title {
@@ -126,6 +179,25 @@
   display: inline-block;
   font-family: "SugarMagic";
   margin-top: 100px;
+}
+
+.highlight {
+  animation: highlightAnimation 2.5s ease infinite;
+}
+
+@keyframes highlightAnimation {
+  0% {
+    background-color: rgba(242, 195, 107, 0);
+    font-size: 1em;
+  }
+  50% {
+    background-color: rgba(242, 195, 107, 1);
+    font-size: 1.2em;
+  }
+  100% {
+    background-color: rgba(242, 195, 107, 0);
+    font-size: 1em;
+  }
 }
 
 .typed-text {
@@ -269,7 +341,7 @@
   height: 0;
 }
 
-.product-form-container .card .imgBx {  
+.product-form-container .card .imgBx {
   position: absolute;  
   top: 0;
   left: 0;
@@ -279,13 +351,43 @@
   justify-content: center;
   align-items: center;
   margin-top: -20px;
+  overflow: hidden;
+  transition: margin-top 0.5s ease, transform 0.5s ease;
 }
 
-.product-form-container .card:hover .imgBx {  
-  top: 0%;  
+.product-form-container .card .imgBx::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color 0.5s ease;
+  z-index: 1;
+}
+
+.product-form-container .card .imgBx img {
+  width: 90%;
+  height: 90%;
+  object-fit: cover;
+  border-radius: 10px;
   transition: transform 0.5s ease-in-out;
-  transform: translateY(-5px);
-}  
+  transform-origin: center;
+  z-index: 0;
+}
+
+.product-form-container .card:hover .imgBx {
+  margin-top: 0;
+}
+
+.product-form-container .card:hover .imgBx::before {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.product-form-container .card:hover .imgBx img {
+  transform: scale(1.1);
+}
 
 .product-form-container .card .imgBx img {  
   width: 90%;
@@ -301,11 +403,12 @@
   height: 70px;  
   text-align: center;  
   transition: 1s;
+  z-index: 2;
 }
 
 .product-form-container .card:hover .contentBx {  
   height: 200px;  
-  background-color: #b0a695d2;
+  background-color: #f0eadcd2;
   border-radius: 20px;
 }
 
@@ -357,7 +460,7 @@
 .product-form-container .card .contentBx a {  
   display: inline-block;  
   padding: 10px 20px;  
-  background: #ebe3d5;  
+  background: #FFF7D1;  
   border-radius: 4px;  
   margin-top: 10px;  
   text-decoration: none;  

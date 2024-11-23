@@ -254,15 +254,22 @@ export default function Header() {
                         localStorage.removeItem("id");
                         navigate("/");
                       });
+                    }else {
+                      // 상태가 0, 1, 2가 아닌 경우
+                      try {
+                        // 가게 상세 정보 조회
+                        const storeResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/store/owner`, {
+                          method: 'GET',
+                          headers: {
+                            Authorization: `${accessToken}`,
+                          },
+                        });
+                      } catch (error) {
+                        navigate("/business/request")
+                      }
                     }
                   } catch (error) {
-                    console.error("API 호출 중 오류 발생:", error);
-                    Swal.fire({
-                      title: "오류",
-                      text: "상태 정보를 불러올 수 없습니다.",
-                      icon: "error",
-                      confirmButtonText: "확인",
-                    });
+                    navigate("/business/request")
                   }
                 } else if (role === "MASTER") {
                   navigate("/admin/userlist");

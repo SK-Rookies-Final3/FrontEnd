@@ -8,6 +8,7 @@ import '../css/Shop_Detail.css';
 import product from '../../img/product.jpg';
 import product_d from '../../img/product-d.jpg';
 import short from '../../img/shorts.png';
+import { useParams } from "react-router-dom";
 
 const ShopDetail = () => {
     const [activeTab, setActiveTab] = useState('광고');
@@ -26,6 +27,7 @@ const ShopDetail = () => {
     const [fileKey, setFileKey] = useState(Date.now());
     const [fileNames, setFileNames] = useState([]);
     const [nickname, setNickname] = useState('');
+    const { productCode } = useParams();
 
     // ImageModal 상태 관리
     const [showImageModal, setShowImageModal] = useState(false);
@@ -50,6 +52,29 @@ const ShopDetail = () => {
         const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
         return (totalRating / reviews.length).toFixed(1);
     };
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                console.log("Fetching reviews for productCode:", productCode); 
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/open-api/brand/review/${productCode}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch reviews: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                console.log("Fetched reviews successfully:", data); 
+                setReviews(data);
+            } catch (error) {
+                console.error("Error fetching reviews:", error); 
+            }
+        };
+        fetchReviews(); 
+    }, [productCode]); 
+    
+
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
@@ -178,59 +203,80 @@ const ShopDetail = () => {
         );
     };
 
-    const handleSubmitReview = () => {
-        const accessToken = localStorage.getItem('accessToken');
-
+    const handleSubmitReview = async () => {
+        const accessToken = localStorage.getItem("accessToken");
+    
         if (!accessToken) {
             Swal.fire({
-                title: '회원만 리뷰 작성 가능합니다',
-                confirmButtonText: '확인',
-                confirmButtonColor: '#754F23',
-                background: '#F0EADC',
-                color: '#754F23',
-                icon: 'warning',
-                iconColor: '#DBC797',
+                title: "회원만 리뷰 작성 가능합니다",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+                icon: "warning",
+                iconColor: "#DBC797",
             });
             return;
         }
-
+    
         if (!(rating > 0 && description)) {
             Swal.fire({
-                title: '필드를 작성해주세요!',
-                text: '별점, 설명을 입력해 주세요.',
-                confirmButtonText: '확인',
-                confirmButtonColor: '#754F23',
-                background: '#F0EADC',
-                color: '#754F23',
-                icon: 'warning',
-                iconColor: '#DBC797',
+                title: "필드를 작성해주세요!",
+                text: "별점, 설명을 입력해 주세요.",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+                icon: "warning",
+                iconColor: "#DBC797",
             });
             return;
         }
-
+    
         const newReview = {
-            id: Date.now(),
             rating,
-            height: height || '미공개 ',
-            weight: weight || '미공개 ',
+            height: height || null,
+            weight: weight || null,
             description,
-            userId: nickname,
-            date: new Date().toISOString().slice(0, 10),
-            images,
-            currentImageIndex: 0,
+            images, 
         };
-
-        setReviews([...reviews, newReview]);
-
-        setRating(0);
-        setHeight('');
-        setWeight('');
-        setDescription('');
-        setRatingKey(Date.now());
-        setImages([]);
-        setFileKey(Date.now());
-        setFileNames([]);
+    
+        try {
+            console.log("Submitting review data:", newReview); 
+            console.log("Product Code from useParams:", productCode);
+            const response = await fetch(
+                `${process.env.REACT_APP_API_BASE_URL}/api/brand/review/${productCode}?userId=${nickname}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: accessToken,
+                    },
+                    body: JSON.stringify(newReview),
+                }
+            );
+    
+            if (!response.ok) {
+                throw new Error("리뷰 작성에 실패했습니다.");
+            }
+    
+            const createdReview = await response.json();
+            console.log("Review submitted successfully:", createdReview); 
+    
+            setReviews((prevReviews) => [...prevReviews, createdReview]);
+            setRating(0);
+            setHeight("");
+            setWeight("");
+            setDescription("");
+            setRatingKey(Date.now());
+            setImages([]);
+            setFileKey(Date.now());
+            setFileNames([]);
+        } catch (error) {
+            console.error("리뷰 작성 중 오류:", error); 
+        }
     };
+    
 
     const handleDeleteReview = (reviewId) => {
         Swal.fire({

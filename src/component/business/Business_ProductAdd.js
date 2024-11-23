@@ -164,7 +164,7 @@ export default function Business_ProductAdd() {
             <span className="right-icon"></span>
             {activeDropdown && ( 
               <div className="items">
-                {['아우터', '상의', '하의', '치마', '신발', '모자', '악세사리', '가방'].map(item => (
+                {['겉옷', '상의', '하의', '치마', '신발', '모자', '가방', '장신구'].map(item => (
                   <a key={item} href="#" onClick={(e) => { 
                       e.preventDefault(); 
                       handleStatusChange(item); 

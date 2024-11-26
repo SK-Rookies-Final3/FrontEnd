@@ -716,3 +716,76 @@
         opacity: 1;
     }
 }
+
+.button-like {
+    border: 2px solid #666;
+    background-color: transparent;
+    text-decoration: none;
+    padding: 1rem;
+    position: relative;
+    vertical-align: middle;
+    text-align: center;
+    display: inline-block;
+    border-radius: 3rem;
+    color: #666;
+    transition: all ease 0.4s;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .button-like span {
+    margin-left: 0.5rem;
+  }
+  
+  .button-like .fa,
+  .button-like span {
+    transition: all ease 0.4s;
+  }
+  
+  .button-like:focus {
+    background-color: transparent;
+  }
+  
+  .button-like:focus .fa,
+  .button-like:focus span {
+    color: #666;
+  }
+  
+  .button-like:hover {
+    border-color: #dd2e44;
+    background-color: transparent;
+  }
+  
+  .button-like:hover .fa,
+  .button-like:hover span {
+    color: #dd2e44;
+  }
+  
+  .liked {
+    background-color: #dd2e44;
+    border-color: #dd2e44;
+  }
+  
+  .liked .fa,
+  .liked span {
+    color: #fff;
+  }
+  
+  .liked:focus {
+    background-color: #dd2e44;
+  }
+  
+  .liked:focus .fa,
+  .liked:focus span {
+    color: #fff;
+  }
+  
+  .liked:hover {
+    background-color: #dd2e44;
+    border-color: #dd2e44;
+  }
+  
+  .liked:hover .fa,
+  .liked:hover span {
+    color: #fff;
+  }

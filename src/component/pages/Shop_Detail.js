@@ -27,6 +27,7 @@ const ShopDetail = () => {
     const [fileKey, setFileKey] = useState(Date.now());
     const [fileNames, setFileNames] = useState([]);
     const [nickname, setNickname] = useState('');
+    const [likedShorts, setLikedShorts] = useState([]);
     const { productCode } = useParams();
 
     // ImageModal 상태 관리
@@ -51,6 +52,17 @@ const ShopDetail = () => {
         if (reviews.length === 0) return 0;
         const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
         return (totalRating / reviews.length).toFixed(1);
+    };
+    
+    const handleLikeClick = (shortCode, event) => {
+        event.stopPropagation(); // 부모 요소 클릭 이벤트 방지
+        setLikedShorts((prevLikedShorts) => {
+            if (prevLikedShorts.includes(shortCode)) {
+                return prevLikedShorts.filter((code) => code !== shortCode);
+            } else {
+                return [...prevLikedShorts, shortCode];
+            }
+        });
     };
 
     useEffect(() => {
@@ -322,11 +334,26 @@ const ShopDetail = () => {
                 return (
                     <div>
                         <div className="video-gallery">
-                            {[1, 2, 3, 4, 5, 6].map((video, index) => (
-                                <div key={index} className="video-item" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
-                                    <img src={short} alt={`Reel ${index + 1}`} />
-                                </div>
-                            ))}
+                            {[1, 2, 3, 4, 5, 6].map((video, index) => {
+                                const shortCode = `short-${index + 1}`; // 각 쇼츠의 고유 코드
+                                return (
+                                    <div 
+                                        key={index} 
+                                        className="video-item" 
+                                        onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}
+                                    >
+                                        <img src={short} alt={`Reel ${index + 1}`} />
+                                        <button
+                                            className={`button-like ${likedShorts.includes(shortCode) ? 'liked' : ''}`}
+                                            onClick={(e) => handleLikeClick(shortCode, e)} // 클릭 시 좋아요 상태 변경
+                                            aria-label="Like button"
+                                        >
+                                            <FaHeart className="fa" />
+                                            <span>{likedShorts.includes(shortCode) ? 'Liked' : 'Like'}</span>
+                                        </button>
+                                    </div>
+                                );
+                            })}
                         </div>
                         <ShortModal showModal={showModal} videoSrc={videoSrc} onClose={handleCloseModal} />
                     </div>

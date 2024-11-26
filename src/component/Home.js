@@ -239,8 +239,8 @@ function Home() {
                 </div>
 
 
-                <ShortModal showModal={showModal} videoSrc={videoSrc} onClose={handleCloseModal} />
             </div>
+            <ShortModal showModal={showModal} videoSrc={videoSrc} onClose={handleCloseModal} />
 
 
             {/* Product Form */}

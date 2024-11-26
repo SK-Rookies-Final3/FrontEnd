@@ -1,0 +1,229 @@
+html, body {
+  margin: 0; /* 기본 마진 제거 */
+  padding: 0; /* 기본 패딩 제거 */
+  height: 100%; /* 전체 높이 설정 */
+  background-color: #F0EADC; /* 배경색 설정 */
+}
+
+.about-container {
+  display: flex;
+  flex-direction: column; /* 세로 방향으로 카드 배치 */
+  background-color: #F0EADC;
+  padding: 20px;
+  margin-top: 80px; /* 헤더 아래에 공간 추가 */
+}
+
+.about-title {
+  text-align: center; /* 텍스트 중앙 정렬 */
+  font-size: 5em; /* 제목 크기 조정 */
+  font-weight: bold; /* 글씨 두껍게 */
+  margin: 20px 0; /* 위아래 여백 조정 */
+  margin-top: auto;
+  color: #333; /* 글씨 색상 (필요에 따라 조정) */
+  font-family: continuous;
+}
+.about-smalltitle {
+  text-align: center; /* 텍스트 중앙 정렬 */
+  font-size: 1em; /* 제목 크기 조정 */
+  margin: 10px 0; /* 위아래 여백 조정 */
+  color: #333; /* 글씨 색상 (필요에 따라 조정) */
+}
+
+
+.about {
+  display: flex; /* Flexbox를 사용하여 카드 배치 */
+  flex-wrap: wrap; /* 카드가 여러 줄로 배치되도록 설정 */
+  justify-content: center; /* 카드 정렬을 중앙으로 설정 */
+  gap: 1.5rem; /* 카드 사이의 간격 설정 */
+}
+
+.main-card {
+  width: 450px;
+  height: 250px;
+  background-color: white;
+  background: linear-gradient(#EAE1D3, #F0EADC);
+  box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.4);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  margin: 1.5rem; /* 카드 간의 마진 */
+  flex: 1 1 calc(50% - 3rem); /* 두 개씩 배치되도록 설정 */
+  max-width: 450px; /* 최대 너비 설정 */
+}
+
+.main-card h1 {
+  text-align: center;
+}
+
+.main-card .additional {
+  position: absolute;
+  width: 150px;
+  height: 100%;
+  background: linear-gradient(#DBC797, #EE786E);
+  transition: width 0.4s;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.main-card.green .additional {
+  background: linear-gradient(#DBC797, #85c4ff);
+}
+
+.main-card:hover .additional {
+  width: 100%;
+  border-radius: 0 5px 5px 0;
+}
+
+.main-card .additional .user-card {
+  width: 150px;
+  height: 100%;
+  position: relative;
+  float: left;
+}
+
+.main-card .additional .user-card::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 10%;
+  right: -2px;
+  height: 80%;
+  border-left: 2px solid rgba(0, 0, 0, 0.025);
+}
+
+/* 레벨과 포인트 간의 위치 및 여백 조정 */
+.main-card .additional .user-card .level {
+  position: absolute; /* 절대 위치로 설정 */
+  top: 15%; /* 위에서 15% 위치 */
+  left: 50%; /* 수평 중앙 정렬 */
+  transform: translateX(-50%); /* 중앙 정렬을 위한 변환 */
+  color: white;
+  text-transform: uppercase;
+  font-size: 0.75em;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 0.125rem 0.75rem;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.main-card .additional .user-card .points {
+  position: absolute; /* 절대 위치로 설정 */
+  top: 75%; /* 위에서 75% 위치 */
+  left: 50%; /* 수평 중앙 정렬 */
+  transform: translateX(-50%); /* 중앙 정렬을 위한 변환 */
+  color: white;
+  text-transform: uppercase;
+  font-size: 0.75em;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 0.125rem 0.75rem;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+/* 아이콘을 이미지로 변경 */
+.main-card .additional .user-card img {
+  position: absolute; /* 절대 위치로 설정 */
+  top: 45%; /* 수직 중앙 정렬 */
+  left: 50%; /* 수평 중앙 정렬 */
+  transform: translate(-50%, -50%); /* 중앙 정렬을 위한 변환 */
+  width: 90px; /* 이미지의 크기 조정 */
+  height: 90px; /* 이미지의 크기 조정 */
+}
+
+.main-card .additional .more-info {
+  width: 300px;
+  height: 100%;
+  position: absolute;
+  left: 150px; /* 위치 조정 */
+  top: 50%; /* 수직 중앙 정렬을 위한 초기 설정 */
+  transform: translateY(-50%); /* 수직 중앙 정렬을 위한 변환 */
+  display: flex; /* Flexbox 사용 */
+  flex-direction: column; /* 세로 방향으로 정렬 */
+  justify-content: center; /* 수직 중앙 정렬 */
+  align-items: center; /* 수평 중앙 정렬 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+.main-card .additional .more-info h1 {
+  color: white;
+  margin-bottom: 0;
+}
+
+.main-card.green .additional .more-info h1 {
+  color: #ffffff;
+}
+
+.main-card .additional .coords {
+  margin: 0 1rem;
+  color: white;
+  font-size: 1rem;
+}
+
+.main-card.green .additional .coords {
+  color: #ffffff;
+}
+
+.main-card .additional .coords span + span {
+  float: right;
+}
+
+.main-card .additional .stats {
+  font-size: 2rem;
+  display: flex;
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  top: auto;
+  color: white;
+}
+
+.main-card.green .additional .stats {
+  color: #325C46;
+}
+
+.main-card .additional .stats > div {
+  flex: 1;
+  text-align: center;
+}
+
+.main-card .additional .stats i {
+  display: block;
+}
+
+.main-card .additional .stats div.title {
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.main-card .additional .stats div.value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1.5rem;
+}
+
+.main-card .additional .stats div.value.infinity {
+  font-size: 2.5rem;
+}
+
+.main-card .general {
+  width: 300px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  padding: 1rem;
+  padding-top: 0;
+}
+
+.main-card .general .more {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 0.9em;
+}

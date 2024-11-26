@@ -1,0 +1,136 @@
+.pay-container {
+  display: flex;
+  background-color: #F0EADC;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.pay-title {
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 25px;
+}
+
+.pay-rectangle {
+  margin-top: 30px;
+  width: 800px;
+  height: 160px;
+  background-color: #EAE1D3;
+  position: relative;
+  display: flex;
+  flex-direction: column; /* 기본적으로 세로 배치 */
+  align-items: flex-start;
+  padding-left: 60px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+/* 주소 입력란과 주소 검색 버튼이 한 줄로 배치되도록 설정 */
+.pay-address-container {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.pay-inputaddress {
+  margin-top: 15px;
+  width: 600px; /* 크기 조정 */
+  height: 30px;
+  border-radius: 10px;
+  border: #DBC797;
+}
+
+.pay-address {
+  margin-top: 15px;
+  width: 90px;
+  height: 30px;
+  margin-left: 20px;
+  background-color: #754F23;
+  color: white;
+  border-radius: 10px;
+  border: #EAE1D3;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pay-address:hover {
+  background-color: #DBC797;
+  color: black;
+}
+
+/* 수령인과 연락처를 가로로 배치 */
+.pay-input-group {
+  display: flex;
+  justify-content: space-between;
+  width: 715px;
+  margin-top: 15px;
+}
+
+.pay-receiver, .pay-phone {
+  width: 350px; /* 두 입력 필드의 크기 */
+  height: 30px;
+  border-radius: 10px;
+  border: #DBC797;
+}
+
+.pay-product-container {
+  margin-top: 30px;
+  width: 830px;
+  background-color: #EAE1D3;
+  display: flex;
+  flex-direction: column; /* 세로 방향으로 정렬 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.pay-product-item {
+  display: flex;
+  justify-content: space-between; /* 좌측 사진, 중앙 상품명, 우측 가격 배치 */
+  align-items: center;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.pay-product-image {
+  width: 80px; /* 정사각형 사진 크기 */
+  height: 80px;
+  background-color: #ccc; /* 사진 대신 배경색으로 placeholder */
+  border-radius: 8px;
+}
+
+.pay-product-name {
+  font-size: 18px;
+  text-align: center; /* 상품명이 가운데 정렬 */
+  width: 400px;
+}
+
+.pay-quantity {
+  font-size: 18px;
+  width: 50px;
+}
+
+.pay-product-price {
+  font-size: 18px;
+  color: #754F23;
+
+}
+
+.pay-btn {
+  margin-top: 30px;
+  border-radius: 10px;
+  background-color: #333333;
+  color: white;
+  width: 860px;
+  height: 45px;
+  align-self: center; 
+  font-size: 20px;
+}
+
+.kakaopay-logo {
+  width: 40px;
+  margin-right: 10px;
+}

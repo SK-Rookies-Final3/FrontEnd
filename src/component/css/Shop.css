@@ -1,0 +1,156 @@
+html, body {
+  margin: 0; /* 기본 마진 제거 */
+  padding: 0; /* 기본 패딩 제거 */
+  height: 100%; /* 전체 높이 설정 */
+  background-color: #F0EADC; /* 배경색 설정 */
+}
+
+.shop-container {
+  display: flex;
+  flex-direction: row;
+  background-color: #F0EADC;
+  min-width: 100vh;
+  padding: 20px;
+}
+
+.shop-sidebar {
+  position: fixed;
+  top: 90px;
+  left: 0;
+  width: 110px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #F0EADC;
+  padding: 20px;
+}
+
+.shop-sidebar:hover {
+  width: 220px;
+}
+
+.shop-sidebar .logo {
+  color: #DBC797;
+  display: flex;
+  align-items: center;
+  padding: 25px 10px 15px;
+}
+
+.shop-sidebar .logo h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-left: 15px;
+  margin-left: 50px;
+  /* display: none; */
+}
+
+.shop-sidebar:hover .logo h2 {
+  display: block;
+}
+
+.shop-sidebar:hover li {
+  width: 120px;
+  height: 50px;
+}
+
+.shop-links {
+  list-style: none;
+  margin-top: 20px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  height: calc(100% - 140px);
+}
+
+.shop-links::-webkit-scrollbar {
+  display: none;
+}
+
+.shop-links li {
+  display: flex;
+  border-radius: 4px;
+  align-items: center;
+}
+
+.shop-links li:hover {
+  cursor: pointer;
+  background: #DBC797;
+  color: #754F23;
+}
+
+.shop-links h4 {
+  color: #222;
+  font-weight: 500;
+  display: none;
+  margin-bottom: 10px;
+}
+
+.shop-sidebar:hover .shop-links h4 {
+  display: block;
+}
+
+.shop-links hr {
+  margin: 10px 8px;
+  border: 1px solid #4c4c4c;
+}
+
+.shop-sidebar:hover .shop-links hr {
+  border-color: transparent;
+}
+
+.shop-links li span {
+  
+  padding: 15px 3px;
+}
+
+.shop-links li a {
+  padding: 10px;
+  color: #000;
+  display: none;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.shop-sidebar:hover .shop-links li a {
+  display: block;
+}
+
+.shop-links .logout-link {
+  margin-top: 20px;
+}
+
+/* Product list styles */
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* display: flex; */
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 80px 40px 40px;
+  gap: 40px;
+  margin-left: 250px; /* 기본 사이드바 여백 */
+  transition: margin-left 0.3s ease;
+}
+
+.shop-sidebar:hover ~ .product-list {
+  margin-left: 270px; /* 사이드바가 펼쳐질 때의 여백 */
+}
+
+.shop-card {
+  /* flex: 1 0 calc(33.33% - 40px); */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s;
+  margin: 10px;
+}
+
+.shop-card:hover {
+  transform: scale(1.05);
+}
+
+.shop-card-img-top {
+  width: 100%;
+  height: auto;
+}

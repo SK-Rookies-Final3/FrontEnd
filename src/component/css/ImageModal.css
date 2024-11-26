@@ -1,0 +1,65 @@
+.image-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.image-modal-content {
+    position: relative;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-image {
+    max-width: 100%;
+    max-height: 80vh;
+}
+
+.prev-button, .next-button, .close-button {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+.prev-button, .next-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    color: white;
+    padding: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.prev-button:hover, .next-button:hover {
+background: rgba(0, 0, 0, 0.3);
+}
+
+.prev-button {
+    left: 20px;
+}
+
+.next-button {
+    right: 20px;
+}
+
+.close-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}

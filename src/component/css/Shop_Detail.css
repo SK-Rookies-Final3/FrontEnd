@@ -175,7 +175,7 @@
 
 .user-info {
     display: flex;
-    gap: 10px;
+    gap: 15px;
 }
 
 .user-info input {
@@ -183,6 +183,34 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+.file-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-input-label {
+    padding: 10px 20px;
+    background-color: #ba884e;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.file-input-label:hover {
+    background-color: #95622e;
+}
+
+.file-input-label input {
+    display: none;
+}
+
+.file-names {
+    font-size: 14px;
+    color: #333;
 }
 
 .description-input {
@@ -222,6 +250,9 @@
     width: 50%;
     margin: auto;
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .review-item {
@@ -232,36 +263,80 @@
     background-color: #F5E7D1;
     border-radius: 10px;
     display: flex;
-    flex-direction: column;
     align-items: flex-start;
+    width: 100%;
+    text-align: left;
+    gap: 20px;
+}
+
+.review-images {
+    position: relative;
+    margin: auto;
+}
+
+.image-navigation {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.image-navigation button {
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    color: white;
+    padding: 8px;
+    font-size: 0.8em;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.image-navigation button:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.review-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;  
+    cursor: pointer;  
+}
+
+.review-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: flex-start;
 }
 
 .review-top {
-    margin-bottom: 10px;
     font-size: 20px;
     display: flex;
     align-items: center;
+    margin-bottom: 5px;
 }
 
 .review-middle {
-    margin-bottom: 10px;
     font-size: 16px;
-    display: flex;
-    align-items: center;
+    color: #333;
+    margin-top: 5px;
+    margin-bottom: 10px;
 }
 
 .review-description {
-    margin-bottom: 10px;
     font-size: 16px;
-    display: flex;
-    align-items: center;
-    width: 100%;
+    margin-bottom: 10px;
 }
 
 .review-bottom {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 14px;
+    margin-top: 10px;
     width: 100%;
 }
 
@@ -271,6 +346,7 @@
     color: #754F23;
     cursor: pointer;
     font-size: 20px;
+    margin-left: auto; /* 삭제 버튼을 오른쪽 끝으로 이동 */
 }
 
 .delete-button:hover {
@@ -640,3 +716,76 @@
         opacity: 1;
     }
 }
+
+.button-like {
+    border: 2px solid #666;
+    background-color: transparent;
+    text-decoration: none;
+    padding: 1rem;
+    position: relative;
+    vertical-align: middle;
+    text-align: center;
+    display: inline-block;
+    border-radius: 3rem;
+    color: #666;
+    transition: all ease 0.4s;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .button-like span {
+    margin-left: 0.5rem;
+  }
+  
+  .button-like .fa,
+  .button-like span {
+    transition: all ease 0.4s;
+  }
+  
+  .button-like:focus {
+    background-color: transparent;
+  }
+  
+  .button-like:focus .fa,
+  .button-like:focus span {
+    color: #666;
+  }
+  
+  .button-like:hover {
+    border-color: #dd2e44;
+    background-color: transparent;
+  }
+  
+  .button-like:hover .fa,
+  .button-like:hover span {
+    color: #dd2e44;
+  }
+  
+  .liked {
+    background-color: #dd2e44;
+    border-color: #dd2e44;
+  }
+  
+  .liked .fa,
+  .liked span {
+    color: #fff;
+  }
+  
+  .liked:focus {
+    background-color: #dd2e44;
+  }
+  
+  .liked:focus .fa,
+  .liked:focus span {
+    color: #fff;
+  }
+  
+  .liked:hover {
+    background-color: #dd2e44;
+    border-color: #dd2e44;
+  }
+  
+  .liked:hover .fa,
+  .liked:hover span {
+    color: #fff;
+  }

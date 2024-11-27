@@ -265,10 +265,22 @@ export default function Header() {
                           },
                         });
                       } catch (error) {
+                        Swal.fire({
+                          title: "사업자 요청 페이지로 이동합니다.",
+                          text: "가게를 오픈하기 위해서는 사업자 요청을 필수로 해야합니다.",
+                          icon: "warning",
+                          confirmButtonText: "확인",
+                        })
                         navigate("/business/request")
                       }
                     }
                   } catch (error) {
+                    Swal.fire({
+                      title: "사업자 요청 페이지로 이동합니다.",
+                      text: "가게 오픈을 위해 사업자 요청은 필수입니다!!",
+                      icon: "warning",
+                      confirmButtonText: "확인",
+                    })
                     navigate("/business/request")
                   }
                 } else if (role === "MASTER") {

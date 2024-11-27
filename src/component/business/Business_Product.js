@@ -91,7 +91,7 @@ function ProductTable({ searchQuery }) {
     useEffect(() => {
         const fetchStoreId = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store/`, { 
+                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store/`, {
                     headers: {
                         'Authorization': accessToken
                     }
@@ -99,7 +99,7 @@ function ProductTable({ searchQuery }) {
 
                 const stores = Array.isArray(response.data) ? response.data : [response.data];
 
-                const matchedStore = stores.find(store => 
+                const matchedStore = stores.find(store =>
                     String(store.userId).trim() === String(userId).trim()
                 );
 
@@ -134,7 +134,7 @@ function ProductTable({ searchQuery }) {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/product/owner`, { 
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/product/owner`, {
                     method: 'GET',
                     headers: {
                         'Authorization': accessToken
@@ -147,16 +147,10 @@ function ProductTable({ searchQuery }) {
 
                 const data = await response.json();
                 setProducts(data);
-                
+
                 console.log('상품 응답 데이터:', data);
             } catch (error) {
-                console.error('상품을 불러오는 데 실패했습니다:', error);
-                Swal.fire({
-                    title: '오류',
-                    text: '상품을 불러오는 데 실패했습니다.',
-                    icon: 'error',
-                    confirmButtonText: '확인'
-                });
+                console.error('상품을 불러오는 데 실패했습니다 or 상품이 없습니다.', error);
             }
         };
 
@@ -244,33 +238,41 @@ function ProductTable({ searchQuery }) {
                 </tr>
             </thead>
             <tbody>
-                {filteredProducts.map((product) => (
-                    <tr key={product.code}>
-                        <td>{product.code}</td>
-                        <td>{product.name}</td>
-                        <td>{Number(product.price).toLocaleString()}원</td>
-                        <td>{product.category}</td>
-                        <td>{product.stock === 0 ? '품절' : '판매중'}</td>
-                        <td>{product.stock}</td>
-                        <td>{new Date(product.registerAt).toLocaleDateString()}</td>
-                        <td>
-                            <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(product.code, e)}>
-                                <span className="button-text">삭제</span>
-                                <span className="animation">
-                                    <span className="paper-wrapper">
-                                        <span className="paper"></span>
+                {filteredProducts.length > 0 ? (
+                    filteredProducts.map((product) => (
+                        <tr key={product.code}>
+                            <td>{product.code}</td>
+                            <td>{product.name}</td>
+                            <td>{Number(product.price).toLocaleString()}원</td>
+                            <td>{product.category}</td>
+                            <td>{product.stock === 0 ? '품절' : '판매중'}</td>
+                            <td>{product.stock}</td>
+                            <td>{new Date(product.registerAt).toLocaleDateString()}</td>
+                            <td>
+                                <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(product.code, e)}>
+                                    <span className="button-text">삭제</span>
+                                    <span className="animation">
+                                        <span className="paper-wrapper">
+                                            <span className="paper"></span>
+                                        </span>
+                                        <span className="shredded-wrapper">
+                                            <span className="shredded"></span>
+                                        </span>
+                                        <span className="can">
+                                            <span className="filler"></span>
+                                        </span>
                                     </span>
-                                    <span className="shredded-wrapper">
-                                        <span className="shredded"></span>
-                                    </span>
-                                    <span className="can">
-                                        <span className="filler"></span>
-                                    </span>
-                                </span>
-                            </button>
+                                </button>
+                            </td>
+                        </tr>
+                    ))
+                ) : (
+                    <tr>
+                        <td colSpan="8" style={{ textAlign: 'center' }}>
+                            등록된 상품이 없습니다.
                         </td>
                     </tr>
-                ))}
+                )}
             </tbody>
         </table>
     );

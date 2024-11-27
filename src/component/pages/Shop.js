@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'; 
-import axios from 'axios'; 
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../css/Shop.css'; 
-import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai'; 
+import '../css/Shop.css';
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { TbJacket } from "react-icons/tb";
 import { PiTShirt, PiPants } from "react-icons/pi";
 import { GiSkirt, GiBigDiamondRing } from "react-icons/gi";
@@ -10,8 +10,8 @@ import { IoFootstepsOutline, IoBagHandleOutline } from "react-icons/io5";
 import { FaRedhat } from "react-icons/fa6";
 
 export default function Shop() {
-  const [hoveredIndex, setHoveredIndex] = useState(null); 
-  const [likedProducts, setLikedProducts] = useState([]); 
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [likedProducts, setLikedProducts] = useState([]);
   const [products, setProducts] = useState([]); // 모든 상품 데이터
   const [filteredProducts, setFilteredProducts] = useState([]); // 필터링된 상품 데이터
   const [selectedCategory, setSelectedCategory] = useState(''); // 선택된 카테고리 상태
@@ -36,6 +36,7 @@ export default function Shop() {
       const response = await axios.get('http://localhost:8089/open-api/brand/product/'); // 백엔드 엔드포인트
       setProducts(response.data); // 모든 상품 데이터 저장
       setFilteredProducts(response.data); // 초기에는 모든 상품을 표시
+      console.log(response.data)
     } catch (error) {
       console.error('Failed to fetch products:', error);
     }
@@ -101,17 +102,17 @@ export default function Shop() {
       <div className="product-list">
         {filteredProducts.map((product) => (
           <div className="shop-card" key={product.code}>
-            <img 
-              src={product.thumbnailUrl || 'default-image.jpg'} 
-              className="shop-card-img-top" 
-              alt={product.name} 
-              onClick={() => handleProductClick(product.code)} 
-              style={{ cursor: 'pointer' }} 
+            <img
+              src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${product.thumbnail.split(/[/\\]/).pop()}`}
+              className="shop-card-img-top"
+              alt={product.name}
+              onClick={() => handleProductClick(product.code)}
+              style={{ cursor: 'pointer' }}
             />
             <div className="card-body">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div 
-                  style={{ textAlign: 'left', cursor: 'pointer' }} 
+                <div
+                  style={{ textAlign: 'left', cursor: 'pointer' }}
                   onClick={() => handleProductClick(product.code)}
                 >
                   <h5 className="card-title">{product.name}</h5>

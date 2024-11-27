@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaStore, FaRegIdBadge } from "react-icons/fa";
 import '../css/LoginForm.css';
+import Swal from "sweetalert2";
 
 const Business_Request = () => {
     const navigate = useNavigate();
@@ -10,8 +11,33 @@ const Business_Request = () => {
     const [storenum, setStorenum] = useState("");
 
     const handleRequest = async () => {
-        if (!storename || !storenum) {
-            alert("모든 필드를 채워주세요.");
+        if (!storename || !storenum ) {
+            Swal.fire({
+                icon: 'error',
+                title: '모든 필드를 채워주세요',
+                text: '가게 이름, 사업자 등록 번호 모두 입력해주세요.',
+                showConfirmButton: true,
+                confirmButtonText: '확인',
+                confirmButtonColor: '#754F23',
+                background: '#F0EADC',
+                color: '#754F23',
+                iconColor: 'red'
+            });
+            return;
+        }
+        
+        if (storenum.length !== 10) {
+            Swal.fire({
+                icon: 'error',
+                title: '사업자 승인 요청 실패!',
+                text: '사업자 승인 번호는 숫자로만 10자리 입력해주세요.',
+                showConfirmButton: true,
+                confirmButtonText: '확인',
+                confirmButtonColor: '#754F23',
+                background: '#F0EADC',
+                color: '#754F23',
+                iconColor: 'red'
+            });
             return;
         }
     
@@ -32,11 +58,32 @@ const Business_Request = () => {
             );
     
             console.log("Response:", response.data);
-            alert("사업자 승인 요청이 성공적으로 전송되었습니다.");
+            
+            Swal.fire({
+                icon: 'success',
+                title: '사업자 승인 요청 성공!',
+                text: '승인 요청 완료까지 최대 2~3일 정도 소요됩니다.',
+                showConfirmButton: true,
+                confirmButtonText: '확인',
+                confirmButtonColor: '#754F23',
+                background: '#F0EADC',
+                color: '#754F23',
+                iconColor: 'green'
+            })
             navigate("/");
         } catch (error) {
             console.error("Error:", error);
-            alert("사업자 승인 요청 중 문제가 발생했습니다.");
+            Swal.fire({
+                icon: 'error',
+                title: '사업자 승인 요청 실패!',
+                text: '알 수 없는 오류가 발생하였습니다',
+                showConfirmButton: true,
+                confirmButtonText: '확인',
+                confirmButtonColor: '#754F23',
+                background: '#F0EADC',
+                color: '#754F23',
+                iconColor: 'red'
+            });
         }
     };
 
@@ -64,14 +111,36 @@ const Business_Request = () => {
                             <div className="input-container">
                                 <FaRegIdBadge className="input-icon" />
                                 <input
-                                    type="number"
+                                    type="text"
                                     name="logstorenum"
                                     className="form-style"
-                                    placeholder="사업자 등록 번호"
+                                    placeholder="숫자로만 10자리 입력해주세요."
                                     id="logstorenum"
                                     autoComplete="off"
                                     value={storenum}
-                                    onChange={(e) => setStorenum(e.target.value)}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (/^\d*$/.test(value) && value.length <= 10) {
+                                            setStorenum(value);
+                                        }
+                                    }}
+                                    onBlur={() => {
+                                        // 입력값이 10자리가 아닌 경우 초기화
+                                        if (storenum.length !== 10) {
+                                            setStorenum("");
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: '사업자 승인 요청 실패!',
+                                                text: '사업자 승인 번호는 숫자로만 10자리 입력해주세요.',
+                                                showConfirmButton: true,
+                                                confirmButtonText: '확인',
+                                                confirmButtonColor: '#754F23',
+                                                background: '#F0EADC',
+                                                color: '#754F23',
+                                                iconColor: 'red'
+                                            });
+                                        }
+                                    }}
                                 />
                             </div>
                             <button className="btn_sub" onClick={handleRequest}>Submit</button>

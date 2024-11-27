@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/Business_Form.css';
 import '../css/Admin_List.css';
 import { FaSearch } from 'react-icons/fa';
@@ -47,22 +47,48 @@ function Sidebar() {
 
 function AdminProduct() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [products, setProducts] = useState([
-        { no: 1, name: '1', price: '150,000', category: '전자제품', status: '판매중', stock: 12, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 2, name: '2', price: '150,000', category: '의류', status: '판매중', stock: 12, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 3, name: '3', price: '150,000', category: '가전', status: '품절', stock: 0, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 4, name: '4', price: '150,000', category: '주방용품', status: '판매중', stock: 13, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 5, name: '5', price: '150,000', category: '의류', status: '품절', stock: 0, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 6, name: '6', price: '150,000', category: '가전', status: '판매중', stock: 20, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 7, name: '7', price: '150,000', category: '전자제품', status: '판매중', stock: 7, registered: '2024.10.11', updated: '2024.10.16' },
-    ]);
+    const [products, setProducts] = useState([]);
 
     const navigate = useNavigate();
 
-    // 상태를 기반으로 productall-text의 정보를 동적으로 계산
     const totalProducts = products.length;
     const availableProducts = products.filter(product => product.status === '판매중').length;
     const outOfStockProducts = products.filter(product => product.status === '품절').length;
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `${localStorage.getItem("accessToken")}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                const mappedProducts = data.map(item => ({
+                    no: item.code,
+                    name: item.name,
+                    price: item.price.toLocaleString(),
+                    category: item.category,
+                    status: item.stock === 0 ? '품절' : '판매중',
+                    stock: item.stock,
+                    registered: item.registerAt || '?'
+                }));
+
+                setProducts(mappedProducts);
+            } catch (err) {
+                console.error('제품을 가져오는 데 실패했습니다:', err);
+            }
+        };
+
+        fetchProducts();
+    }, []);
 
     return (
         <div className="admin-container">
@@ -83,7 +109,7 @@ function AdminProduct() {
                         <input
                             className="search-text"
                             type="text"
-                            placeholder="Search Anything"
+                            placeholder="검색어를 입력하세요"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)} />
                         <div className="search-btn">
@@ -98,36 +124,36 @@ function AdminProduct() {
 }
 
 function ProductTable({ products, setProducts, searchQuery }) {
-    const handleDeleteButtonClick = (productNo, event) => {
-        Swal.fire({
-            icon: 'warning',
-            title: '정말 삭제하시겠습니까?',
-            showCancelButton: true,
-            confirmButtonText: '삭제',
-            cancelButtonText: '취소',
-            confirmButtonColor: '#754F23',
-            background: '#F0EADC',
-            color: '#754F23',
-            iconColor: '#DBC797'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const button = event.target.closest('.delete_btn');
-                const animation = button.querySelector('.animation');
-                const row = button.closest('tr');
-                animation.style.display = 'flex';
-                button.classList.add('click');
+    // const handleDeleteButtonClick = (productNo, event) => {
+    //     Swal.fire({
+    //         icon: 'warning',
+    //         title: '정말 삭제하시겠습니까?',
+    //         showCancelButton: true,
+    //         confirmButtonText: '삭제',
+    //         cancelButtonText: '취소',
+    //         confirmButtonColor: '#754F23',
+    //         background: '#F0EADC',
+    //         color: '#754F23',
+    //         iconColor: '#DBC797'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             const button = event.target.closest('.delete_btn');
+    //             const animation = button.querySelector('.animation');
+    //             const row = button.closest('tr');
+    //             animation.style.display = 'flex';
+    //             button.classList.add('click');
 
-                setTimeout(() => {
-                    row.classList.add('fade-out');
-                }, 2000);
+    //             setTimeout(() => {
+    //                 row.classList.add('fade-out');
+    //             }, 2000);
 
-                setTimeout(() => {
-                    const updatedProducts = products.filter((product) => product.no !== productNo);
-                    setProducts(updatedProducts); // 상태 업데이트
-                }, 2500);
-            }
-        });
-    };
+    //             setTimeout(() => {
+    //                 const updatedProducts = products.filter((product) => product.no !== productNo);
+    //                 setProducts(updatedProducts);
+    //             }, 2500);
+    //         }
+    //     });
+    // };
 
     // searchQuery에 따라 필터링된 제품 목록
     const filteredProducts = products.filter((product) =>
@@ -145,8 +171,7 @@ function ProductTable({ products, setProducts, searchQuery }) {
                     <th>상태</th>
                     <th>재고</th>
                     <th>등록일</th>
-                    <th>수정일</th>
-                    <th>삭제</th>
+                    {/* <th>삭제</th> */}
                 </tr>
             </thead>
             <tbody>
@@ -154,15 +179,14 @@ function ProductTable({ products, setProducts, searchQuery }) {
                     <tr key={product.no}>
                         <td>{product.no}</td>
                         <td>{product.name}</td>
-                        <td>{product.price}</td>
+                        <td>{product.price}원</td>
                         <td>{product.category}</td>
                         <td>{product.status}</td>
                         <td>{product.stock}</td>
                         <td>{product.registered}</td>
-                        <td>{product.updated}</td>
-                        <td>
+                        {/* <td>
                             <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(product.no, e)}>
-                                <span className="button-text">Delete</span>
+                                <span className="button-text">삭제</span>
                                 <span className="animation">
                                     <span className="paper-wrapper">
                                         <span className="paper"></span>
@@ -175,7 +199,7 @@ function ProductTable({ products, setProducts, searchQuery }) {
                                     </span>
                                 </span>
                             </button>
-                        </td>
+                        </td> */}
                     </tr>
                 ))}
             </tbody>

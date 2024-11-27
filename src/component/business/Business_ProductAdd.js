@@ -185,12 +185,12 @@ export default function Business_ProductAdd() {
   
     // 썸네일 이미지 추가
     thumbnail.forEach((file, index) => {
-      formData.append('thumbnail', file, `thumbnail_${index}.${file.name.split('.').pop()}`);
+      formData.append('thumbnail', file);
     });
   
     // 상세 이미지 추가
     images.forEach((file, index) => {
-      formData.append('images', file, `detailed_${index}.${file.name.split('.').pop()}`);
+      formData.append('images', file);
     });
   
     try {

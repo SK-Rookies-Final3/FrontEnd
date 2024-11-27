@@ -183,7 +183,7 @@ function ProductTable({ products, setProducts, searchQuery }) {
                         <td>{product.category}</td>
                         <td>{product.status}</td>
                         <td>{product.stock}</td>
-                        <td>{product.registered}</td>
+                        <td>{new Date(product.registered).toLocaleDateString()}</td>
                         {/* <td>
                             <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(product.no, e)}>
                                 <span className="button-text">삭제</span>

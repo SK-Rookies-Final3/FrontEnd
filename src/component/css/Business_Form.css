@@ -3,20 +3,20 @@
     background-color: #F0EADC;
 }
 
-.sidebar {
+.business_sidebar {
     width: 280px;
     background-color: #F0EADC;
     padding: 20px;
     height: 100vh;
 }
 
-.sidebar ul {
+.business_sidebar ul {
     list-style-type: none;
     padding: 0;
     border-right: 1px solid gray;
 }
 
-.sidebar ul li {
+.business_sidebar ul li {
     padding: 10px 0;
     font-weight: bold;
     cursor: pointer;
@@ -24,17 +24,17 @@
     font-size: 18px;
 }
 
-.sidebar ul li:hover {
+.business_sidebar ul li:hover {
     background-color: #d3c4ac;
     border-radius: 20px;
 }
 
-.sidebar ul li.active {
+.business_sidebar ul li.active {
     text-decoration: underline;
     text-underline-offset: 5px;
 }
 
-.sidebar ul:hover li {
+.business_sidebar ul:hover li {
     text-decoration: none;
 }
 
@@ -61,8 +61,8 @@
     border-radius: 20px;
 }
 
-/* add-button */
-.add-button {
+/* product-add-button */
+.product-add-button {
     scale: 0.8;
     line-height: 1;
     display: inline-flex;
@@ -77,9 +77,9 @@
     position: relative;
     cursor: pointer;
     margin-right: 20px;
-}
-
-.add-button .button__icon-wrapper {
+  }
+  
+  .product-add-button .button__icon-wrapper {
     /* flex-shrink: 0; */
     width: 25px;
     height: 25px;
@@ -89,27 +89,27 @@
     display: grid;
     place-items: center;
     overflow: hidden;
-}
-
-.add-button:hover {
+  }
+  
+  .product-add-button:hover {
     background-color: #d3c4ac;
-}
-
-.add-button:hover .button__icon-wrapper {
+  }
+  
+  .product-add-button:hover .button__icon-wrapper {
     color: #754F23;
-}
-
-.add-button .button__icon-svg--copy {
+  }
+  
+  .product-add-button .button__icon-svg--copy {
     position: absolute;
     transform: translate(-150%, 150%);
-}
-
-.add-button:hover .button__icon-svg:first-child {
+  }
+  
+  .product-add-button:hover .button__icon-svg:first-child {
     transition: transform 0.3s ease-in-out;
     transform: translate(150%, -150%);
-}
-
-.add-button:hover .button__icon-svg--copy {
+  }
+  
+  .product-add-button:hover .button__icon-svg--copy {
     transition: transform 0.3s ease-in-out 0.1s;
     transform: translate(0);
 }
@@ -159,7 +159,7 @@
 }
 
 .product-table {
-    width: 95%;
+    width: 90%;
     border-collapse: collapse;
     margin: auto;
     background-color: #EAE1D3;
@@ -180,6 +180,7 @@
 
 .product-table td {
     font-size: 16px;
+    height: 35px;
 }
 
 /* Delete button */

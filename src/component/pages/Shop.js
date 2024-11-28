@@ -27,13 +27,13 @@ export default function Shop() {
     { id: '신발', icon: <IoFootstepsOutline />, label: '신발', hoverText: 'Shoes' },
     { id: '모자', icon: <FaRedhat />, label: '모자', hoverText: 'Hats' },
     { id: '가방', icon: <IoBagHandleOutline />, label: '가방', hoverText: 'Bags' },
-    { id: '장신구', icon: <GiBigDiamondRing />, label: '장신구', hoverText: 'Accessories' },
+    { id: '악세사리', icon: <GiBigDiamondRing />, label: '악세사리', hoverText: 'Accessories' },
   ];
 
   // 백엔드에서 상품 데이터 가져오기
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:8089/open-api/brand/product/'); // 백엔드 엔드포인트
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/`); // 백엔드 엔드포인트
       setProducts(response.data); // 모든 상품 데이터 저장
       setFilteredProducts(response.data); // 초기에는 모든 상품을 표시
       console.log(response.data)
@@ -66,7 +66,7 @@ export default function Shop() {
     });
 
     const likedProduct = products.find((product) => product.code === productCode);
-    localStorage.setItem('likedProduct', JSON.stringify(likedProduct));
+    sessionStorage.setItem('likedProduct', JSON.stringify(likedProduct));
   };
 
   const handleProductClick = (productCode) => {

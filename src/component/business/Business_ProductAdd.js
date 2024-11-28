@@ -319,7 +319,7 @@ export default function Business_ProductAdd() {
             {colorDropdownActive && (
               <div className="items">
                 {[
-                  { name: '빨강', color: 'red', english: 'Red' },
+                  { name: 'Red', color: 'red', english: 'Red' },
                   { name: '주황', color: 'orange', english: 'Orange' },
                   { name: '노랑', color: 'yellow', english: 'Yellow' },
                   { name: '초록', color: 'green', english: 'Green' },

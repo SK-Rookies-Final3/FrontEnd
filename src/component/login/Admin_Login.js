@@ -66,8 +66,8 @@ const Admin_Login = () => {
                 }
 
                 // 서버로부터 받은 토큰 처리
-                localStorage.setItem("accessToken", accessToken);
-                localStorage.setItem("role", role);
+                sessionStorage.setItem("accessToken", accessToken);
+                sessionStorage.setItem("role", role);
 
                 Swal.fire({
                     icon: 'success',

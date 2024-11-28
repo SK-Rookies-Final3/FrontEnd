@@ -76,7 +76,7 @@ const ShopDetail = () => {
                     throw new Error(`Failed to fetch product details: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log(product)
+                
                 setProduct(data);
             } catch (error) {
                 console.error('Error fetching product details:', error);
@@ -84,6 +84,10 @@ const ShopDetail = () => {
         };
         fetchProductDetails();
     }, [productCode]);
+
+    useEffect(() => {
+        console.log('Updated Product State:', product);
+    }, [product]);
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -96,7 +100,6 @@ const ShopDetail = () => {
                 }
                 
                 const data = await response.json();
-                
                 console.log("Fetched reviews successfully:", data); 
                 setReviews(data);
             } catch (error) {
@@ -378,14 +381,30 @@ const ShopDetail = () => {
                         <ShortModal showModal={showModal} videoSrc={videoSrc} onClose={handleCloseModal} />
                     </div>
                 );
-            case '상세정보':
-                return (
-                    <div>
+                case '상세정보':
+                    return (
                         <div className="detail">
-                            <p>{product.textInformation || '상세 정보가 없습니다.'}</p>
+                            {/* 이미지 목록 */}
+                            <div className="detail-images">
+                                {product?.images && product.images.length > 0 ? (
+                                    product.images.map((image, index) => (
+                                        <img
+                                            key={index}
+                                            src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${image.split(/[/\\]/).pop()}`}
+                                            alt={`Detail Image ${index + 1}`}
+                                            className="detail-image"
+                                        />
+                                    ))
+                                ) : (
+                                    <p>상세 이미지가 없습니다.</p>
+                                )}
+                            </div>
+                            {/* 상세 텍스트 */}
+                            <div className="detail-text">
+                                <p>{product?.textInformation || '상세 정보가 없습니다.'}</p>
+                            </div>
                         </div>
-                    </div>
-                );
+                    );
             case '상품리뷰':
                 return (
                     <div>
@@ -535,7 +554,7 @@ const ShopDetail = () => {
                         <div className="product-image-ani" key={index}>
                             <img
                                 src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${image.split(/[/\\]/).pop()}`}
-                                alt={`Product Image ${index + 1}`}
+                                alt="Product Thumbnail"
                             />
                         </div>
                     ))

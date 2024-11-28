@@ -548,20 +548,18 @@ const ShopDetail = () => {
     return (
         <div className="shop-detail">
             {/* 상품 이미지 */}
-            <div className="product-images">
-                {product?.images && product.images.length > 0 ? (
-                    product.images.map((image, index) => (
-                        <div className="product-image-ani" key={index}>
-                            <img
-                                src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${image.split(/[/\\]/).pop()}`}
-                                alt="Product Thumbnail"
-                            />
-                        </div>
-                    ))
-                ) : (
-                    <p>이미지가 없습니다.</p>
-                )}
+    <div className="product-images">
+        {product?.thumbnail && product.thumbnail.length > 0 ? (
+            <div className="product-image-ani">
+                <img
+                    src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${product.thumbnail[0].split(/[/\\]/).pop()}`}
+                    alt="Product Thumbnail"
+                />
             </div>
+        ) : (
+            <p>썸네일 이미지가 없습니다.</p>
+        )}
+    </div>
     
             {/* 상품 정보 */}
             <div className="product-info">

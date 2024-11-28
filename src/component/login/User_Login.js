@@ -105,8 +105,8 @@ const User_Login = () => {
             if (error.response && error.response.status === 400) {
                 Swal.fire({
                     icon: 'error',
-                    title: '잘못된 요청입니다.',
-                    text: '아이디 또는 비밀번호를 확인해주세요.',
+                    title: '아이디 또는 비밀번호를 확인해주세요.',
+                    html: '가입 정보가 없거나 비밀번호가 올바르지 않습니다.<br>다시 확인해주세요!',
                     showConfirmButton: true,
                     confirmButtonText: '확인',
                     confirmButtonColor: '#754F23',

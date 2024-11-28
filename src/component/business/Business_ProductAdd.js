@@ -165,10 +165,10 @@ export default function Business_ProductAdd() {
       });
       return;
     }
-  
+
     // FormData 객체 생성
     const formData = new FormData();
-  
+
     // JSON 데이터를 문자열로 추가
     const productRequest = {
       name: productName,
@@ -180,22 +180,22 @@ export default function Business_ProductAdd() {
       clothesSize: category !== '신발' ? size : '',
       shoesSize: category === '신발' ? size : '',
     };
-  
+
     formData.append('productRequest', new Blob([JSON.stringify(productRequest)], { type: 'application/json' }));
-  
+
     // 썸네일 이미지 추가
     thumbnail.forEach((file, index) => {
       formData.append('thumbnail', file);
     });
-  
+
     // 상세 이미지 추가
     images.forEach((file, index) => {
       formData.append('images', file);
     });
-  
+
     try {
       const accessToken = sessionStorage.getItem('accessToken');
-  
+
       // Axios POST 요청
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/product/owner/${storeId}`,
@@ -207,10 +207,10 @@ export default function Business_ProductAdd() {
           },
         }
       );
-  
+
       // Response 로그 출력
       console.log('응답 데이터:', response.data);
-  
+
       Swal.fire({
         title: '등록 완료',
         text: '상품이 성공적으로 등록되었습니다.',
@@ -320,15 +320,15 @@ export default function Business_ProductAdd() {
               <div className="items">
                 {[
                   { name: 'Red', color: 'red', english: 'Red' },
-                  { name: '주황', color: 'orange', english: 'Orange' },
-                  { name: '노랑', color: 'yellow', english: 'Yellow' },
-                  { name: '초록', color: 'green', english: 'Green' },
-                  { name: '파랑', color: 'blue', english: 'Blue' },
-                  { name: '보라', color: 'purple', english: 'Purple' },
-                  { name: '갈색', color: 'brown', english: 'Brown' },
-                  { name: '회색', color: 'gray', english: 'Gray' },
-                  { name: '흰색', color: 'white', english: 'White' },
-                  { name: '검정색', color: 'black', english: 'Black' }
+                  { name: 'Orange', color: 'orange', english: 'Orange' },
+                  { name: 'Yellow', color: 'yellow', english: 'Yellow' },
+                  { name: 'Green', color: 'green', english: 'Green' },
+                  { name: 'Blue', color: 'blue', english: 'Blue' },
+                  { name: 'Purple', color: 'purple', english: 'Purple' },
+                  { name: 'Brown', color: 'brown', english: 'Brown' },
+                  { name: 'Gray', color: 'gray', english: 'Gray' },
+                  { name: 'White', color: 'white', english: 'White' },
+                  { name: 'Black', color: 'black', english: 'Black' }
                 ].map(item => (
                   <a
                     key={item.name}

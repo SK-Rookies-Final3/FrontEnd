@@ -44,7 +44,7 @@ const Business_Request = () => {
         // console.log(`${process.env.REACT_APP_API_BASE_URL_APIgateway}`);
         
         try {
-            const accessToken = localStorage.getItem('accessToken');
+            const accessToken = sessionStorage.getItem('accessToken');
             console.log("accessToken:", accessToken);
             
             const response = await axios.post(

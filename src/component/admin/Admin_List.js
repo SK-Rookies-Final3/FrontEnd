@@ -22,8 +22,8 @@ function Sidebar() {
             iconColor: '#DBC797'
         }).then((result) => {
             if (result.isConfirmed) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("role");
+                sessionStorage.removeItem("accessToken");
+                sessionStorage.removeItem("role");
                 navigate('/');
             }
         });
@@ -52,7 +52,7 @@ function AdminList() {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = sessionStorage.getItem('accessToken');
         if (accessToken) {
             axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user/master`, {
                 headers: {
@@ -104,7 +104,7 @@ function AdminList() {
 
 function UserTable({ users, searchQuery, filterRole, setUsers }) {
     const handleDeleteButtonClick = async (username, event, targetId) => {
-        const token = localStorage.getItem('accessToken');
+        const token = sessionStorage.getItem('accessToken');
         if (!token) {
             console.log("토큰이 없습니다.");
             return;

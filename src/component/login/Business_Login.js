@@ -176,7 +176,7 @@ const Business_Login = () => {
         }
 
         try {
-            const token = localStorage.getItem('token');
+            const token = sessionStorage.getItem('token');
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL}/open-api/user/register`,
                 { username, password, role: 'OWNER' },

@@ -32,7 +32,7 @@ export default function Business_ProductAdd() {
   const dropdownRef_Size = useRef(null);
 
   // 로컬스토리지에서 로그인된 사용자의 id 가져오기
-  const userId = localStorage.getItem('id');
+  const userId = sessionStorage.getItem('id');
 
   useEffect(() => {
     const fetchStoreId = async () => {
@@ -194,7 +194,7 @@ export default function Business_ProductAdd() {
     });
   
     try {
-      const accessToken = localStorage.getItem('accessToken');
+      const accessToken = sessionStorage.getItem('accessToken');
   
       // Axios POST 요청
       const response = await axios.post(

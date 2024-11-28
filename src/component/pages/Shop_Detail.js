@@ -29,6 +29,7 @@ const ShopDetail = () => {
     const [nickname, setNickname] = useState('');
     const [likedShorts, setLikedShorts] = useState([]);
     const { productCode } = useParams();
+    const [product, setProduct] = useState(null);
 
     // ImageModal 상태 관리
     const [showImageModal, setShowImageModal] = useState(false);
@@ -55,7 +56,7 @@ const ShopDetail = () => {
     };
     
     const handleLikeClick = (shortCode, event) => {
-        event.stopPropagation(); // 부모 요소 클릭 이벤트 방지
+        event.stopPropagation();
         setLikedShorts((prevLikedShorts) => {
             if (prevLikedShorts.includes(shortCode)) {
                 return prevLikedShorts.filter((code) => code !== shortCode);
@@ -66,10 +67,29 @@ const ShopDetail = () => {
     };
 
     useEffect(() => {
+        const fetchProductDetails = async () => {
+            try {
+                const response = await fetch(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/${productCode}`
+                );
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch product details: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log(product)
+                setProduct(data);
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+            }
+        };
+        fetchProductDetails();
+    }, [productCode]);
+
+    useEffect(() => {
         const fetchReviews = async () => {
             try {
                 console.log("Fetching reviews for productCode:", productCode); 
-                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/open-api/brand/review/${productCode}`);
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/review/${productCode}`);
                 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch reviews: ${response.status}`);
@@ -362,8 +382,7 @@ const ShopDetail = () => {
                 return (
                     <div>
                         <div className="detail">
-                            <div>어쩌고</div>
-                            <img src={product_d} alt="Product-d" />
+                            <p>{product.textInformation || '상세 정보가 없습니다.'}</p>
                         </div>
                     </div>
                 );
@@ -509,62 +528,68 @@ const ShopDetail = () => {
 
     return (
         <div className="shop-detail">
+            {/* 상품 이미지 */}
             <div className="product-images">
-                <div className='product-image-ani'>
-                    <img src={product} alt="Product 1" />
-                </div>
-                <div className='product-image-ani'>
-                    <img src={product} alt="Product 1" />
-                </div>
-                <div className='product-image-ani'>
-                    <img src={product} alt="Product 1" />
-                </div>
+                {product?.images && product.images.length > 0 ? (
+                    product.images.map((image, index) => (
+                        <div className="product-image-ani" key={index}>
+                            <img
+                                src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${image.split(/[/\\]/).pop()}`}
+                                alt={`Product Image ${index + 1}`}
+                            />
+                        </div>
+                    ))
+                ) : (
+                    <p>이미지가 없습니다.</p>
+                )}
             </div>
-
+    
+            {/* 상품 정보 */}
             <div className="product-info">
-                <div className="rating">
-                    {averageRating}{' '}
-                    <StarRatings
-                        rating={parseFloat(averageRating)}
-                        starRatedColor="gold"
-                        numberOfStars={5}
-                        starDimension="24px"
-                        starSpacing="3px"
-                        name="average-rating"
-                    />
-                </div>
-
+                <h2>{product?.name || '상품 이름'}</h2>
                 <div className="price">
-                    KRW 216,000
+                    KRW {product?.price?.toLocaleString() || '0'}
                 </div>
             </div>
-
-            {/* Size 선택 드롭다운 */}
+    
+            {/* 드롭다운 선택 */}
             <div className="form-selects-container">
-                <div className={`form-select-container ${isSizeActive ? "active" : ""}`}>
-                    <div className="form-select" onClick={handleSizeSelectClick}>
-                        <div className="form-option-placeholder">
-                            {selectedSize}
+                {/* 사이즈 선택 드롭다운 */}
+<div className={`form-select-container ${isSizeActive ? "active" : ""}`}>
+    <div className="form-select" onClick={handleSizeSelectClick}>
+        <div className="form-option-placeholder">
+            {selectedSize}
+        </div>
+    </div>
+    {isSizeActive && (
+        <div className="form-option-wrapper">
+            <div className="form-option-container">
+                {product?.category === "신발" && product.shoesSize
+                    ? product.shoesSize.split(',').map((size) => (
+                        <div
+                            key={size}
+                            className={`form-option ${selectedSize === size ? "active" : ""}`}
+                            onClick={() => handleSizeOptionClick(size)}
+                        >
+                            {size}
                         </div>
-                    </div>
-                    {isSizeActive && (
-                        <div className="form-option-wrapper">
-                            <div className="form-option-container">
-                                {["size 1", "size 2", "size 3"].map((item) => (
-                                    <div
-                                        key={item}
-                                        className={`form-option ${selectedSize === item ? "active" : ""}`}
-                                        onClick={() => handleSizeOptionClick(item)}
-                                    >
-                                        {item}
-                                    </div>
-                                ))}
-                            </div>
+                    ))
+                    : product?.clothesSize &&
+                      product.clothesSize.split(',').map((size) => (
+                        <div
+                            key={size}
+                            className={`form-option ${selectedSize === size ? "active" : ""}`}
+                            onClick={() => handleSizeOptionClick(size)}
+                        >
+                            {size}
                         </div>
-                    )}
-                </div>
-
-                {/* Color 선택 드롭다운 */}
+                      ))}
+            </div>
+        </div>
+    )}
+</div>
+    
+                {/* 색깔 선택 드롭다운 */}
                 <div className={`form-select-container ${isColorActive ? "active" : ""}`}>
                     <div className="form-select" onClick={handleColorSelectClick}>
                         <div className="form-option-placeholder">
@@ -574,45 +599,48 @@ const ShopDetail = () => {
                     {isColorActive && (
                         <div className="form-option-wrapper">
                             <div className="form-option-container">
-                                {["color 1", "color 2", "color 3"].map((item) => (
-                                    <div
-                                        key={item}
-                                        className={`form-option ${selectedColor === item ? "active" : ""}`}
-                                        onClick={() => handleColorOptionClick(item)}
-                                    >
-                                        {item}
-                                    </div>
-                                ))}
+                                {product?.color &&
+                                    product.color.split(',').map((color) => (
+                                        <div
+                                            key={color}
+                                            className={`form-option ${selectedColor === color ? "active" : ""}`}
+                                            onClick={() => handleColorOptionClick(color)}
+                                        >
+                                            {color}
+                                        </div>
+                                    ))}
                             </div>
                         </div>
                     )}
                 </div>
-
+    
                 {/* 수량 선택 드롭다운 */}
-                <div className={`form-select-container ${isAmountActive ? "active" : ""}`}>
-                    <div className="form-select" onClick={handleAmountSelectClick}>
-                        <div className="form-option-placeholder">
-                            {selectedAmount}
-                        </div>
+<div className={`form-select-container ${isAmountActive ? "active" : ""}`}>
+    <div className="form-select" onClick={handleAmountSelectClick}>
+        <div className="form-option-placeholder">
+            {selectedAmount !== "Choose a amount" ? selectedAmount : "Choose a amount"}
+        </div>
+    </div>
+    {isAmountActive && (
+        <div className="form-option-wrapper">
+            <div className="form-option-container">
+                {Array.from({ length: Math.min(product?.stock || 0, 10) }, (_, i) => i + 1).map((amount) => (
+                    <div
+                        key={amount}
+                        className={`form-option ${selectedAmount === amount ? "active" : ""}`}
+                        onClick={() => handleAmountOptionClick(amount)}
+                    >
+                        {amount}
                     </div>
-                    {isAmountActive && (
-                        <div className="form-option-wrapper">
-                            <div className="form-option-container">
-                                {["1", "2", "3"].map((item) => (
-                                    <div
-                                        key={item}
-                                        className={`form-option ${selectedAmount === item ? "active" : ""}`}
-                                        onClick={() => handleAmountOptionClick(item)}
-                                    >
-                                        {item}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
+                ))}
+            </div>
+        </div>
+    )}
+</div>
+
 
             </div>
+    
 
             <div className="wishlist-cart-container">
                 <button

@@ -51,7 +51,7 @@ function App() {
           <Route path='/admin/statistics' element={<Admin_Statistics />} />
 
           <Route path='/pages/shop' element={<Shop />}/>
-          <Route path='/pages/shop/detail' element={<Shop_Detail />}/>
+          <Route path='/pages/shop/detail/:productCode' element={<Shop_Detail />}/>
           <Route path="/pages/brands" element={<Brand />} />
 
           <Route path='/mypages/orderlist' element={<Mypage_Order />}/>

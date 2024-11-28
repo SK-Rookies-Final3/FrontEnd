@@ -21,8 +21,9 @@ function Sidebar() {
             iconColor: '#DBC797'
         }).then((result) => {
             if (result.isConfirmed) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("role");
+                sessionStorage.removeItem("accessToken");
+                sessionStorage.removeItem("role");
+                sessionStorage.removeItem("id");
                 navigate('/');
             }
         });
@@ -85,8 +86,8 @@ function BusinessProduct() {
 function ProductTable({ searchQuery }) {
     const [products, setProducts] = useState([]);
     const [storeId, setStoreId] = useState(null);
-    const accessToken = localStorage.getItem("accessToken");
-    const userId = localStorage.getItem('id');
+    const accessToken = sessionStorage.getItem("accessToken");
+    const userId = sessionStorage.getItem('id');
 
     useEffect(() => {
         const fetchStoreId = async () => {
@@ -108,7 +109,7 @@ function ProductTable({ searchQuery }) {
                     console.log('매칭된 Store ID:', matchedStore.id);
                 } else {
                     console.warn('매칭되는 Store가 없습니다.');
-                    console.log('LocalStorage ID:', userId);
+                    console.log('sessionStorage ID:', userId);
                     console.log('Store User IDs:', stores.map(store => store.userId));
                     Swal.fire({
                         title: '경고',

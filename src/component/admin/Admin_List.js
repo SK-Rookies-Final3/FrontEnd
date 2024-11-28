@@ -182,20 +182,22 @@ function UserTable({ users, searchQuery, filterRole, setUsers }) {
                         <td>{user.role}</td>
                         <td>{user.createdAt.slice(0, 19).replace('T', ' ')}</td>
                         <td>
-                            <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(user.username, e, user.id)}>
-                                <span className="button-text">Delete</span>
-                                <span className="animation">
-                                    <span className="paper-wrapper">
-                                        <span className="paper"></span>
+                            {user.role !== 'MASTER' && (
+                                <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(user.username, e, user.id)}>
+                                    <span className="button-text">Delete</span>
+                                    <span className="animation">
+                                        <span className="paper-wrapper">
+                                            <span className="paper"></span>
+                                        </span>
+                                        <span className="shredded-wrapper">
+                                            <span className="shredded"></span>
+                                        </span>
+                                        <span className="can">
+                                            <span className="filler"></span>
+                                        </span>
                                     </span>
-                                    <span className="shredded-wrapper">
-                                        <span className="shredded"></span>
-                                    </span>
-                                    <span className="can">
-                                        <span className="filler"></span>
-                                    </span>
-                                </span>
-                            </button>
+                                </button>
+                            )}
                         </td>
                     </tr>
                 ))}

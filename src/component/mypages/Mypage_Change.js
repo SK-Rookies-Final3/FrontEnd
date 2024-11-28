@@ -55,7 +55,7 @@ function ChangeContainer() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = sessionStorage.getItem('accessToken');
         if (accessToken) {
             axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user`, {
                 headers: {
@@ -138,7 +138,7 @@ function ChangeContainer() {
     };
 
     const handelEditingButton = async () => {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = sessionStorage.getItem('accessToken');
 
         // address가 비어 있거나 null이면 기본값 '대한민국'을 설정
         const requestData = {
@@ -196,8 +196,8 @@ function ChangeContainer() {
             iconColor: '#DBC797'
         }).then((result) => {
             if (result.isConfirmed) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("role");
+                sessionStorage.removeItem("accessToken");
+                sessionStorage.removeItem("role");
                 navigate('/');
             }
         });
@@ -216,7 +216,7 @@ function ChangeContainer() {
             iconColor: '#DBC797'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                const token = localStorage.getItem('accessToken');
+                const token = sessionStorage.getItem('accessToken');
                 try {
                     const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/exit/${Id}`, {
                         method: 'DELETE',
@@ -235,8 +235,8 @@ function ChangeContainer() {
                             background: '#F0EADC',
                             iconColor: '#DBC797'
                         }).then(() => {
-                            localStorage.removeItem("accessToken");
-                            localStorage.removeItem("role");
+                            sessionStorage.removeItem("accessToken");
+                            sessionStorage.removeItem("role");
                             navigate('/');
                         });
                     } else {

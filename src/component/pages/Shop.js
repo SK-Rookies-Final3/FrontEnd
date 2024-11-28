@@ -20,7 +20,7 @@ export default function Shop() {
   // 카테고리 아이콘과 이름 유지
   const categories = [
     { id: '', icon: <TbJacket />, label: '전체', hoverText: 'All' }, // 전체 보기
-    { id: '겉옷', icon: <TbJacket />, label: '겉옷', hoverText: 'Outerwear' },
+    { id: '아우터', icon: <TbJacket />, label: '아우터', hoverText: 'Outerwear' },
     { id: '상의', icon: <PiTShirt />, label: '상의', hoverText: 'Tops' },
     { id: '하의', icon: <PiPants />, label: '하의', hoverText: 'Bottoms' },
     { id: '치마', icon: <GiSkirt />, label: '치마', hoverText: 'Skirts' },

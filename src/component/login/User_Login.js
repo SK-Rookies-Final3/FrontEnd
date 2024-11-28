@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import '../css/LoginForm.css';
 
 const User_Login = () => {
@@ -10,6 +11,8 @@ const User_Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showRepeatPassword, setShowRepeatPassword] = useState(false);
 
     const goBusinessLogin = () => {
         navigate('/business/login');
@@ -19,7 +22,17 @@ const User_Login = () => {
         setUsername("");
         setPassword("");
         setRepeatPassword("");
+        setShowPassword(false);
+        setShowRepeatPassword(false);
         setIsSignup(!isSignup);
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const toggleRepeatPasswordVisibility = () => {
+        setShowRepeatPassword(!showRepeatPassword);
     };
 
     const handleLogin = async () => {
@@ -38,18 +51,18 @@ const User_Login = () => {
             });
             return;
         }
-    
+
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API_BASE_URL}/open-api/login`,
+                `${process.env.REACT_APP_API_BASE_URL}/open-api/user/login`,
                 { username, password }
             );
-    
+
             if (response.status === 200) {
                 console.log("로그인 성공:", response.data);
-    
+
                 const { accessToken, role } = response.data.body;
-    
+
                 // role이 CLIENT가 아니면 로그인 차단
                 if (role !== "CLIENT") {
                     Swal.fire({
@@ -65,11 +78,11 @@ const User_Login = () => {
                     });
                     return;
                 }
-    
+
                 // 서버로부터 받은 토큰 처리
-                localStorage.setItem("accessToken", accessToken);
-                localStorage.setItem("role", role);
-    
+                sessionStorage.setItem("accessToken", accessToken);
+                sessionStorage.setItem("role", role);
+
                 Swal.fire({
                     icon: 'success',
                     title: '로그인 성공!',
@@ -87,13 +100,13 @@ const User_Login = () => {
             }
         } catch (error) {
             console.error("로그인 실패:", error);
-    
+
             // 서버에서 반환된 에러 코드에 따른 메시지 처리
             if (error.response && error.response.status === 400) {
                 Swal.fire({
                     icon: 'error',
-                    title: '잘못된 요청입니다.',
-                    text: '아이디 또는 비밀번호를 확인해주세요.',
+                    title: '아이디 또는 비밀번호를 확인해주세요.',
+                    html: '가입 정보가 없거나 비밀번호가 올바르지 않습니다.<br>다시 확인해주세요!',
                     showConfirmButton: true,
                     confirmButtonText: '확인',
                     confirmButtonColor: '#754F23',
@@ -161,15 +174,17 @@ const User_Login = () => {
             return;
         }
 
+        console.log(`${process.env.REACT_APP_API_BASE_URL}`)
         try {
-            const token = localStorage.getItem('token');
+            const token = sessionStorage.getItem('token');
             const response = await axios.post(
-                `${process.env.REACT_APP_API_BASE_URL}/open-api/register`,
+                `${process.env.REACT_APP_API_BASE_URL}/open-api/user/register`,
                 { username, password, role: 'CLIENT' },
                 {
                     headers: {
                         Authorization: `${token}`,
                     },
+                    withCredentials : true,
                 }
             );
 
@@ -199,8 +214,8 @@ const User_Login = () => {
             if (error.response && error.response.status === 400) {
                 Swal.fire({
                     icon: 'error',
-                    title: '잘못된 요청입니다.',
-                    text: '아이디 또는 비밀번호를 확인해주세요.',
+                    title: '중복된 아이디 입니다.',
+                    text: '아이디를 변경해주세요',
                     showConfirmButton: true,
                     confirmButtonText: '확인',
                     confirmButtonColor: '#754F23',
@@ -249,12 +264,21 @@ const User_Login = () => {
                         <div className="card-login">
                             <div className="center-wrap">
                                 <h2 className="log_text">LOG IN</h2>
-                                <input type="text" name="logeid" className="form-style"
-                                    placeholder="Your ID" id="logeid" autoComplete="off" value={username}
-                                    onChange={(e) => setUsername(e.target.value)} />
-                                <input type="password" name="logpass" className="form-style"
-                                    placeholder="Your Password" id="logpass" autoComplete="off" value={password}
-                                    onChange={(e) => setPassword(e.target.value)} />
+                                <div className="input-container">
+                                    <FaUser className="input-icon" />
+                                    <input type="text" name="logeid" className="form-style"
+                                        placeholder="Your ID" id="logeid" autoComplete="off" value={username}
+                                        onChange={(e) => setUsername(e.target.value)} />
+                                </div>
+                                <div className="input-container">
+                                    <FaLock className="input-icon" />
+                                    <input type={showPassword ? "text" : "password"} name="logpass" className="form-style"
+                                        placeholder="Your Password" id="logpass" autoComplete="off" value={password}
+                                        onChange={(e) => setPassword(e.target.value)} />
+                                    <span className="toggle-password" onClick={togglePasswordVisibility}>
+                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                </div>
                                 <button className="btn_sub" onClick={handleLogin}>Submit</button>
                                 <p className="paragraph">
                                     <span className="link" onClick={goBusinessLogin}>Business</span>
@@ -264,15 +288,30 @@ const User_Login = () => {
                         <div className="card-signup">
                             <div className="center-wrap">
                                 <h2 className="log_text">SIGN UP</h2>
-                                <input type="text" name="logeid" className="form-style"
-                                    placeholder="Your ID" id="logeid" autoComplete="off" value={username}
-                                    onChange={(e) => setUsername(e.target.value)} />
-                                <input type="password" name="logpass" className="form-style"
-                                    placeholder="Your PassWord" id="logpass" autoComplete="off" value={password}
-                                    onChange={(e) => setPassword(e.target.value)} />
-                                <input type="password" name="logpass" className="form-style"
-                                    placeholder="Your Repeat Password" id="logpass" autoComplete="off" value={repeatPassword}
-                                    onChange={(e) => setRepeatPassword(e.target.value)} />
+                                <div className="input-container">
+                                    <FaUser className="input-icon" />
+                                    <input type="text" name="logeid" className="form-style"
+                                        placeholder="Your ID" id="logeid" autoComplete="off" value={username}
+                                        onChange={(e) => setUsername(e.target.value)} />
+                                </div>
+                                <div className="input-container">
+                                    <FaLock className="input-icon" />
+                                    <input type={showPassword ? "text" : "password"} name="logpass" className="form-style"
+                                        placeholder="Your Password" id="logpass" autoComplete="off" value={password}
+                                        onChange={(e) => setPassword(e.target.value)} />
+                                    <span className="toggle-password" onClick={togglePasswordVisibility}>
+                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                </div>
+                                <div className="input-container">
+                                    <FaLock className="input-icon" />
+                                    <input type={showRepeatPassword ? "text" : "password"} name="logpass" className="form-style"
+                                        placeholder="Your Repeat Password" id="logpass" autoComplete="off" value={repeatPassword}
+                                        onChange={(e) => setRepeatPassword(e.target.value)} />
+                                    <span className="toggle-password" onClick={toggleRepeatPasswordVisibility}>
+                                        {showRepeatPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                </div>
                                 <button className="btn_sub" onClick={handleRegister}>Submit</button>
                                 <p className="paragraph">
                                     <span className="link" onClick={goBusinessLogin}>Business</span>

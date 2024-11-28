@@ -1,64 +1,81 @@
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../css/Shop.css';
-import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai'; // 채워진 하트 아이콘 추가
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { TbJacket } from "react-icons/tb";
-import { PiTShirt } from "react-icons/pi";
-import { PiPants } from "react-icons/pi";
-import { GiSkirt } from "react-icons/gi";
-import { IoFootstepsOutline } from "react-icons/io5";
+import { PiTShirt, PiPants } from "react-icons/pi";
+import { GiSkirt, GiBigDiamondRing } from "react-icons/gi";
+import { IoFootstepsOutline, IoBagHandleOutline } from "react-icons/io5";
 import { FaRedhat } from "react-icons/fa6";
-import { IoBagHandleOutline } from "react-icons/io5";
-import { GiBigDiamondRing } from "react-icons/gi";
-import productImage from '../../img/product.jpg'; // 이미지 경로 변경
 
 export default function Shop() {
-  const [hoveredIndex, setHoveredIndex] = useState(null); // 현재 호버된 카테고리의 인덱스 상태
-  const [likedProducts, setLikedProducts] = useState([]); // 좋아요 상태 배열
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [likedProducts, setLikedProducts] = useState([]);
+  const [products, setProducts] = useState([]); // 모든 상품 데이터
+  const [filteredProducts, setFilteredProducts] = useState([]); // 필터링된 상품 데이터
+  const [selectedCategory, setSelectedCategory] = useState(''); // 선택된 카테고리 상태
   const navigate = useNavigate();
 
+  // 카테고리 아이콘과 이름 유지
   const categories = [
-    { icon: <TbJacket />, label: '겉옷', hoverText: 'Outerwear' },
-    { icon: <PiTShirt />, label: '상의', hoverText: 'Tops' },
-    { icon: <PiPants />, label: '하의', hoverText: 'Bottoms' },
-    { icon: <GiSkirt />, label: '치마', hoverText: 'Skirts' },
-    { icon: <IoFootstepsOutline />, label: '신발', hoverText: 'Shoes' },
-    { icon: <FaRedhat />, label: '모자', hoverText: 'Hats' },
-    { icon: <IoBagHandleOutline />, label: '가방', hoverText: 'Bags' },
-    { icon: <GiBigDiamondRing />, label: '장신구', hoverText: 'Accessories' },
+    { id: '', icon: <TbJacket />, label: '전체', hoverText: 'All' }, // 전체 보기
+    { id: '아우터', icon: <TbJacket />, label: '아우터', hoverText: 'Outerwear' },
+    { id: '상의', icon: <PiTShirt />, label: '상의', hoverText: 'Tops' },
+    { id: '하의', icon: <PiPants />, label: '하의', hoverText: 'Bottoms' },
+    { id: '치마', icon: <GiSkirt />, label: '치마', hoverText: 'Skirts' },
+    { id: '신발', icon: <IoFootstepsOutline />, label: '신발', hoverText: 'Shoes' },
+    { id: '모자', icon: <FaRedhat />, label: '모자', hoverText: 'Hats' },
+    { id: '가방', icon: <IoBagHandleOutline />, label: '가방', hoverText: 'Bags' },
+    { id: '장신구', icon: <GiBigDiamondRing />, label: '장신구', hoverText: 'Accessories' },
   ];
 
-  const products = [ // 상품 데이터 배열
-    { id: 1, title: '비비안웨스트우드', price: '150,000', image: productImage },
-    { id: 2, title: '상품2', price: '100,000', image: productImage },
-    { id: 3, title: '상품3', price: '80,000', image: productImage },
-    { id: 4, title: '상품4', price: '90,000', image: productImage },
-    { id: 5, title: '상품5', price: '120,000', image: productImage },
-    { id: 6, title: '상품6', price: '60,000', image: productImage },
-    // 필요 시 추가 상품 데이터 추가
-  ];
+  // 백엔드에서 상품 데이터 가져오기
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('http://localhost:8089/open-api/brand/product/'); // 백엔드 엔드포인트
+      setProducts(response.data); // 모든 상품 데이터 저장
+      setFilteredProducts(response.data); // 초기에는 모든 상품을 표시
+      console.log(response.data)
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+    }
+  };
 
-  const handleLikeClick = (productId) => {
-    setLikedProducts(prev => {
-      if (prev.includes(productId)) {
-        // 이미 좋아요가 눌렸다면 제거
-        return prev.filter(id => id !== productId);
+  useEffect(() => {
+    fetchProducts(); // 컴포넌트 로드 시 데이터 가져오기
+  }, []);
+
+  // 카테고리 선택 핸들러
+  const handleCategoryClick = (categoryId) => {
+    setSelectedCategory(categoryId); // 선택된 카테고리 상태 업데이트
+    if (categoryId === '') {
+      setFilteredProducts(products); // 카테고리가 비어 있으면 모든 상품 표시
+    } else {
+      setFilteredProducts(products.filter((product) => product.category === categoryId)); // 선택된 카테고리에 해당하는 상품만 필터링
+    }
+  };
+
+  const handleLikeClick = (productCode) => {
+    setLikedProducts((prev) => {
+      if (prev.includes(productCode)) {
+        return prev.filter((id) => id !== productCode);
       } else {
-        // 아니면 추가
-        return [...prev, productId];
+        return [...prev, productCode];
       }
     });
-    
-    const likedProduct = products.find(product => product.id === productId);
+
+    const likedProduct = products.find((product) => product.code === productCode);
     localStorage.setItem('likedProduct', JSON.stringify(likedProduct));
   };
 
-  const handleProductClick = (productId) => {
-    navigate('/page/shop/detail'); // 상세 페이지로 이동
+  const handleProductClick = (productCode) => {
+    navigate(`/pages/shop/detail/${productCode}`); // 상세 페이지 이동
   };
 
   return (
     <div className="shop-container">
+      {/* 사이드바 */}
       <aside className="shop-sidebar">
         <div className="logo">
           <h2>Category</h2>
@@ -69,6 +86,8 @@ export default function Shop() {
               key={index}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
+              onClick={() => handleCategoryClick(category.id)} // 카테고리 클릭
+              style={{ cursor: 'pointer', fontWeight: selectedCategory === category.id ? 'bold' : 'normal' }}
             >
               <span className="icon">{category.icon}</span>
               <span>
@@ -78,38 +97,43 @@ export default function Shop() {
           ))}
         </ul>
       </aside>
+
+      {/* 상품 리스트 */}
       <div className="product-list">
-        {products.map(product => (
-            <div className="shop-card" key={product.id} style={{ width: "150px" }}> {/* 카드 너비 조정 */}
-            <img 
-                src={product.image} 
-                className='shop-card-img-top' 
-                alt={product.title} 
-                onClick={() => handleProductClick(product.id)} 
-                style={{ cursor: 'pointer' }} 
+        {filteredProducts.map((product) => (
+          <div className="shop-card" key={product.code}>
+            <img
+              src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${product.thumbnail.split(/[/\\]/).pop()}`}
+              className="shop-card-img-top"
+              alt={product.name}
+              onClick={() => handleProductClick(product.code)}
+              style={{ cursor: 'pointer' }}
             />
-            <div className='card-body'>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ textAlign: 'left', cursor: 'pointer' }} onClick={() => handleProductClick(product.id)}>
-                    <h5 className='card-title'>{product.title}</h5>
-                    <p className="card-text">{product.price}</p>
+            <div className="card-body">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  style={{ textAlign: 'left', cursor: 'pointer' }}
+                  onClick={() => handleProductClick(product.code)}
+                >
+                  <h5 className="card-title" style={{ marginLeft: '10px' }}>{product.name}</h5>
+                  <p className="card-text" style={{ marginLeft: '10px' }}>{product.price.toLocaleString()}원</p>
                 </div>
                 <button
-                    type="button"
-                    style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onClick={() => handleLikeClick(product.id)}
+                  type="button"
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  onClick={() => handleLikeClick(product.code)}
                 >
-                    {likedProducts.includes(product.id) ? (
-                    <AiFillHeart size={24} color="#FF5733" /> // 채워진 하트 아이콘
-                    ) : (
-                    <AiOutlineHeart size={24} color="#FF5733" /> // 빈 하트 아이콘
-                    )}
+                  {likedProducts.includes(product.code) ? (
+                    <AiFillHeart size={24} color="#FF5733" />
+                  ) : (
+                    <AiOutlineHeart size={24} color="#FF5733" />
+                  )}
                 </button>
-                </div>
+              </div>
             </div>
-            </div>
-         ))}
-        </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

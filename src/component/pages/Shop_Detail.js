@@ -76,6 +76,7 @@ const ShopDetail = () => {
                     throw new Error(`Failed to fetch product details: ${response.status}`);
                 }
                 const data = await response.json();
+                console.log(product)
                 setProduct(data);
             } catch (error) {
                 console.error('Error fetching product details:', error);

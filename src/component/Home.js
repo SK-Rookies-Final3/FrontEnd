@@ -46,7 +46,7 @@ function Home() {
     const [isPausedProduct, setIsPausedProduct] = useState(false);
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = sessionStorage.getItem('accessToken');
         if (accessToken) {
             axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user`, {
                 headers: {
@@ -66,7 +66,7 @@ function Home() {
     
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = sessionStorage.getItem('accessToken');
         setTextSet(accessToken ? texts : texts_be);
         setNewTextSet(accessToken ? newTexts : newTexts_be);
     }, []);

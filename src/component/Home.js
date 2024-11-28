@@ -8,6 +8,7 @@ import short from '../img/shorts.png';
 import product from '../img/product.jpg';
 import './css/Home.css';
 import { VscArrowRight } from "react-icons/vsc";
+import axios from "axios";
 
 function Bottom() {
     return (
@@ -19,7 +20,7 @@ function Bottom() {
 }
 
 function Home() {
-
+    const [nickname, setNickname] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [videoSrc, setVideoSrc] = useState('');
     const navigate = useNavigate();
@@ -43,6 +44,26 @@ function Home() {
     const [newCharIndex, setNewCharIndex] = useState(0);
     const [newIsDeleting, setNewIsDeleting] = useState(false);
     const [isPausedProduct, setIsPausedProduct] = useState(false);
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user`, {
+                headers: {
+                    Authorization: `${accessToken}`,
+                },
+            })
+            .then(response => {
+                if (response.data && response.data.body) {
+                    setNickname(response.data.body.nickname);
+                }
+            })
+            .catch(error => {
+                console.error("닉네임을 가져오는 중 오류가 발생했습니다.", error);
+            });
+        }
+    }, []);
+    
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
@@ -214,7 +235,7 @@ function Home() {
                 <div className='form-title-con'>
                     <h2 className="form-title">Short Form</h2>
                     <h3 ref={h3Ref}>
-                        <strong>AI filtering</strong> 완료!
+                        <strong>{nickname}에게 맞는 AI 추천!</strong>
                     </h3>
                 </div>
                 <div className="typed-text">_ {displayedText}</div>

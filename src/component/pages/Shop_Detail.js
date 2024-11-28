@@ -86,6 +86,10 @@ const ShopDetail = () => {
     }, [productCode]);
 
     useEffect(() => {
+        console.log('Updated Product State:', product);
+    }, [product]);
+
+    useEffect(() => {
         const fetchReviews = async () => {
             try {
                 console.log("Fetching reviews for productCode:", productCode); 

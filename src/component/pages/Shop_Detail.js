@@ -547,6 +547,17 @@ const ShopDetail = () => {
             {/* 상품 정보 */}
             <div className="product-info">
                 <h2>{product?.name || '상품 이름'}</h2>
+                <div className="rating">
+                    {averageRating}{' '}
+                    <StarRatings
+                        rating={parseFloat(averageRating)}
+                        starRatedColor="gold"
+                        numberOfStars={5}
+                        starDimension="24px"
+                        starSpacing="3px"
+                        name="average-rating"
+                    />
+                </div>
                 <div className="price">
                     KRW {product?.price?.toLocaleString() || '0'}
                 </div>

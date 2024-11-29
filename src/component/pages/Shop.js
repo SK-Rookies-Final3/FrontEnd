@@ -112,7 +112,7 @@ export default function Shop() {
               onClick={() => handleProductClick(product.code)}
               style={{ cursor: 'pointer' }}
             />
-            <div className="card-body" onClick={() => handleProductClick(product.code)}>
+            <div className="card-body" >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div
                   style={{ textAlign: 'left', cursor: 'pointer' }}

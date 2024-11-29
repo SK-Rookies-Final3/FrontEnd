@@ -17,7 +17,7 @@ html, body {
   position: fixed;
   top: 90px;
   left: 0;
-  width: 110px;
+  width: 140px;
   height: 100vh;
   display: flex;
   flex-direction: column;

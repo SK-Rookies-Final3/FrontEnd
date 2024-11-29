@@ -112,11 +112,11 @@ export default function Shop() {
               onClick={() => handleProductClick(product.code)}
               style={{ cursor: 'pointer' }}
             />
-            <div className="card-body">
+            <div className="card-body" onClick={() => handleProductClick(product.code)}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div
                   style={{ textAlign: 'left', cursor: 'pointer' }}
-                  onClick={() => handleProductClick(product.code)}
+                  
                 >
                   <h5 className="card-title" style={{ marginLeft: '10px' }}>{product.name}</h5>
                   <p className="card-text" style={{ marginLeft: '10px' }}>{product.price.toLocaleString()}원</p>

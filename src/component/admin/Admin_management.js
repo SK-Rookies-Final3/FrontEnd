@@ -23,8 +23,8 @@ function Sidebar() {
             iconColor: '#DBC797'
         }).then((result) => {
             if (result.isConfirmed) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("role");
+                sessionStorage.removeItem("accessToken");
+                sessionStorage.removeItem("role");
                 navigate('/');
             }
         });
@@ -81,7 +81,7 @@ function CompanyTable({ searchQuery }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const accessToken = localStorage.getItem('accessToken');
+                const accessToken = sessionStorage.getItem('accessToken');
 
                 // 사용자 데이터 가져오기
                 const usersResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user/master`, {
@@ -145,7 +145,7 @@ function CompanyTable({ searchQuery }) {
     }, []);
 
     const handleApproval = async (storeId, userId) => {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = sessionStorage.getItem('accessToken');
         const result = await Swal.fire({
             title: '승인하시겠습니까?',
             icon: 'question',
@@ -188,7 +188,7 @@ function CompanyTable({ searchQuery }) {
     };
 
     const handleRejection = async (storeId, userId) => {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = sessionStorage.getItem('accessToken');
         const result = await Swal.fire({
             title: '거절하시겠습니까?',
             icon: 'warning',

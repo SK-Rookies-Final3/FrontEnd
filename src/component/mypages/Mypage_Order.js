@@ -58,7 +58,7 @@ function OrderContainer() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = sessionStorage.getItem('accessToken');
         if (accessToken) {
             axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user`, {
                 headers: {
@@ -103,8 +103,8 @@ function OrderContainer() {
             iconColor: '#DBC797'
         }).then((result) => {
             if (result.isConfirmed) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("role");
+                sessionStorage.removeItem("accessToken");
+                sessionStorage.removeItem("role");
                 console.log("로그아웃되었습니다.");
                 navigate('/');
             }
@@ -124,7 +124,7 @@ function OrderContainer() {
             iconColor: '#DBC797'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                const token = localStorage.getItem('accessToken');
+                const token = sessionStorage.getItem('accessToken');
                 try {
                     const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/exit/${Id}`, {
                         method: 'DELETE',
@@ -144,8 +144,8 @@ function OrderContainer() {
                             color: '#754F23',
                             iconColor: '#DBC797'
                         }).then(() => {
-                            localStorage.removeItem("accessToken");
-                            localStorage.removeItem("role");
+                            sessionStorage.removeItem("accessToken");
+                            sessionStorage.removeItem("role");
                             navigate('/');
                         });
                     } else {

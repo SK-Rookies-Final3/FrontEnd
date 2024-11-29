@@ -8,6 +8,7 @@ import short from '../img/shorts.png';
 import product from '../img/product.jpg';
 import './css/Home.css';
 import { VscArrowRight } from "react-icons/vsc";
+import axios from "axios";
 
 function Bottom() {
     return (
@@ -19,7 +20,7 @@ function Bottom() {
 }
 
 function Home() {
-
+    const [nickname, setNickname] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [videoSrc, setVideoSrc] = useState('');
     const navigate = useNavigate();
@@ -45,7 +46,27 @@ function Home() {
     const [isPausedProduct, setIsPausedProduct] = useState(false);
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = sessionStorage.getItem('accessToken');
+        if (accessToken) {
+            axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user`, {
+                headers: {
+                    Authorization: `${accessToken}`,
+                },
+            })
+                .then(response => {
+                    if (response.data && response.data.body) {
+                        setNickname(response.data.body.nickname);
+                    }
+                })
+                .catch(error => {
+                    console.error("닉네임을 가져오는 중 오류가 발생했습니다.", error);
+                });
+        }
+    }, []);
+
+
+    useEffect(() => {
+        const accessToken = sessionStorage.getItem('accessToken');
         setTextSet(accessToken ? texts : texts_be);
         setNewTextSet(accessToken ? newTexts : newTexts_be);
     }, []);
@@ -53,14 +74,14 @@ function Home() {
     useEffect(() => {
         const handleScroll = () => {
             const scrollTop = window.scrollY;
-    
+
             const homeTopContainer = document.querySelector('.home_top-container');
             if (homeTopContainer) {
                 const scaleValue = Math.max(1 - (scrollTop / 1000), 0.8);
                 const rotateValue = Math.min((scrollTop / 1000) * 5, 5);
                 const opacityValue = Math.max(1 - (scrollTop / 1000) * 0.3, 0.7);
                 const translateY = Math.min(scrollTop * 0.1, 50);
-    
+
                 homeTopContainer.style.perspective = '1000px';
                 homeTopContainer.style.transform = `
                     scale(${scaleValue}) 
@@ -71,7 +92,7 @@ function Home() {
                 homeTopContainer.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
             }
         };
-    
+
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -213,9 +234,15 @@ function Home() {
             <div className="s-form-container sections">
                 <div className='form-title-con'>
                     <h2 className="form-title">Short Form</h2>
-                    <h3 ref={h3Ref}>
-                        <strong>AI filtering</strong> 완료!
-                    </h3>
+                    {sessionStorage.getItem('accessToken') ? (
+                        <h3 ref={h3Ref}>
+                            <strong>{nickname}에게 맞는 AI 추천!</strong>
+                        </h3>
+                    ) : (
+                        <h3 ref={h3Ref}>
+                            <strong>AI Filtering 완료</strong>
+                        </h3>
+                    )}
                 </div>
                 <div className="typed-text">_ {displayedText}</div>
                 <div className="short-form-videos">

@@ -14,7 +14,7 @@ export default function Header() {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = sessionStorage.getItem('accessToken');
     if (accessToken) {
       setShowTooltip(false); // 토큰이 있으면 Tooltip 숨김
       setIsLoggedIn(true);
@@ -180,7 +180,7 @@ export default function Header() {
             )}
 
             <a onClick={() => {
-              const accessToken = localStorage.getItem("accessToken");
+              const accessToken = sessionStorage.getItem("accessToken");
 
               if (!accessToken) {
                 navigate("user/login");
@@ -191,9 +191,9 @@ export default function Header() {
               <BsBagHeart />
             </a>
             <a onClick={async () => {
-              const accessToken = localStorage.getItem("accessToken");
-              const role = localStorage.getItem("role");
-              const userId = localStorage.getItem("id");
+              const accessToken = sessionStorage.getItem("accessToken");
+              const role = sessionStorage.getItem("role");
+              const userId = sessionStorage.getItem("id");
               console.log(userId)
 
               if (!accessToken) {
@@ -229,9 +229,9 @@ export default function Header() {
                         cancelButtonText: "취소",
                       }).then((result) => {
                         if (result.isConfirmed) {
-                          localStorage.removeItem("role");
-                          localStorage.removeItem("accessToken");
-                          localStorage.removeItem("id");
+                          sessionStorage.removeItem("role");
+                          sessionStorage.removeItem("accessToken");
+                          sessionStorage.removeItem("id");
                           navigate("/");
                           Swal.fire({
                             title: "로그아웃 되었습니다.",
@@ -249,9 +249,9 @@ export default function Header() {
                         icon: "error",
                         confirmButtonText: "확인",
                       }).then(() => {
-                        localStorage.removeItem("accessToken");
-                        localStorage.removeItem("role");
-                        localStorage.removeItem("id");
+                        sessionStorage.removeItem("accessToken");
+                        sessionStorage.removeItem("role");
+                        sessionStorage.removeItem("id");
                         navigate("/");
                       });
                     }else {

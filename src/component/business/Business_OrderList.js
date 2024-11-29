@@ -20,8 +20,9 @@ function Sidebar() {
             iconColor: '#DBC797'
         }).then((result) => {
             if (result.isConfirmed) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("role");
+                sessionStorage.removeItem("accessToken");
+                sessionStorage.removeItem("role");
+                sessionStorage.removeItem("id");
                 navigate('/');
             }
         });

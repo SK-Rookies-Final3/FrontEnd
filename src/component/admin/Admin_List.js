@@ -22,8 +22,8 @@ function Sidebar() {
             iconColor: '#DBC797'
         }).then((result) => {
             if (result.isConfirmed) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("role");
+                sessionStorage.removeItem("accessToken");
+                sessionStorage.removeItem("role");
                 navigate('/');
             }
         });
@@ -52,7 +52,7 @@ function AdminList() {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = sessionStorage.getItem('accessToken');
         if (accessToken) {
             axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user/master`, {
                 headers: {
@@ -104,7 +104,7 @@ function AdminList() {
 
 function UserTable({ users, searchQuery, filterRole, setUsers }) {
     const handleDeleteButtonClick = async (username, event, targetId) => {
-        const token = localStorage.getItem('accessToken');
+        const token = sessionStorage.getItem('accessToken');
         if (!token) {
             console.log("토큰이 없습니다.");
             return;
@@ -182,20 +182,22 @@ function UserTable({ users, searchQuery, filterRole, setUsers }) {
                         <td>{user.role}</td>
                         <td>{user.createdAt.slice(0, 19).replace('T', ' ')}</td>
                         <td>
-                            <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(user.username, e, user.id)}>
-                                <span className="button-text">Delete</span>
-                                <span className="animation">
-                                    <span className="paper-wrapper">
-                                        <span className="paper"></span>
+                            {user.role !== 'MASTER' && (
+                                <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(user.username, e, user.id)}>
+                                    <span className="button-text">Delete</span>
+                                    <span className="animation">
+                                        <span className="paper-wrapper">
+                                            <span className="paper"></span>
+                                        </span>
+                                        <span className="shredded-wrapper">
+                                            <span className="shredded"></span>
+                                        </span>
+                                        <span className="can">
+                                            <span className="filler"></span>
+                                        </span>
                                     </span>
-                                    <span className="shredded-wrapper">
-                                        <span className="shredded"></span>
-                                    </span>
-                                    <span className="can">
-                                        <span className="filler"></span>
-                                    </span>
-                                </span>
-                            </button>
+                                </button>
+                            )}
                         </td>
                     </tr>
                 ))}

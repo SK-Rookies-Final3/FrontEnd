@@ -1,32 +1,55 @@
+/* Shop_Detail.css */
+
+/* 전체 레이아웃 및 배경 */
 .shop-detail {
     padding: 20px;
     background-color: #F0EADC;
     min-height: 100vh;
 }
 
+/* 상품 이미지 섹션 */
 .product-images {
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
     gap: 20px;
     margin: auto;
     margin-top: 10px;
     width: 60%;
     margin-bottom: 20px;
+    box-sizing: border-box;
 }
 
-/* .product-images img {
-    flex: 1 1 30%;
-    max-width: 30%;
-    height: auto;
-    border-radius: 10px;
-    transition: all 0.5s ease;
-} */
+.product-images.multiple {
+    flex-wrap: nowrap;
+    gap: 20px;
+    width: 60%;
+    overflow-x: auto;
+}
 
-/*  */
+.product-images.multiple .product-image-ani {
+    flex: 0 0 auto;
+    width: 30%;
+    max-width: 30%;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.product-images.single {
+    justify-content: center;
+    width: 70%;
+}
+
+.product-images.single .product-image-ani {
+    flex: 0 0 25%;
+    /* max-width: 50%; */
+    overflow: hidden;
+    box-sizing: border-box;
+}
 
 .product-image-ani {
-    flex: 1 1 30%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -35,6 +58,8 @@
     opacity: 0;
     transform: rotateZ(-90deg);
     animation: rotate-fade-in 640ms cubic-bezier(.29, -0.01, .39, 1.31) forwards 800ms;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .product-image-ani img {
@@ -42,12 +67,16 @@
     height: 99%;
     border-radius: inherit;
     box-shadow: 2px 2px 4px #b1b1b1;
+    object-fit: cover;
     mask-origin: border-box;
     mask-mode: alpha;
     mask-image: linear-gradient(to bottom, transparent 50%, black 50%), 
                 linear-gradient(to top, transparent 50%, black 50%);
     animation: mask-animation 800ms ease forwards 1s;
     mask-repeat: no-repeat;
+    display: block;
+    margin: auto;
+    padding: 2px;
 }
 
 @keyframes mask-animation {
@@ -66,13 +95,36 @@
     }
 }
 
+/* 상품 정보 섹션 */
 .product-info {
     display: flex;
+    flex-direction: column;
     width: 55%;
     margin: auto;
-    justify-content: space-between;
+    /* align-items: center;  기존의 정렬 속성이 있다면 주석 처리하거나 제거 */
 }
 
+.product-info h2 {
+    margin-bottom: 20px;
+    align-self: flex-start; /* h2 요소만 왼쪽으로 정렬 */
+    margin-left: 10px;
+    font-size: 30px;
+}
+
+.product-info2 {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: auto;
+}
+
+.rating,
+.price {
+    font-size: 20px;
+    margin: 10px;
+}
+
+/* 위시리스트 및 장바구니 버튼 컨테이너 */
 .wishlist-cart-container {
     padding: 20px;
     display: flex;
@@ -82,12 +134,7 @@
     gap: 30px;
 }
 
-.rating,
-.price {
-    font-size: 20px;
-    margin: 10px;
-}
-
+/* 탭 섹션 */
 .tabs {
     width: 55%;
     margin: auto;
@@ -105,6 +152,7 @@
     background-color: transparent;
     font-size: 16px;
     padding: 5px;
+    transition: font-weight 0.3s;
 }
 
 .tabs button.active {
@@ -116,6 +164,7 @@
     font-size: 14px;
 }
 
+/* 비디오 갤러리 섹션 */
 .video-gallery {
     display: flex;
     justify-content: center;
@@ -130,6 +179,7 @@
     flex: 1 1 30%;
     max-width: 30%;
     box-sizing: border-box;
+    position: relative;
 }
 
 .video-item img {
@@ -140,6 +190,7 @@
     cursor: pointer;
 }
 
+/* 상세정보 섹션 */
 .detail {
     width: 60%;
     margin: auto;
@@ -153,12 +204,14 @@
     width: 60%;
 }
 
+/* 리뷰 폼 섹션 */
 .review-form {
     width: 50%;
     margin: auto;
     margin-top: 20px;
     background-color: #F0EADC;
     padding: 20px;
+    border-radius: 10px;
 }
 
 .review-header {
@@ -240,12 +293,14 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .submit-button button:hover {
     background-color: #5e3e1d;
 }
 
+/* 리뷰 목록 섹션 */
 .review-list {
     width: 50%;
     margin: auto;
@@ -267,11 +322,26 @@
     width: 100%;
     text-align: left;
     gap: 20px;
+    position: relative;
+    transition: opacity 0.5s ease, transform 1s ease;
+}
+
+.review-item.fade-out {
+    opacity: 0;
+    transform: translateX(-20px);
 }
 
 .review-images {
     position: relative;
     margin: auto;
+}
+
+.review-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;  
+    cursor: pointer;  
 }
 
 .image-navigation {
@@ -295,14 +365,6 @@
 
 .image-navigation button:hover {
     background: rgba(0, 0, 0, 0.3);
-}
-
-.review-image {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 10px;  
-    cursor: pointer;  
 }
 
 .review-content {
@@ -359,6 +421,7 @@
     transition: opacity 0.5s ease, transform 1s ease;
 }
 
+/* 드롭다운 선택 섹션 */
 .form-selects-container {
     /* width: 30%;
     height: 100%;
@@ -380,12 +443,12 @@
     position: relative;
 }
 
-.form-select-container>select {
+.form-select-container > select {
     visibility: hidden;
     position: absolute;
 }
 
-.form-select-container>.form-select {
+.form-select-container > .form-select {
     border: 2px solid #CCC;
     border-radius: 10px;
     position: relative;
@@ -393,26 +456,26 @@
     transition: border-color 0.3s ease-in-out;
 }
 
-.form-select-container.active>.form-select {
+.form-select-container.active > .form-select {
     border-color: transparent;
     border: 2px solid #CCC;
     transform: scale(1.05);
     transition: transform 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
 
-.form-select-container:not(.active)>.form-select {
+.form-select-container:not(.active) > .form-select {
     transform: scale(1);
     transition: transform 0.3s ease-in-out;
 }
 
-.form-select-container>.form-select>.form-option-placeholder {
+.form-select-container > .form-select > .form-option-placeholder {
     padding: 1rem;
     position: relative;
     cursor: pointer;
     transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1) 120ms;
 }
 
-.form-select-container>.form-select>.form-option-placeholder::after {
+.form-select-container > .form-select > .form-option-placeholder::after {
     content: "";
     display: block;
     width: 0.5em;
@@ -426,7 +489,7 @@
     transition: transform 0.3s ease-in-out;
 }
 
-.form-select-container.active>.form-select>.form-option-placeholder::after {
+.form-select-container.active > .form-select > .form-option-placeholder::after {
     transform: rotate(135deg) translateY(-50%);
 }
 
@@ -483,6 +546,7 @@
     background-color: #E3F2FD;
 }
 
+/* 장바구니 버튼 */
 .cart-button {
     position: relative;
     padding: 10px;
@@ -494,7 +558,7 @@
     outline: none;
     cursor: pointer;
     color: #fff;
-    transition: .3s ease-in-out;
+    transition: 0.3s ease-in-out;
     overflow: hidden;
 }
 
@@ -615,6 +679,7 @@
     }
 }
 
+/* 위시리스트 버튼 */
 .wishlist-button {
     position: relative;
     padding: 10px;
@@ -667,6 +732,23 @@
     opacity: 0;
 }
 
+/* 위시리스트 상태일 때 텍스트 변경 */
+.wishlist-button.product-wish .add-to-wishlist {
+    display: none;
+}
+
+.wishlist-button.product-wish .added {
+    display: inline;
+    opacity: 1; /* 텍스트 "Added"를 항상 표시하고, 불투명하게 유지 */
+    animation: none; /* 애니메이션 방해 방지 */
+}
+
+/* 위시리스트 상태일 때 하트 색상 유지 */
+.wishlist-button.product-wish .fa-heart {
+    color: #e63946;
+}
+
+/* 클릭 시 애니메이션 */
 .wishlist-button.clicked .fa-heart {
     animation: heart-pop 0.6s ease forwards;
 }
@@ -717,6 +799,7 @@
     }
 }
 
+/* 좋아요 버튼 (button-like) */
 .button-like {
     border: 2px solid #666;
     background-color: transparent;
@@ -731,61 +814,61 @@
     transition: all ease 0.4s;
     cursor: pointer;
     font-size: 16px;
-  }
-  
-  .button-like span {
+}
+
+.button-like span {
     margin-left: 0.5rem;
-  }
-  
-  .button-like .fa,
-  .button-like span {
+}
+
+.button-like .fa,
+.button-like span {
     transition: all ease 0.4s;
-  }
-  
-  .button-like:focus {
+}
+
+.button-like:focus {
     background-color: transparent;
-  }
-  
-  .button-like:focus .fa,
-  .button-like:focus span {
+}
+
+.button-like:focus .fa,
+.button-like:focus span {
     color: #666;
-  }
-  
-  .button-like:hover {
+}
+
+.button-like:hover {
     border-color: #dd2e44;
     background-color: transparent;
-  }
-  
-  .button-like:hover .fa,
-  .button-like:hover span {
+}
+
+.button-like:hover .fa,
+.button-like:hover span {
     color: #dd2e44;
-  }
-  
-  .liked {
+}
+
+.liked {
     background-color: #dd2e44;
     border-color: #dd2e44;
-  }
-  
-  .liked .fa,
-  .liked span {
+}
+
+.liked .fa,
+.liked span {
     color: #fff;
-  }
-  
-  .liked:focus {
+}
+
+.liked:focus {
     background-color: #dd2e44;
-  }
-  
-  .liked:focus .fa,
-  .liked:focus span {
+}
+
+.liked:focus .fa,
+.liked:focus span {
     color: #fff;
-  }
-  
-  .liked:hover {
+}
+
+.liked:hover {
     background-color: #dd2e44;
     border-color: #dd2e44;
-  }
-  
-  .liked:hover .fa,
-  .liked:hover span {
+}
+
+.liked:hover .fa,
+.liked:hover span {
     color: #fff;
-  }
+}

@@ -22,6 +22,7 @@ const ShopDetail = () => {
     const [ratingKey, setRatingKey] = useState(Date.now());
     const [averageRating, setAverageRating] = useState(0);
     const [wishlistClicked, setWishlistClicked] = useState(false);
+    const [wishlistItems, setWishlistItems] = useState([]);
     const [cartClicked, setCartClicked] = useState(false);
     const [images, setImages] = useState([]);
     const [fileKey, setFileKey] = useState(Date.now());
@@ -29,12 +30,13 @@ const ShopDetail = () => {
     const [nickname, setNickname] = useState('');
     const [likedShorts, setLikedShorts] = useState([]);
     const { productCode } = useParams();
+    const [product, setProduct] = useState(null);
 
     // ImageModal 상태 관리
     const [showImageModal, setShowImageModal] = useState(false);
     const [selectedImages, setSelectedImages] = useState([]);
     const [initialImageIndex, setInitialImageIndex] = useState(0);
-    
+
     // Size 관련 상태
     const [isSizeActive, setIsSizeActive] = useState(false);
     const [selectedSize, setSelectedSize] = useState("Choose a size");
@@ -53,9 +55,22 @@ const ShopDetail = () => {
         const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
         return (totalRating / reviews.length).toFixed(1);
     };
-    
+
+    const handleWishlistToggle = () => {
+        setWishlistClicked(true);
+        if (wishlistItems.includes(productCode)) {
+            setWishlistItems(wishlistItems.filter(code => code !== productCode));
+        } else {
+            setWishlistItems([...wishlistItems, productCode]);
+        }
+        // 애니메이션 후 'clicked' 클래스를 제거하여 다시 클릭 가능하게 함
+        setTimeout(() => {
+            setWishlistClicked(false);
+        }, 600); // 애니메이션 지속 시간과 일치
+    };
+
     const handleLikeClick = (shortCode, event) => {
-        event.stopPropagation(); // 부모 요소 클릭 이벤트 방지
+        event.stopPropagation();
         setLikedShorts((prevLikedShorts) => {
             if (prevLikedShorts.includes(shortCode)) {
                 return prevLikedShorts.filter((code) => code !== shortCode);
@@ -66,26 +81,52 @@ const ShopDetail = () => {
     };
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    useEffect(() => {
+        const fetchProductDetails = async () => {
+            try {
+                const response = await fetch(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/${productCode}`
+                );
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch product details: ${response.status}`);
+                }
+                const data = await response.json();
+
+                setProduct(data);
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+            }
+        };
+        fetchProductDetails();
+    }, [productCode]);
+
+    useEffect(() => {
+        console.log('Updated Product State:', product);
+    }, [product]);
+
+    useEffect(() => {
         const fetchReviews = async () => {
             try {
-                console.log("Fetching reviews for productCode:", productCode); 
-                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/open-api/brand/review/${productCode}`);
-                
+                console.log("Fetching reviews for productCode:", productCode);
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/review/${productCode}`);
+
                 if (!response.ok) {
                     throw new Error(`Failed to fetch reviews: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
-                
-                console.log("Fetched reviews successfully:", data); 
+                console.log("Fetched reviews successfully:", data);
                 setReviews(data);
             } catch (error) {
-                console.error("Error fetching reviews:", error); 
+                console.error("Error fetching reviews:", error);
             }
         };
-        fetchReviews(); 
-    }, [productCode]); 
-    
+        fetchReviews();
+    }, [productCode]);
+
 
 
     useEffect(() => {
@@ -154,10 +195,11 @@ const ShopDetail = () => {
         setIsAmountActive(false);
     };
 
-    const addWish = () => {
-        setWishlistClicked(true);
-        setTimeout(() => setWishlistClicked(false), 1500);
-    };
+    // const addWish = () => {
+    //     setIsProductWish(!isProductWish);
+    //     setWishlistClicked(true);
+    //     setTimeout(() => setWishlistClicked(false), 1500);
+    // };
 
     const addCart = () => {
         if (selectedSize === "Choose a size" || selectedColor === "Choose a color" || selectedAmount === "Choose a amount") {
@@ -217,7 +259,7 @@ const ShopDetail = () => {
 
     const handleSubmitReview = async () => {
         const accessToken = localStorage.getItem("accessToken");
-    
+
         if (!accessToken) {
             Swal.fire({
                 title: "회원만 리뷰 작성 가능합니다",
@@ -230,7 +272,7 @@ const ShopDetail = () => {
             });
             return;
         }
-    
+
         if (!(rating > 0 && description)) {
             Swal.fire({
                 title: "필드를 작성해주세요!",
@@ -244,17 +286,17 @@ const ShopDetail = () => {
             });
             return;
         }
-    
+
         const newReview = {
             rating,
             height: height || null,
             weight: weight || null,
             description,
-            images, 
+            images,
         };
-    
+
         try {
-            console.log("Submitting review data:", newReview); 
+            console.log("Submitting review data:", newReview);
             console.log("Product Code from useParams:", productCode);
             const response = await fetch(
                 `${process.env.REACT_APP_API_BASE_URL}/api/brand/review/${productCode}?userId=${nickname}`,
@@ -267,14 +309,14 @@ const ShopDetail = () => {
                     body: JSON.stringify(newReview),
                 }
             );
-    
+
             if (!response.ok) {
                 throw new Error("리뷰 작성에 실패했습니다.");
             }
-    
+
             const createdReview = await response.json();
-            console.log("Review submitted successfully:", createdReview); 
-    
+            console.log("Review submitted successfully:", createdReview);
+
             setReviews((prevReviews) => [...prevReviews, createdReview]);
             setRating(0);
             setHeight("");
@@ -285,10 +327,10 @@ const ShopDetail = () => {
             setFileKey(Date.now());
             setFileNames([]);
         } catch (error) {
-            console.error("리뷰 작성 중 오류:", error); 
+            console.error("리뷰 작성 중 오류:", error);
         }
     };
-    
+
 
     const handleDeleteReview = (reviewId) => {
         Swal.fire({
@@ -337,9 +379,9 @@ const ShopDetail = () => {
                             {[1, 2, 3, 4, 5, 6].map((video, index) => {
                                 const shortCode = `short-${index + 1}`; // 각 쇼츠의 고유 코드
                                 return (
-                                    <div 
-                                        key={index} 
-                                        className="video-item" 
+                                    <div
+                                        key={index}
+                                        className="video-item"
                                         onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}
                                     >
                                         <img src={short} alt={`Reel ${index + 1}`} />
@@ -360,10 +402,25 @@ const ShopDetail = () => {
                 );
             case '상세정보':
                 return (
-                    <div>
-                        <div className="detail">
-                            <div>어쩌고</div>
-                            <img src={product_d} alt="Product-d" />
+                    <div className="detail">
+                        {/* 이미지 목록 */}
+                        <div className="detail-images">
+                            {product?.images && product.images.length > 0 ? (
+                                product.images.map((image, index) => (
+                                    <img
+                                        key={index}
+                                        src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${image.split(/[/\\]/).pop()}`}
+                                        alt={`Detail Image ${index + 1}`}
+                                        className="detail-image"
+                                    />
+                                ))
+                            ) : (
+                                <p>상세 이미지가 없습니다.</p>
+                            )}
+                        </div>
+                        {/* 상세 텍스트 */}
+                        <div className="detail-text">
+                            <p>{product?.textInformation || '상세 정보가 없습니다.'}</p>
                         </div>
                     </div>
                 );
@@ -509,38 +566,46 @@ const ShopDetail = () => {
 
     return (
         <div className="shop-detail">
-            <div className="product-images">
-                <div className='product-image-ani'>
-                    <img src={product} alt="Product 1" />
-                </div>
-                <div className='product-image-ani'>
-                    <img src={product} alt="Product 1" />
-                </div>
-                <div className='product-image-ani'>
-                    <img src={product} alt="Product 1" />
-                </div>
+            {/* 상품 이미지 */}
+            <div className={`product-images ${product?.thumbnail.length === 1 ? 'single' : 'multiple'}`}>
+                {product?.thumbnail && product.thumbnail.length > 0 ? (
+                    product.thumbnail.map((thumb, index) => (
+                        <div key={index} className="product-image-ani">
+                            <img
+                                src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${thumb.split(/[/\\]/).pop()}`}
+                                alt={`Product Thumbnail ${index + 1}`}
+                            />
+                        </div>
+                    ))
+                ) : (
+                    <p>썸네일 이미지가 없습니다.</p>
+                )}
             </div>
 
+            {/* 상품 정보 */}
             <div className="product-info">
-                <div className="rating">
-                    {averageRating}{' '}
-                    <StarRatings
-                        rating={parseFloat(averageRating)}
-                        starRatedColor="gold"
-                        numberOfStars={5}
-                        starDimension="24px"
-                        starSpacing="3px"
-                        name="average-rating"
-                    />
-                </div>
-
-                <div className="price">
-                    KRW 216,000
+                <h2>{product?.name || '상품 이름'}</h2>
+                <div className='product-info2'>
+                    <div className="rating">
+                        {averageRating}{' '}
+                        <StarRatings
+                            rating={parseFloat(averageRating)}
+                            starRatedColor="gold"
+                            numberOfStars={5}
+                            starDimension="24px"
+                            starSpacing="3px"
+                            name="average-rating"
+                        />
+                    </div>
+                    <div className="price">
+                        KRW {product?.price?.toLocaleString() || '0'}
+                    </div>
                 </div>
             </div>
 
-            {/* Size 선택 드롭다운 */}
+            {/* 드롭다운 선택 */}
             <div className="form-selects-container">
+                {/* 사이즈 선택 드롭다운 */}
                 <div className={`form-select-container ${isSizeActive ? "active" : ""}`}>
                     <div className="form-select" onClick={handleSizeSelectClick}>
                         <div className="form-option-placeholder">
@@ -550,21 +615,32 @@ const ShopDetail = () => {
                     {isSizeActive && (
                         <div className="form-option-wrapper">
                             <div className="form-option-container">
-                                {["size 1", "size 2", "size 3"].map((item) => (
-                                    <div
-                                        key={item}
-                                        className={`form-option ${selectedSize === item ? "active" : ""}`}
-                                        onClick={() => handleSizeOptionClick(item)}
-                                    >
-                                        {item}
-                                    </div>
-                                ))}
+                                {product?.category === "신발" && product.shoesSize
+                                    ? product.shoesSize.split(',').map((size) => (
+                                        <div
+                                            key={size}
+                                            className={`form-option ${selectedSize === size ? "active" : ""}`}
+                                            onClick={() => handleSizeOptionClick(size)}
+                                        >
+                                            {size}
+                                        </div>
+                                    ))
+                                    : product?.clothesSize &&
+                                    product.clothesSize.split(',').map((size) => (
+                                        <div
+                                            key={size}
+                                            className={`form-option ${selectedSize === size ? "active" : ""}`}
+                                            onClick={() => handleSizeOptionClick(size)}
+                                        >
+                                            {size}
+                                        </div>
+                                    ))}
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* Color 선택 드롭다운 */}
+                {/* 색깔 선택 드롭다운 */}
                 <div className={`form-select-container ${isColorActive ? "active" : ""}`}>
                     <div className="form-select" onClick={handleColorSelectClick}>
                         <div className="form-option-placeholder">
@@ -574,15 +650,16 @@ const ShopDetail = () => {
                     {isColorActive && (
                         <div className="form-option-wrapper">
                             <div className="form-option-container">
-                                {["color 1", "color 2", "color 3"].map((item) => (
-                                    <div
-                                        key={item}
-                                        className={`form-option ${selectedColor === item ? "active" : ""}`}
-                                        onClick={() => handleColorOptionClick(item)}
-                                    >
-                                        {item}
-                                    </div>
-                                ))}
+                                {product?.color &&
+                                    product.color.split(',').map((color) => (
+                                        <div
+                                            key={color}
+                                            className={`form-option ${selectedColor === color ? "active" : ""}`}
+                                            onClick={() => handleColorOptionClick(color)}
+                                        >
+                                            {color}
+                                        </div>
+                                    ))}
                             </div>
                         </div>
                     )}
@@ -592,19 +669,19 @@ const ShopDetail = () => {
                 <div className={`form-select-container ${isAmountActive ? "active" : ""}`}>
                     <div className="form-select" onClick={handleAmountSelectClick}>
                         <div className="form-option-placeholder">
-                            {selectedAmount}
+                            {selectedAmount !== "Choose a amount" ? selectedAmount : "Choose a amount"}
                         </div>
                     </div>
                     {isAmountActive && (
                         <div className="form-option-wrapper">
                             <div className="form-option-container">
-                                {["1", "2", "3"].map((item) => (
+                                {Array.from({ length: Math.min(product?.stock || 0, 10) }, (_, i) => i + 1).map((amount) => (
                                     <div
-                                        key={item}
-                                        className={`form-option ${selectedAmount === item ? "active" : ""}`}
-                                        onClick={() => handleAmountOptionClick(item)}
+                                        key={amount}
+                                        className={`form-option ${selectedAmount === amount ? "active" : ""}`}
+                                        onClick={() => handleAmountOptionClick(amount)}
                                     >
-                                        {item}
+                                        {amount}
                                     </div>
                                 ))}
                             </div>
@@ -612,12 +689,17 @@ const ShopDetail = () => {
                     )}
                 </div>
 
+
             </div>
+
 
             <div className="wishlist-cart-container">
                 <button
-                    className={`wishlist-button ${wishlistClicked ? 'clicked' : ''}`}
-                    onClick={addWish}>
+                    className={`wishlist-button ${wishlistClicked ? 'clicked' : ''} ${wishlistItems.includes(productCode) ? 'product-wish' : ''}`}
+                    onClick={handleWishlistToggle}
+                    aria-pressed={wishlistItems.includes(productCode)}
+                    aria-label={wishlistItems.includes(productCode) ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
                     <span className="add-to-wishlist">Add to Wishlist</span>
                     <span className="added">Added</span>
                     <FaHeart className="fa-heart" />

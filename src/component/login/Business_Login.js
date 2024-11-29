@@ -80,9 +80,9 @@ const Business_Login = () => {
                 }
 
                 // 서버로부터 받은 토큰 처리
-                localStorage.setItem("accessToken", accessToken);
-                localStorage.setItem("role", role);
-                localStorage.setItem("id", id);
+                sessionStorage.setItem("accessToken", accessToken);
+                sessionStorage.setItem("role", role);
+                sessionStorage.setItem("id", id);
 
                 Swal.fire({
                     icon: 'success',
@@ -106,8 +106,8 @@ const Business_Login = () => {
             if (error.response && error.response.status === 400) {
                 Swal.fire({
                     icon: 'error',
-                    title: '잘못된 요청입니다.',
-                    text: '아이디 또는 비밀번호를 확인해주세요.',
+                    title: '아이디 또는 비밀번호를 확인해주세요.',
+                    html: '가입 정보가 없거나 비밀번호가 올바르지 않습니다.<br>다시 확인해주세요!',
                     showConfirmButton: true,
                     confirmButtonText: '확인',
                     confirmButtonColor: '#754F23',
@@ -176,7 +176,7 @@ const Business_Login = () => {
         }
 
         try {
-            const token = localStorage.getItem('token');
+            const token = sessionStorage.getItem('token');
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL}/open-api/user/register`,
                 { username, password, role: 'OWNER' },

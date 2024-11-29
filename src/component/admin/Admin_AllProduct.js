@@ -21,8 +21,8 @@ function Sidebar() {
             iconColor: '#DBC797'
         }).then((result) => {
             if (result.isConfirmed) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("role");
+                sessionStorage.removeItem("accessToken");
+                sessionStorage.removeItem("role");
                 navigate('/');
             }
         });
@@ -61,7 +61,7 @@ function AdminProduct() {
                 const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `${localStorage.getItem("accessToken")}`
+                        'Authorization': `${sessionStorage.getItem("accessToken")}`
                     }
                 });
 

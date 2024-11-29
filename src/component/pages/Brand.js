@@ -2,13 +2,28 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../css/Brand.css';
 import { useNavigate } from 'react-router-dom';
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 
 export default function Brand() {
   const [stores, setStores] = useState([]); // store 데이터를 관리하는 상태
   const [products, setProducts] = useState([]); // 전체 상품 데이터 상태
+  const [likedProducts, setLikedProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]); // 필터링된 상품 데이터
   const [selectedBrand, setSelectedBrand] = useState(null); // 선택된 브랜드 상태
   const navigate = useNavigate();
+
+  const handleLikeClick = (productCode) => {
+    setLikedProducts((prev) => {
+      if (prev.includes(productCode)) {
+        return prev.filter((id) => id !== productCode);
+      } else {
+        return [...prev, productCode];
+      }
+    });
+
+    const likedProduct = products.find((product) => product.code === productCode);
+    sessionStorage.setItem('likedProduct', JSON.stringify(likedProduct));
+  };
 
   // API로 데이터 가져오기
   useEffect(() => {
@@ -17,8 +32,11 @@ export default function Brand() {
         const storeResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store/`);
         console.log('Stores:', storeResponse.data);
         setStores(storeResponse.data);
-  
+
         const productResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/`);
+        const sortedProducts = productResponse.data.sort((a, b) => {
+          return a.name.localeCompare(b.name, 'ko', { numeric: true })
+        });
         console.log('Products:', productResponse.data);
         setProducts(productResponse.data);
         setFilteredProducts(productResponse.data); // 초기에는 전체 상품 표시
@@ -59,11 +77,11 @@ export default function Brand() {
   };
 
   // 상품 클릭 핸들러
-  const handleProductClick = (productId) => {
-    navigate(`/pages/shop/detail/${productId}`); // 상세 페이지로 이동
+  const handleProductClick = (productCode) => {
+    navigate(`/pages/shop/detail/${productCode}`); // 상세 페이지로 이동
   };
 
-  
+
   return (
     <div className="brand-container">
       {/* 사이드바 */}
@@ -78,19 +96,19 @@ export default function Brand() {
             onClick={handleAllProductsClick}
           >
             <span>전체 보기</span>
-            
+
           </li>
           {/* 개별 브랜드 버튼 */}
           {stores.map((store, index) => (
             <li
-            key={index}
-            className={selectedBrand === store.name ? 'active' : ''}
-            onClick={() => handleBrandClick(store.name)}
-          >
-            <span>{store.name}</span>
-            
-          </li>
-          
+              key={index}
+              className={selectedBrand === store.name ? 'active' : ''}
+              onClick={() => handleBrandClick(store.name)}
+            >
+              <span>{store.name}</span>
+
+            </li>
+
           ))}
         </ul>
       </aside>
@@ -104,11 +122,25 @@ export default function Brand() {
                 src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${product.thumbnail?.split(/[/\\]/).pop()}`}
                 className="brand-card-img-top"
                 alt={product.title}
-                onClick={() => handleProductClick(product.id)}
+                onClick={() => handleProductClick(product.code)}
               />
-              <div className="brand-card-body">
-                <h5 className="brand-card-title">{product.title}</h5>
-                <p className="brand-card-text">{product.price.toLocaleString()}원</p>
+              <div className="brand-card-body" onClick={() => handleProductClick(product.code)}>
+                <div className="brand-info">
+                  <h5 className="brand-card-title">{product.name}</h5>
+                  <p className="brand-card-text">{product.price.toLocaleString()}원</p>
+                </div>
+                <button
+                  type="button"
+                  className="like-button"
+                  onClick={() => handleLikeClick(product.code)}
+                  aria-label={likedProducts.includes(product.code) ? "Remove from favorites" : "Add to favorites"}
+                >
+                  {likedProducts.includes(product.code) ? (
+                    <AiFillHeart size={24} color="#FF5733" />
+                  ) : (
+                    <AiOutlineHeart size={24} color="#FF5733" />
+                  )}
+                </button>
               </div>
             </div>
           ))

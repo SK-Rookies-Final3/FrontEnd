@@ -34,8 +34,11 @@ export default function Shop() {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/`); // 백엔드 엔드포인트
-      setProducts(response.data); // 모든 상품 데이터 저장
-      setFilteredProducts(response.data); // 초기에는 모든 상품을 표시
+      const sortedProducts = response.data.sort((a, b) => {
+      return a.name.localeCompare(b.name, 'ko', { numeric: true });
+    });
+      setProducts(response.data); 
+      setFilteredProducts(response.data); 
       console.log(response.data)
     } catch (error) {
       console.error('Failed to fetch products:', error);

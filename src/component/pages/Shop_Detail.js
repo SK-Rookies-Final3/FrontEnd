@@ -118,8 +118,7 @@ const ShopDetail = () => {
                 }
 
                 const data = await response.json();
-                
-                console.log("Fetched reviews successfully:", data); 
+                console.log("Fetched reviews successfully:", data);
                 setReviews(data);
             } catch (error) {
                 console.error("Error fetching reviews:", error);
@@ -403,9 +402,25 @@ const ShopDetail = () => {
                 );
             case '상세정보':
                 return (
-                    <div>
-                        <div className="detail">
-                            <p>{product.textInformation || '상세 정보가 없습니다.'}</p>
+                    <div className="detail">
+                        {/* 이미지 목록 */}
+                        <div className="detail-images">
+                            {product?.images && product.images.length > 0 ? (
+                                product.images.map((image, index) => (
+                                    <img
+                                        key={index}
+                                        src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${image.split(/[/\\]/).pop()}`}
+                                        alt={`Detail Image ${index + 1}`}
+                                        className="detail-image"
+                                    />
+                                ))
+                            ) : (
+                                <p>상세 이미지가 없습니다.</p>
+                            )}
+                        </div>
+                        {/* 상세 텍스트 */}
+                        <div className="detail-text">
+                            <p>{product?.textInformation || '상세 정보가 없습니다.'}</p>
                         </div>
                     </div>
                 );
@@ -552,21 +567,21 @@ const ShopDetail = () => {
     return (
         <div className="shop-detail">
             {/* 상품 이미지 */}
-            <div className="product-images">
-                {product?.images && product.images.length > 0 ? (
-                    product.images.map((image, index) => (
-                        <div className="product-image-ani" key={index}>
+            <div className={`product-images ${product?.thumbnail.length === 1 ? 'single' : 'multiple'}`}>
+                {product?.thumbnail && product.thumbnail.length > 0 ? (
+                    product.thumbnail.map((thumb, index) => (
+                        <div key={index} className="product-image-ani">
                             <img
-                                src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${image.split(/[/\\]/).pop()}`}
-                                alt={`Product Image ${index + 1}`}
+                                src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${thumb.split(/[/\\]/).pop()}`}
+                                alt={`Product Thumbnail ${index + 1}`}
                             />
                         </div>
                     ))
                 ) : (
-                    <p>이미지가 없습니다.</p>
+                    <p>썸네일 이미지가 없습니다.</p>
                 )}
             </div>
-    
+
             {/* 상품 정보 */}
             <div className="product-info">
                 <h2>{product?.name || '상품 이름'}</h2>

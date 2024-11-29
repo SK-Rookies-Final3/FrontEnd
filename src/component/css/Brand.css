@@ -123,7 +123,9 @@ html, body {
 
 /* Product list styles */
 .brand-product-list {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* display: flex; */
   flex-wrap: wrap;
   justify-content: center;
   padding: 80px 20px 20px;
@@ -137,7 +139,7 @@ html, body {
 }
 
 .brand-card {
-  flex: 1 0 calc(33.33% - 40px);
+  /* flex: 1 0 calc(33.33% - 40px); */
   aspect-ratio: 1 / 1;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 8px;

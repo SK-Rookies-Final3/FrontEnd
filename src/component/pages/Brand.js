@@ -101,8 +101,9 @@ export default function Brand() {
                 className="brand-card-img-top"
                 alt={product.title}
                 onClick={() => handleProductClick(product.code)}
+                style={{ cursor: 'pointer' }}
               />
-              <div className="brand-card-body" onClick={() => handleProductClick(product.code)}>
+              <div className="brand-card-body" >
                 <div className="brand-info">
                   <h5 className="brand-card-title">{product.name}</h5>
                   <p className="brand-card-text">{product.price.toLocaleString()}원</p>

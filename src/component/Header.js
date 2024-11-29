@@ -276,12 +276,12 @@ export default function Header() {
                     }
                   } catch (error) {
                     Swal.fire({
-                      title: "사업자 요청 페이지로 이동합니다.",
-                      text: "가게 오픈을 위해 사업자 요청은 필수입니다!!",
+                      title: "세션 만료",
+                      html: "로그인 시간이 초과되었습니다.<br>계속 진행하려면 다시 로그인해주세요.",
                       icon: "warning",
                       confirmButtonText: "확인",
-                    })
-                    navigate("/business/request")
+                    });                    
+                    navigate("/user/login")
                   }
                 } else if (role === "MASTER") {
                   navigate("/admin/userlist");

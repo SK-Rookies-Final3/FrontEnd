@@ -251,7 +251,7 @@ const ShopDetail = () => {
     //         quantity: selectedAmount,
     //         color: selectedColor,
     //         size: selectedSize,
-    //         thumbnail: product.thumbnail
+    //         thumbnail: product.thumbnail[0]
     //     };
 
     //     console.log("Cart Request Data:", requestData);
@@ -349,7 +349,7 @@ const ShopDetail = () => {
                     color: selectedColor,
                     ...sizeField,
                     name: product.name,
-                    thumbnail: product.thumbnail,
+                    thumbnail: product.thumbnail[0],
                     price: product.price,
                 }
             ]

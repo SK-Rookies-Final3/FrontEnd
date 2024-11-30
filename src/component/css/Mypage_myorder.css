@@ -25,10 +25,14 @@
 
 .myorder-product {
   display: flex;
-  align-items: center; /* 이미지와 텍스트를 세로 정렬 */
+  align-items: center;
   margin-right: 20px; /* 아이템 간 간격 */
   width: 100%; /* 전체 폭 사용 */
-  justify-content: space-between; /* 내부 요소를 좌우로 배치 */
+  justify-content: space-between; 
+}
+
+.myorder-product img {
+  width: 80px;
 }
 
 .myorder-product-image {
@@ -44,18 +48,24 @@
 }
 
 .myorder-product-info {
-  font-size: 16px; /* 텍스트 크기 */
+  font-size: 16px;
   color: #333;
-  text-align: center; /* 텍스트를 가운데 정렬 */
-  flex-grow: 1; /* 나머지 공간을 채우도록 설정 */
-  white-space: nowrap; /* 한 줄로 정렬 */
-  overflow: hidden; /* 텍스트가 넘치면 숨기기 */
-  text-overflow: ellipsis; /* 넘친 텍스트에 말줄임표 */
+  /* text-align: center;  */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  flex-grow: 1; 
+  margin-left: 150px;
 }
 
 .myorder-product-price {
   font-size: 16px; /* 텍스트 크기 */
   color: #333;
-  margin-left: 10px; /* 텍스트 사이 간격 */
   text-align: right; /* 텍스트를 오른쪽 정렬 */
+}
+
+.highlights {
+  color: #754F23; /* 강조하고 싶은 색상 (파란색 예시) */
+  font-weight: bold;
 }

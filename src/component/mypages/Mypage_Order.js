@@ -7,7 +7,7 @@ import { FaRegHandPointRight, FaRegHandPointLeft } from "react-icons/fa";
 import { FcCalendar } from "react-icons/fc";
 import { MdOutlineWavingHand } from "react-icons/md";
 import axios from "axios";
-import nikeImage from '../../img/Nike.PNG'; // Import your image here
+import nikeImage from '../../img/Nike.PNG';
 
 function Sidebar({ handleDeleteAccount, handleLogout }) {
     const navigate = useNavigate();
@@ -208,14 +208,18 @@ function OrderContainer() {
                                     <div className="myorder-products">
                                         {order.orderItems.map(item => (
                                             <div key={item.id} className="myorder-product">
-                                                <div className="myorder-product-image">
-                                                    <img src={nikeImage} alt="Nike Product" />
-                                                </div>
+                                               <img 
+                                                src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${item.thumbnail?.split(/[/\\]/).pop()}`}
+                                                alt="Product Thumbnail" 
+                                            />
                                                 <div className="myorder-product-info">
-                                                    {`상품 코드: ${item.productCode}, 색상: ${item.color}, 사이즈: ${item.clothesSize}`}
+                                                    <span className="highlights">상품명 :</span> {item.name},&nbsp;&nbsp;
+                                                    <span className="highlights">색상 :</span> {item.color},&nbsp;&nbsp;
+                                                    <span className="highlights">사이즈 :</span> {item.clothesSize},&nbsp;&nbsp;
+                                                    <span className="highlights">수량 :</span> {item.amount}
                                                 </div>
                                                 <div className="myorder-product-price">
-                                                    {`수량: ${item.amount}`}
+                                                    {`${Number(item.price).toLocaleString()} 원`}
                                                 </div>
                                             </div>
                                         ))}

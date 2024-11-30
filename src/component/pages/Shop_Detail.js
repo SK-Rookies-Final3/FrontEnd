@@ -348,6 +348,9 @@ const ShopDetail = () => {
                     amount: parseInt(selectedAmount, 10),
                     color: selectedColor,
                     ...sizeField,
+                    name: product.name,
+                    thumbnail: product.thumbnail,
+                    price: product.price,
                 }
             ]
         };

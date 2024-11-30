@@ -254,34 +254,48 @@ export default function Header() {
                         sessionStorage.removeItem("id");
                         navigate("/");
                       });
-                    }else {
+                    } else {
                       // 상태가 0, 1, 2가 아닌 경우
-                      try {
-                        // 가게 상세 정보 조회
-                        const storeResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/store/owner`, {
-                          method: 'GET',
-                          headers: {
-                            Authorization: `${accessToken}`,
-                          },
-                        });
-                      } catch (error) {
-                        Swal.fire({
-                          title: "사업자 요청 페이지로 이동합니다.",
-                          text: "가게를 오픈하기 위해서는 사업자 요청을 필수로 해야합니다.",
-                          icon: "warning",
-                          confirmButtonText: "확인",
-                        })
-                        navigate("/business/request")
-                      }
+                      // try {
+                      //   // 가게 상세 정보 조회
+                      //   const storeResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/store/owner`, {
+                      //     method: 'GET',
+                      //     headers: {
+                      //       Authorization: `${accessToken}`,
+                      //     },
+                      //   });
+                      // } catch (error) {
+                      //   Swal.fire({
+                      //     title: "사업자 요청 페이지로 이동합니다.",
+                      //     text: "가게를 오픈하기 위해서는 사업자 요청을 필수로 해야합니다.",
+                      //     icon: "warning",
+                      //     confirmButtonText: "확인",
+                      //   })
+                      //   navigate("/business/request")
+                      Swal.fire({
+                        title: "사업자 요청 페이지로 이동합니다.",
+                        text: "가게를 오픈하기 위해서는 사업자 요청을 필수로 해야합니다.",
+                        icon: "warning",
+                        confirmButtonText: "확인",
+                      })
+                      navigate("/business/request")
                     }
+
                   } catch (error) {
+                    // Swal.fire({
+                    //   title: "세션 만료",
+                    //   html: "로그인 시간이 초과되었습니다.<br>계속 진행하려면 다시 로그인해주세요.",
+                    //   icon: "warning",
+                    //   confirmButtonText: "확인",
+                    // });                    
+                    // navigate("/user/login")
                     Swal.fire({
-                      title: "세션 만료",
-                      html: "로그인 시간이 초과되었습니다.<br>계속 진행하려면 다시 로그인해주세요.",
+                      title: "사업자 요청 페이지로 이동합니다.",
+                      text: "가게를 오픈하기 위해서는 사업자 요청을 필수로 해야합니다.",
                       icon: "warning",
                       confirmButtonText: "확인",
-                    });                    
-                    navigate("/user/login")
+                    })
+                    navigate("/business/request")
                   }
                 } else if (role === "MASTER") {
                   navigate("/admin/userlist");

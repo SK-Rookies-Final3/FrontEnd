@@ -106,7 +106,7 @@ export default function Shop() {
         {filteredProducts.map((product) => (
           <div className="shop-card" key={product.code}>
             <img
-              src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${product.thumbnail.split(/[/\\]/).pop()}`}
+              src={product.thumbnail}
               className="shop-card-img-top"
               alt={product.name}
               onClick={() => handleProductClick(product.code)}

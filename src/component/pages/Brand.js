@@ -97,7 +97,8 @@ export default function Brand() {
           filteredProducts.map((product) => (
             <div className="brand-card" key={product.id}>
               <img
-                src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${product.thumbnail?.split(/[/\\]/).pop()}`}
+                // src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${product.thumbnail?.split(/[/\\]/).pop()}`}
+                src={product.thumbnail}
                 className="brand-card-img-top"
                 alt={product.title}
                 onClick={() => handleProductClick(product.code)}

@@ -13,8 +13,8 @@ html, body {
   padding: 20px;
 }
 
-.brand-container:hover .brand-product-list {
-  margin-left: 370px; /* 사이드바 확장 시 상품 카드 이동 */
+.brand-sidebar:hover ~ .brand-product-list {
+  margin-left: 370px; 
 }
 
 .brand-sidebar {

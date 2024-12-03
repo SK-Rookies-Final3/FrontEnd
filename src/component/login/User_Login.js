@@ -61,7 +61,7 @@ const User_Login = () => {
             if (response.status === 200) {
                 console.log("로그인 성공:", response.data);
 
-                const { accessToken, role } = response.data.body;
+                const { accessToken, role, id } = response.data.body;
 
                 // role이 CLIENT가 아니면 로그인 차단
                 if (role !== "CLIENT") {
@@ -82,6 +82,7 @@ const User_Login = () => {
                 // 서버로부터 받은 토큰 처리
                 sessionStorage.setItem("accessToken", accessToken);
                 sessionStorage.setItem("role", role);
+                sessionStorage.setItem("id", id);
 
                 Swal.fire({
                     icon: 'success',

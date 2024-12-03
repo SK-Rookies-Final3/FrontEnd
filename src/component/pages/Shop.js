@@ -11,7 +11,7 @@ import { FaRedhat } from "react-icons/fa6";
 
 export default function Shop() {
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [likedProducts, setLikedProducts] = useState([]);
+  // const [likedProducts, setLikedProducts] = useState([]);
   const [products, setProducts] = useState([]); // 모든 상품 데이터
   const [filteredProducts, setFilteredProducts] = useState([]); // 필터링된 상품 데이터
   const [selectedCategory, setSelectedCategory] = useState(''); // 선택된 카테고리 상태
@@ -59,18 +59,18 @@ export default function Shop() {
     }
   };
 
-  const handleLikeClick = (productCode) => {
-    setLikedProducts((prev) => {
-      if (prev.includes(productCode)) {
-        return prev.filter((id) => id !== productCode);
-      } else {
-        return [...prev, productCode];
-      }
-    });
+  // const handleLikeClick = (productCode) => {
+  //   setLikedProducts((prev) => {
+  //     if (prev.includes(productCode)) {
+  //       return prev.filter((id) => id !== productCode);
+  //     } else {
+  //       return [...prev, productCode];
+  //     }
+  //   });
 
-    const likedProduct = products.find((product) => product.code === productCode);
-    sessionStorage.setItem('likedProduct', JSON.stringify(likedProduct));
-  };
+  //   const likedProduct = products.find((product) => product.code === productCode);
+  //   sessionStorage.setItem('likedProduct', JSON.stringify(likedProduct));
+  // };
 
   const handleProductClick = (productCode) => {
     navigate(`/pages/shop/detail/${productCode}`); // 상세 페이지 이동
@@ -121,7 +121,7 @@ export default function Shop() {
                   <h5 className="card-title" style={{ marginLeft: '10px' }}>{product.name}</h5>
                   <p className="card-text" style={{ marginLeft: '10px' }}>{product.price.toLocaleString()}원</p>
                 </div>
-                <button
+                {/* <button
                   type="button"
                   style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
                   onClick={() => handleLikeClick(product.code)}
@@ -131,7 +131,7 @@ export default function Shop() {
                   ) : (
                     <AiOutlineHeart size={24} color="#FF5733" />
                   )}
-                </button>
+                </button> */}
               </div>
             </div>
           </div>

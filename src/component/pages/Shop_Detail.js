@@ -711,7 +711,7 @@ const ShopDetail = () => {
                                 product.images.map((image, index) => (
                                     <img
                                         key={index}
-                                        src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${image.split(/[/\\]/).pop()}`}
+                                        src={image}
                                         alt={`Detail Image ${index + 1}`}
                                         className="detail-image"
                                     />
@@ -879,7 +879,7 @@ const ShopDetail = () => {
                     product.thumbnail.map((thumb, index) => (
                         <div key={index} className="product-image-ani">
                             <img
-                                src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${thumb.split(/[/\\]/).pop()}`}
+                                src={thumb}
                                 alt={`Product Thumbnail ${index + 1}`}
                             />
                         </div>

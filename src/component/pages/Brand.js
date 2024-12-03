@@ -108,7 +108,7 @@ export default function Brand() {
                   <h5 className="brand-card-title">{product.name}</h5>
                   <p className="brand-card-text">{product.price.toLocaleString()}원</p>
                 </div>
-                <button
+                {/* <button
                   type="button"
                   className="like-button"
                   onClick={() => handleLikeClick(product.code)}
@@ -119,7 +119,7 @@ export default function Brand() {
                   ) : (
                     <AiOutlineHeart size={24} color="#FF5733" />
                   )}
-                </button>
+                </button> */}
               </div>
             </div>
           ))

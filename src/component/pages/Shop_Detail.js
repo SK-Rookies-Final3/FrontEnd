@@ -5,8 +5,6 @@ import Swal from 'sweetalert2';
 import StarRatings from 'react-star-ratings';
 import { FaTrash, FaShoppingCart, FaBox, FaHeart, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import '../css/Shop_Detail.css';
-import product from '../../img/product.jpg';
-import product_d from '../../img/product-d.jpg';
 import short from '../../img/shorts.png';
 import { useParams } from "react-router-dom";
 import axios from 'axios';
@@ -28,7 +26,7 @@ const ShopDetail = () => {
     const [images, setImages] = useState([]);
     const [fileKey, setFileKey] = useState(Date.now());
     const [fileNames, setFileNames] = useState([]);
-    const [nickname, setNickname] = useState('');
+    const [username, setUsername] = useState('');
     const [likedShorts, setLikedShorts] = useState([]);
     const { productCode } = useParams();
     const [product, setProduct] = useState(null);
@@ -50,11 +48,60 @@ const ShopDetail = () => {
     const [isAmountActive, setIsAmountActive] = useState(false);
     const [selectedAmount, setSelectedAmount] = useState("Choose a amount");
 
+    const fetchReviews = async () => {
+        try {
+
+            // 리뷰 API 호출
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/review/${productCode}`
+            );
+
+            // 응답 데이터 확인
+            if (response.status === 204 || response.data.length === 0) {
+                Swal.fire({
+                    title: "리뷰 없음",
+                    text: "이 상품에 대한 리뷰가 아직 없습니다.",
+                    icon: "info",
+                });
+                setReviews([]); // 빈 배열 설정
+                return;
+            }
+
+            const mappedReviews = response.data.map((review) => ({
+                ...review,
+                reviewId: review.reviewCode,
+            }));
+
+            // 리뷰 데이터를 상태로 설정
+            setReviews(mappedReviews);
+
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+            Swal.fire({
+                title: "오류 발생",
+                text: "리뷰를 가져오는 중 문제가 발생했습니다.",
+                icon: "error",
+            });
+        }
+    };
+
+    fetchReviews();
+
     // 별점 평균 계산 함수
     const calculateAverageRating = () => {
-        if (reviews.length === 0) return 0;
-        const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
-        return (totalRating / reviews.length).toFixed(1);
+        if (!Array.isArray(reviews) || reviews.length === 0) {
+            console.log("Reviews 배열이 비어 있거나 배열이 아님:", reviews);
+            return 0;
+        }
+    
+        // review.starRating을 기준으로 평균 계산
+        const totalRating = reviews.reduce((acc, review) => {
+            const rating = review.starRating || 0; 
+            return acc + rating;
+        }, 0);
+    
+        const average = totalRating / reviews.length;
+        return average.toFixed(1);
     };
 
     const handleWishlistToggle = () => {
@@ -64,10 +111,9 @@ const ShopDetail = () => {
         } else {
             setWishlistItems([...wishlistItems, productCode]);
         }
-        // 애니메이션 후 'clicked' 클래스를 제거하여 다시 클릭 가능하게 함
         setTimeout(() => {
             setWishlistClicked(false);
-        }, 600); // 애니메이션 지속 시간과 일치
+        }, 600); 
     };
 
     const handleLikeClick = (shortCode, event) => {
@@ -80,6 +126,35 @@ const ShopDetail = () => {
             }
         });
     };
+
+    useEffect(() => {
+        const fetchUsername = async () => {
+            const accessToken = sessionStorage.getItem("accessToken");
+
+            if (!accessToken) {
+                console.error("Access token is missing.");
+                return;
+            }
+
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user`, {
+                    headers: {
+                        Authorization: `${accessToken}`
+                    }
+                });
+
+                if (response.data && response.data.body) {
+                    setUsername(response.data.body.username); // API에서 username 가져오기
+                } else {
+                    console.error("Failed to fetch username: No data found in response.");
+                }
+            } catch (error) {
+                console.error("Error fetching username:", error);
+            }
+        };
+
+        fetchUsername();
+    }, []);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -105,52 +180,60 @@ const ShopDetail = () => {
     }, [productCode]);
 
     useEffect(() => {
-        console.log('Updated Product State:', product);
     }, [product]);
 
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                console.log("Fetching reviews for productCode:", productCode);
-                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/review/${productCode}`);
-
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch reviews: ${response.status}`);
+    
+                // 리뷰 API 호출
+                const response = await axios.get(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/review/${productCode}`
+                );
+    
+                // 응답 데이터 확인
+                if (response.status === 204 || response.data.length === 0) {
+                    Swal.fire({
+                        title: "리뷰 없음",
+                        text: "이 상품에 대한 리뷰가 아직 없습니다.",
+                        icon: "info",
+                    });
+                    setReviews([]); // 빈 배열 설정
+                    return;
                 }
 
-                const data = await response.json();
-                console.log("Fetched reviews successfully:", data);
-                setReviews(data);
+                const mappedReviews = response.data.map((review) => ({
+                    ...review,
+                    reviewId: review.reviewCode,
+                }));
+    
+                // 리뷰 데이터를 상태로 설정
+                setReviews(mappedReviews);
+
             } catch (error) {
                 console.error("Error fetching reviews:", error);
+                Swal.fire({
+                    title: "오류 발생",
+                    text: "리뷰를 가져오는 중 문제가 발생했습니다.",
+                    icon: "error",
+                });
             }
         };
+    
         fetchReviews();
     }, [productCode]);
-
-
+    
 
     useEffect(() => {
-        const accessToken = sessionStorage.getItem('accessToken');
-        if (accessToken) {
-            fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user`, {
-                headers: {
-                    Authorization: `${accessToken}`,
-                },
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data && data.body) {
-                        setNickname(data.body.nickname);
-                    }
-                })
-                .catch((error) => console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error));
-        }
-    }, []);
-
-    // 리뷰가 업데이트될 때마다 평균 별점 재계산
-    useEffect(() => {
-        setAverageRating(calculateAverageRating());
+        setAverageRating(() => {
+            try {
+                const avg = calculateAverageRating();
+                return avg;
+            } catch (error) {
+                console.error("평균 별점 계산 중 오류 발생:", error);
+                return 0;
+            }
+        });
     }, [reviews]);
 
     const handleVideoClick = (url) => {
@@ -355,7 +438,6 @@ const ShopDetail = () => {
             ]
         };
 
-        console.log("Cart Request Data:", requestData);
 
         try {
             const response = await axios.post(
@@ -434,82 +516,91 @@ const ShopDetail = () => {
         );
     };
 
+    useEffect(() => {
+        const fetchUsername = async () => {
+            const accessToken = sessionStorage.getItem("accessToken");
+    
+            if (!accessToken) {
+                console.error("Access token is missing.");
+                return;
+            }
+    
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user`, {
+                    headers: {
+                        Authorization: `${accessToken}`
+                    }
+                });
+    
+                if (response.data && response.data.body) {
+                    setUsername(response.data.body.username); // API에서 username 가져오기
+                } else {
+                    console.error("Failed to fetch username: No data found in response.");
+                }
+            } catch (error) {
+                console.error("Error fetching username:", error);
+            }
+        };
+    
+        fetchUsername();
+    }, []);
+
     const handleSubmitReview = async () => {
         const accessToken = sessionStorage.getItem("accessToken");
-
-        if (!accessToken) {
+        const id = sessionStorage.getItem("id");
+    
+        if (!accessToken || !id || !username) {
             Swal.fire({
-                title: "회원만 리뷰 작성 가능합니다",
-                confirmButtonText: "확인",
-                confirmButtonColor: "#754F23",
-                background: "#F0EADC",
-                color: "#754F23",
-                icon: "warning",
-                iconColor: "#DBC797",
+                title: "로그인 정보가 없습니다.",
+                text: "다시 로그인해주세요.",
+                icon: "error",
             });
             return;
         }
-
-        if (!(rating > 0 && description)) {
-            Swal.fire({
-                title: "필드를 작성해주세요!",
-                text: "별점, 설명을 입력해 주세요.",
-                confirmButtonText: "확인",
-                confirmButtonColor: "#754F23",
-                background: "#F0EADC",
-                color: "#754F23",
-                icon: "warning",
-                iconColor: "#DBC797",
-            });
-            return;
-        }
-
+    
         const newReview = {
-            rating,
+            starRating: rating,
             height: height || null,
             weight: weight || null,
-            description,
-            images,
+            content: description,
+            color: product.color,
+            size: product.category === "신발" ? product.shoesSize : product.clothesSize,
+            username: username, 
         };
-
+    
         try {
-            console.log("Submitting review data:", newReview);
-            console.log("Product Code from useParams:", productCode);
-            const response = await fetch(
-                `${process.env.REACT_APP_API_BASE_URL}/api/brand/review/${productCode}?userId=${nickname}`,
+            const response = await axios.post(
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${productCode}?userId=${id}`,
+                newReview,
                 {
-                    method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
                         Authorization: accessToken,
+                        "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(newReview),
+                    withCredentials: true,
                 }
             );
+    
+            console.log("리뷰 작성 성공:", response.data);
 
-            if (!response.ok) {
-                throw new Error("리뷰 작성에 실패했습니다.");
-            }
-
-            const createdReview = await response.json();
-            console.log("Review submitted successfully:", createdReview);
-
-            setReviews((prevReviews) => [...prevReviews, createdReview]);
+            await fetchReviews();
+            
+            setReviews((prevReviews) => [...prevReviews, response.data]);
             setRating(0);
             setHeight("");
             setWeight("");
             setDescription("");
-            setRatingKey(Date.now());
-            setImages([]);
-            setFileKey(Date.now());
-            setFileNames([]);
         } catch (error) {
-            console.error("리뷰 작성 중 오류:", error);
+            console.error("리뷰 작성 실패:", error);
+            Swal.fire({
+                title: "리뷰 작성에 실패했습니다.",
+                text: error.response?.data?.message || "다시 시도해주세요.",
+                icon: "error",
+            });
         }
     };
-
-
-    const handleDeleteReview = (reviewId) => {
+    
+    const handleDeleteReview = async (reviewId) => {
         Swal.fire({
             icon: 'warning',
             title: '정말 삭제하시겠습니까?',
@@ -520,28 +611,64 @@ const ShopDetail = () => {
             background: '#F0EADC',
             color: '#754F23',
             iconColor: '#DBC797',
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                const updatedReviews = reviews.map((review) =>
-                    review.id === reviewId ? { ...review, isDeleting: true } : review
-                );
-                setReviews(updatedReviews);
-
-                setTimeout(() => {
-                    setReviews(reviews.filter((review) => review.id !== reviewId));
-                }, 1000);
+                try {
+                    const accessToken = sessionStorage.getItem("accessToken");
+    
+                    if (!accessToken) {
+                        Swal.fire({
+                            title: "로그인 정보가 없습니다.",
+                            text: "다시 로그인해주세요.",
+                            icon: "error",
+                        });
+                        return;
+                    }
+                    console.log(`Deleting Review with URL: ${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${reviewId}`);
+    
+                    // userId 제거 후 백엔드에 삭제 요청
+                    const response = await axios.delete(
+                        `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${reviewId}`,
+                        {
+                            headers: {
+                                Authorization: accessToken,
+                                "Content-Type": "application/json",
+                            },
+                            withCredentials: true,
+                        }
+                    );
+    
+                    if (response.status === 204) {
+                        Swal.fire({
+                            title: "리뷰가 삭제되었습니다.",
+                            icon: "success",
+                            confirmButtonText: "확인",
+                            confirmButtonColor: "#754F23",
+                            background: "#F0EADC",
+                            color: "#754F23",
+                        });
+    
+                        setReviews((prevReviews) => prevReviews.filter((review) => review.reviewCode !== reviewId));
+                    }
+                } catch (error) {
+                    console.error("리뷰 삭제 실패:", error);
+                    Swal.fire({
+                        title: "리뷰 삭제에 실패했습니다.",
+                        text: error.response?.data?.message || "다시 시도해주세요.",
+                        icon: "error",
+                    });
+                }
             }
         });
     };
+    
 
-    // review-image 클릭 시 ImageModal 표시
     const handleImageClick = (images, index) => {
         setSelectedImages(images);
         setInitialImageIndex(index);
         setShowImageModal(true);
     };
 
-    // ImageModal 닫기
     const handleCloseImageModal = () => {
         setShowImageModal(false);
         setSelectedImages([]);
@@ -554,7 +681,7 @@ const ShopDetail = () => {
                     <div>
                         <div className="video-gallery">
                             {[1, 2, 3, 4, 5, 6].map((video, index) => {
-                                const shortCode = `short-${index + 1}`; // 각 쇼츠의 고유 코드
+                                const shortCode = `short-${index + 1}`; 
                                 return (
                                     <div
                                         key={index}
@@ -609,7 +736,7 @@ const ShopDetail = () => {
                                 <div className="rating-input">
                                     <StarRatings
                                         key={ratingKey}
-                                        rating={rating}
+                                        rating={rating || 0}
                                         starRatedColor="gold"
                                         starHoverColor="gold"
                                         changeRating={(newRating) => setRating(newRating)}
@@ -672,10 +799,10 @@ const ShopDetail = () => {
                         <div className="review-list">
                             {reviews.map((review) => (
                                 <div key={review.id} className={`review-item ${review.isDeleting ? 'fade-out' : ''}`}>
-                                    {review.images.length > 0 && (
+                                    {Array.isArray(review.images) && review.images.length > 0 ? (
                                         <div className="review-images">
                                             <img
-                                                src={review.images[review.currentImageIndex]}
+                                                src={review.images[review.currentImageIndex] || review.images[0]} // 안전하게 첫 이미지를 기본으로 표시
                                                 alt={`Review image ${review.currentImageIndex + 1}`}
                                                 className="review-image"
                                                 onClick={() => handleImageClick(review.images, review.currentImageIndex)}
@@ -687,11 +814,13 @@ const ShopDetail = () => {
                                                 </div>
                                             )}
                                         </div>
+                                    ): (
+                                        <p>이미지가 없습니다.</p>
                                     )}
                                     <div className="review-content">
                                         <div className="review-top">
                                             <StarRatings
-                                                rating={review.rating}
+                                                rating={review.starRating}
                                                 starRatedColor="gold"
                                                 numberOfStars={5}
                                                 starDimension="20px"
@@ -703,13 +832,16 @@ const ShopDetail = () => {
                                             <span>{review.height} cm / {review.weight} kg</span>
                                         </div>
                                         <div className="review-description">
-                                            <p>{review.description}</p>
+                                            <p>{review.content}</p>
                                         </div>
                                         <div className="review-bottom">
-                                            <span>ID: {review.userId} / {review.date}</span>
-                                            {review.userId === nickname && (
-                                                <button className="delete-button" onClick={() => handleDeleteReview(review.id)}>
-                                                    <FaTrash />
+                                            <span>ID: {review.username} / {review.reviewDate}</span>
+                                        
+                                            {review.userId === parseInt(sessionStorage.getItem("id")) && (
+                                                <button className="delete-button" onClick={() => {
+                                                    handleDeleteReview(review.reviewId);
+                                                    }}>
+                                                    <FaTrash /> 
                                                 </button>
                                             )}
                                         </div>

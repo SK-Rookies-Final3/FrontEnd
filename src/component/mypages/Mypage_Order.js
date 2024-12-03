@@ -216,7 +216,9 @@ function OrderContainer() {
                                                 <div className="myorder-product-info">
                                                     <span className="highlights">상품명 :</span> {item.name},&nbsp;&nbsp;
                                                     <span className="highlights">색상 :</span> {item.color},&nbsp;&nbsp;
-                                                    <span className="highlights">사이즈 :</span> {item.clothesSize},&nbsp;&nbsp;
+                                                    <span className="highlights">사이즈 :</span> 
+                                                        {item.clothesSize || item.shoesSize || "-"}
+                                                        ,&nbsp;&nbsp;
                                                     <span className="highlights">수량 :</span> {item.amount}
                                                 </div>
                                                 <div className="myorder-product-price">

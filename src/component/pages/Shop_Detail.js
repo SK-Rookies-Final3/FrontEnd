@@ -476,6 +476,8 @@ const ShopDetail = () => {
             ]
         };
 
+        console.log("Order Request Data:", requestData);
+
 
         try {
             const response = await axios.post(
@@ -489,7 +491,7 @@ const ShopDetail = () => {
                 }
             );
 
-            console.log("Cart Response:", response.data);
+            console.log("Order Response:", response.data);
 
             Swal.fire({
                 title: "주문이 완료되었습니다!",

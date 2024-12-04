@@ -194,6 +194,16 @@ export default function Business_ProductAdd() {
     });
 
     try {
+      // 로딩 모달 표시
+      Swal.fire({
+        title: '등록 중...',
+        text: '상품을 등록하는 중입니다.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
       const accessToken = sessionStorage.getItem('accessToken');
 
       // Axios POST 요청
@@ -208,9 +218,13 @@ export default function Business_ProductAdd() {
         }
       );
 
+      // 로딩 모달 닫기
+      Swal.close();
+
       // Response 로그 출력
       console.log('응답 데이터:', response.data);
 
+      // 성공 메시지 표시
       Swal.fire({
         title: '등록 완료',
         text: '상품이 성공적으로 등록되었습니다.',
@@ -219,6 +233,10 @@ export default function Business_ProductAdd() {
         navigate('/business/product');
       });
     } catch (err) {
+      // 로딩 모달 닫기
+      Swal.close();
+
+      // 오류 메시지 표시
       Swal.fire({
         title: '등록 실패',
         text: err.response?.data?.message || '알 수 없는 오류가 발생했습니다. 1대1 문의 해주세요.',

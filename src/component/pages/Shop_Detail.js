@@ -48,8 +48,35 @@ const ShopDetail = () => {
     const [isAmountActive, setIsAmountActive] = useState(false);
     const [selectedAmount, setSelectedAmount] = useState("Choose a amount");
 
+    const fetchReviews = async () => {
+        try {
+
+            // 리뷰 API 호출
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/review/${productCode}`
+            );
+
+            if (response.status === 204 || !response.data || response.data.length === 0) {
+                setReviews([]); // 빈 배열 설정
+                return;
+            }
+
+            const mappedReviews = response.data.map((review) => ({
+                ...review,
+                reviewId: review.reviewCode,
+            }));
+
+            // 리뷰 데이터를 상태로 설정
+            setReviews(mappedReviews);
+
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+            setReviews([]);
+        }
+    };
 
     useEffect(() => {
+        
         const fetchWishlistStatus = async () => {
             const accessToken = sessionStorage.getItem("accessToken");
 
@@ -123,34 +150,27 @@ const ShopDetail = () => {
         } catch (error) {
             console.error("Error updating wishlist:", error);
         }
+
+    
+
+    // 별점 평균 계산 함수
+    const calculateAverageRating = () => {
+        if (!Array.isArray(reviews) || reviews.length === 0) {
+            console.log("Reviews 배열이 비어 있거나 배열이 아님:", reviews);
+            return 0;
+        }
+    
+        // review.starRating을 기준으로 평균 계산
+        const totalRating = reviews.reduce((acc, review) => {
+            const rating = review.starRating || 0; 
+            return acc + rating;
+        }, 0);
+    
+        const average = totalRating / reviews.length;
+        return average.toFixed(1);
     };
 
 
-    const fetchReviews = async () => {
-        try {
-
-            // 리뷰 API 호출
-            const response = await axios.get(
-                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/review/${productCode}`
-            );
-
-            if (response.status === 204 || !response.data || response.data.length === 0) {
-                setReviews([]); // 빈 배열 설정
-                return;
-            }
-
-            const mappedReviews = response.data.map((review) => ({
-                ...review,
-                reviewId: review.reviewCode,
-            }));
-
-            // 리뷰 데이터를 상태로 설정
-            setReviews(mappedReviews);
-
-        } catch (error) {
-            console.error("Error fetching reviews:", error);
-            setReviews([]);
-        }
     };
 
     // 별점 평균 계산 함수
@@ -445,7 +465,7 @@ const ShopDetail = () => {
             orderItemList: [
                 {
                     productCode: productCode,
-                    amount: parseInt(selectedAmount, 10),
+                    stock: parseInt(selectedAmount, 10),
                     color: selectedColor,
                     ...sizeField,
                     name: product.name,

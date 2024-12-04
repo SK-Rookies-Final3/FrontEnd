@@ -35,11 +35,11 @@ export default function Shop() {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/`); // 백엔드 엔드포인트
       const sortedProducts = response.data.sort((a, b) => {
-      return a.name.localeCompare(b.name, 'ko', { numeric: true });
-    });
-      setProducts(response.data); 
-      setFilteredProducts(response.data); 
-      console.log(response.data)
+        return a.name.localeCompare(b.name, 'ko', { numeric: true });
+      });
+      setProducts(sortedProducts); 
+      setFilteredProducts(sortedProducts); 
+      console.log(sortedProducts)
     } catch (error) {
       console.error('Failed to fetch products:', error);
     }
@@ -55,7 +55,8 @@ export default function Shop() {
     if (categoryId === '') {
       setFilteredProducts(products); // 카테고리가 비어 있으면 모든 상품 표시
     } else {
-      setFilteredProducts(products.filter((product) => product.category === categoryId)); // 선택된 카테고리에 해당하는 상품만 필터링
+      const filtered = products.filter((product) => product.category === categoryId);
+      setFilteredProducts(filtered); // 선택된 카테고리에 해당하는 상품만 필터링
     }
   };
 
@@ -103,39 +104,44 @@ export default function Shop() {
 
       {/* 상품 리스트 */}
       <div className="product-list">
-        {filteredProducts.map((product) => (
-          <div className="shop-card" key={product.code}>
-            <img
-              src={product.thumbnail}
-              className="shop-card-img-top"
-              alt={product.name}
-              onClick={() => handleProductClick(product.code)}
-              style={{ cursor: 'pointer' }}
-            />
-            <div className="card-body" >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div
-                  style={{ textAlign: 'left', cursor: 'pointer' }}
-                  
-                >
-                  <h5 className="card-title" style={{ marginLeft: '10px' }}>{product.name}</h5>
-                  <p className="card-text" style={{ marginLeft: '10px' }}>{product.price.toLocaleString()}원</p>
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
+            <div className="shop-card" key={product.code}>
+              <img
+                src={product.thumbnail}
+                className="shop-card-img-top"
+                alt={product.name}
+                onClick={() => handleProductClick(product.code)}
+                style={{ cursor: 'pointer' }}
+              />
+              <div className="card-body" >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div
+                    style={{ textAlign: 'left', cursor: 'pointer' }}
+                  >
+                    <h5 className="card-title" style={{ marginLeft: '10px' }}>{product.name}</h5>
+                    <p className="card-text" style={{ marginLeft: '10px' }}>{product.price.toLocaleString()}원</p>
+                  </div>
+                  {/* <button
+                    type="button"
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onClick={() => handleLikeClick(product.code)}
+                  >
+                    {likedProducts.includes(product.code) ? (
+                      <AiFillHeart size={24} color="#FF5733" />
+                    ) : (
+                      <AiOutlineHeart size={24} color="#FF5733" />
+                    )}
+                  </button> */}
                 </div>
-                {/* <button
-                  type="button"
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
-                  onClick={() => handleLikeClick(product.code)}
-                >
-                  {likedProducts.includes(product.code) ? (
-                    <AiFillHeart size={24} color="#FF5733" />
-                  ) : (
-                    <AiOutlineHeart size={24} color="#FF5733" />
-                  )}
-                </button> */}
               </div>
             </div>
+          ))
+        ) : (
+          <div className="no-products-message">
+            등록된 상품이 없습니다 😞
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

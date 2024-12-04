@@ -210,7 +210,7 @@ function OrderContainer() {
                                         {order.orderItems.map(item => (
                                             <div key={item.id} className="myorder-product">
                                                <img 
-                                                src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${item.thumbnail?.split(/[/\\]/).pop()}`}
+                                                src={item.thumbnail}
                                                 alt="Product Thumbnail" 
                                             />
                                                 <div className="myorder-product-info">
@@ -219,7 +219,7 @@ function OrderContainer() {
                                                     <span className="highlights">사이즈 :</span> 
                                                         {item.clothesSize || item.shoesSize || "-"}
                                                         ,&nbsp;&nbsp;
-                                                    <span className="highlights">수량 :</span> {item.amount}
+                                                    <span className="highlights">수량 :</span> {item.stock}
                                                 </div>
                                                 <div className="myorder-product-price">
                                                     {`${Number(item.price).toLocaleString()} 원`}

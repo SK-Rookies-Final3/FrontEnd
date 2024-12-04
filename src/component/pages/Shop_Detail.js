@@ -508,6 +508,22 @@ const ShopDetail = () => {
             });
             return;
         }
+
+        const userAlreadyReviewed = reviews.some((review) => review.userId === parseInt(id));
+    if (userAlreadyReviewed) {
+        Swal.fire({
+            title: "이미 리뷰를 작성하셨습니다.",
+            text: "하나의 상품에는 하나의 리뷰만 작성할 수 있습니다.",
+            icon: "warning",
+        });
+        setRating(0);
+        setHeight("");
+        setWeight("");
+        setDescription("");
+        setFileNames([]);
+        setImages([]);
+        return;
+    }
     
         const newReview = {
             starRating: rating,

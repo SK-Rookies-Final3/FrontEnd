@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import '../css/Business_Form.css';
 import { FaSearch } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -71,22 +71,81 @@ function BusinessOrderList() {
 }
 
 function OrderTable({ searchQuery }) {
-    const [orders, setOrders] = useState([
-        { no: 1, name: '1', price: '150,000', customer: '주문자1', status: '배송대기', quantity: 12, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 2, name: '2', price: '150,000', customer: '주문자2', status: '배송 중', quantity: 12, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 3, name: '3', price: '150,000', customer: '주문자3', status: '취소', quantity: 3, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 4, name: '4', price: '150,000', customer: '주문자4', status: '취소', quantity: 13, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 5, name: '5', price: '150,000', customer: '주문자5', status: '결제 완료', quantity: 5, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 6, name: '6', price: '150,000', customer: '주문자6', status: '완료', quantity: 20, registered: '2024.10.11', updated: '2024.10.16' },
-        { no: 7, name: '7', price: '150,000', customer: '주문자7', status: '판매중', quantity: 7, registered: '2024.10.11', updated: '2024.10.16' },
-    ]);
-
+    const [orders, setOrders] = useState([]);
+    const [users, setUsers] = useState([]); // 사용자 데이터를 저장할 상태
     const [activeDropdown, setActiveDropdown] = useState(null);
+
+    // 주문 데이터 가져오기
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await fetch(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/owner`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `${sessionStorage.getItem("accessToken")}`,
+                        },
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("응답 데이터 (주문):", data);
+                setOrders(data); // 주문 데이터를 상태에 저장
+            } catch (err) {
+                console.error('주문 조회를 가져오는 데 실패했습니다:', err);
+            }
+        };
+
+        fetchOrders();
+    }, []);
+
+    // 사용자 데이터 가져오기
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch(
+                    `${process.env.REACT_APP_API_BASE_URL}/api/user/master`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `${sessionStorage.getItem("accessToken")}`,
+                        },
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("응답 데이터 (사용자):", data);
+                setUsers(data); // 사용자 데이터를 상태에 저장
+            } catch (err) {
+                console.error('사용자 정보를 가져오는 데 실패했습니다:', err);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    // userId를 nickname으로 매핑하기 위한 맵 생성
+    const userMap = useMemo(() => {
+        const map = {};
+        users.forEach(user => {
+            map[user.id] = user.nickname;
+        });
+        return map;
+    }, [users]);
 
     const handleStatusChange = (orderNo, newStatus) => {
         setOrders((prevOrders) =>
             prevOrders.map((order) =>
-                order.no === orderNo ? { ...order, status: newStatus } : order
+                order.code === orderNo ? { ...order, status: newStatus } : order
             )
         );
         setActiveDropdown(null);
@@ -131,8 +190,11 @@ function OrderTable({ searchQuery }) {
         });
     };
 
+    // 검색 쿼리에 따라 주문 필터링
     const filteredOrders = orders.filter((order) =>
-        order.name.toLowerCase().includes(searchQuery.toLowerCase())
+        order.orderItems.some((item) =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
     );
 
     return (
@@ -146,52 +208,84 @@ function OrderTable({ searchQuery }) {
                     <th>상태</th>
                     <th>수량</th>
                     <th>등록일</th>
-                    <th>수정일</th>
+                    <th>색깔</th>
+                    <th>사이즈</th>
                     <th>삭제</th>
                 </tr>
             </thead>
             <tbody>
-                {filteredOrders.map((order) => (
-                    <tr key={order.no}>
-                        <td>{order.no}</td>
-                        <td>{order.name}</td>
-                        <td>{order.price}</td>
-                        <td>{order.customer}</td>
-                        <td>
-                            <div className={`dropdown ${activeDropdown === order.no ? 'active' : ''}`} onClick={() => handleDropdownToggle(order.no)}>
-                                {order.status}
-                                <span className="left-icon"></span>
-                                <span className="right-icon"></span>
-                                <div className="items">
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '주문완료')} style={{ '--i': 1 }}><span></span>주문완료</a>
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송대기')} style={{ '--i': 2 }}><span></span>배송대기</a>
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송 중')} style={{ '--i': 3 }}><span></span>배송 중</a>
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '배송완료')} style={{ '--i': 4 }}><span></span>배송완료</a>
-                                    <a href="#" onClick={() => handleStatusChange(order.no, '주문취소')} style={{ '--i': 5 }}><span></span>주문취소</a>
-                                </div>
-                            </div>
-                        </td>
-                        <td>{order.quantity}</td>
-                        <td>{order.registered}</td>
-                        <td>{order.updated}</td>
-                        <td>
-                            <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(order.no, e)}>
-                                <span className="button-text">Delete</span>
-                                <span className="animation">
-                                    <span className="paper-wrapper">
-                                        <span className="paper"></span>
-                                    </span>
-                                    <span className="shredded-wrapper">
-                                        <span className="shredded"></span>
-                                    </span>
-                                    <span className="can">
-                                        <span className="filler"></span>
-                                    </span>
-                                </span>
-                            </button>
-                        </td>
-                    </tr>
-                ))}
+                {filteredOrders.map((order, orderIndex) =>
+                    order.orderItems.map((item, index) => {
+                        const size = item.clothesSize || item.shoesSize || "-"; // null이 아닌 값을 가져옴, 없으면 "-"
+                        return (
+                            <tr key={`${order.code}-${item.id}`}>
+                                <td>{orderIndex + 1}</td>
+                                <td>{item.name}</td>
+                                <td>{item.price}</td>
+                                <td>
+                                    {/* userId 대신 nickname 표시 */}
+                                    {userMap[order.userId] || "알 수 없는 사용자"}
+                                </td>
+                                <td>
+                                    <div
+                                        className={`dropdown ${activeDropdown === order.code ? 'active' : ''}`}
+                                        onClick={() => handleDropdownToggle(order.code)}
+                                    >
+                                        {order.status === 0
+                                            ? "주문 대기"
+                                            : order.status === 1
+                                                ? "주문 완료"
+                                                : order.status === 2
+                                                    ? "배송 대기"
+                                                    : "알 수 없음"}
+                                        <span className="left-icon"></span>
+                                        <span className="right-icon"></span>
+                                        <div className="items">
+                                            <a
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleStatusChange(order.code, 1);
+                                                }}
+                                            >
+                                                주문 완료
+                                            </a>
+                                            <a
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleStatusChange(order.code, 2);
+                                                }}
+                                            >
+                                                배송 대기
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{item.stock}</td>
+                                <td>{new Date(order.orderDate).toLocaleString()}</td>
+                                <td>{item.color || "-"}</td> {/* color 컬럼 추가 */}
+                                <td>{size}</td> {/* size 컬럼 추가 */}
+                                <td>
+                                    <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(order.no, e)}>
+                                        <span className="button-text">삭제</span>
+                                        <span className="animation">
+                                            <span className="paper-wrapper">
+                                                <span className="paper"></span>
+                                            </span>
+                                            <span className="shredded-wrapper">
+                                                <span className="shredded"></span>
+                                            </span>
+                                            <span className="can">
+                                                <span className="filler"></span>
+                                            </span>
+                                        </span>
+                                    </button>
+                                </td>
+                            </tr>
+                        );
+                    })
+                )}
             </tbody>
         </table>
     );

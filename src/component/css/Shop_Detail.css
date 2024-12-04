@@ -546,6 +546,12 @@
     background-color: #E3F2FD;
 }
 
+/* SOLD OUT 텍스트 색상 변경 */
+.form-option-placeholder.sold-out {
+    color: red;
+    font-weight: 900; 
+}
+
 /* 장바구니 버튼 */
 .cart-button {
     position: relative;

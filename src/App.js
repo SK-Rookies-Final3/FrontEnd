@@ -6,6 +6,7 @@ import Home from './component/Home';
 import User_Login from './component/login/User_Login';
 import Business_Login from './component/login/Business_Login';
 import Admin_Login from './component/login/Admin_Login';
+import Admin_Register from './component/login/Admin_Register';
 import Business_Request from './component/login/Business_Request';
 import Business_Product from './component/business/Business_Product';
 import Business_ProductAdd from './component/business/Business_ProductAdd';
@@ -27,6 +28,8 @@ import Mypage_Pay from './component/mypages/Mypage_Pay';
 import Brand from './component/pages/Brand';
 import Loading from './component/Loading';
 import AboutUs from './component/AboutUs';
+import Unauthorized from './component/Unauthorized';
+import PrivateRoute from './component/PrivateRoute';
 
 function App() {
   return (
@@ -34,35 +37,147 @@ function App() {
       <div className="App">
         <Header />
         <Routes>
+          {/* 공용 페이지 */}
           <Route path="/" element={<Home />} />
-          <Route path='/user/login' element={<User_Login />} />
-          <Route path='/business/login' element={<Business_Login />} />
-          <Route path='/djemals/login' element={<Admin_Login />} />
-          <Route path='/business/request' element={<Business_Request />} />
-          <Route path='/business/product' element={<Business_Product />} />
-          <Route path='/business/productadd' element={<Business_ProductAdd />} />
-          <Route path='/business/orderlist' element={<Business_OrderList />} />
-          <Route path='/business/statistics' element={<Business_Statistics />} />
-          <Route path='/business/loading' element={<Business_Loading />} />
-
-          <Route path='/admin/userlist' element={<Admin_List />} />
-          <Route path='/admin/management' element={<Admin_Management />} />
-          <Route path='/admin/allproduct' element={<Admin_AllProduct />} />
-          <Route path='/admin/statistics' element={<Admin_Statistics />} />
-
-          <Route path='/pages/shop' element={<Shop />}/>
-          <Route path='/pages/shop/detail/:productCode' element={<Shop_Detail />}/>
+          <Route path="/user/login" element={<User_Login />} />
+          <Route path="/business/login" element={<Business_Login />} />
+          <Route path="/djemals/login" element={<Admin_Login />} />
+          <Route path="/djemals/register" element={<Admin_Register />} />
           <Route path="/pages/brands" element={<Brand />} />
+          <Route path="/pages/shop" element={<Shop />} />
+          <Route path="/pages/shop/detail/:productCode" element={<Shop_Detail />} />
+          <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
 
-          <Route path='/mypages/orderlist' element={<Mypage_Order />}/>
-          <Route path='/mypages/like' element={<Mypage_Like />}/>
-          <Route path='/mypages/question' element={<Mypage_Question />}/>
-          <Route path='/mypages/change' element={<Mypage_Change />}/>
-          <Route path='/mypages/cart' element={<Mypage_Cart />}/>
-          <Route path='/mypages/pay' element={<Mypage_Pay />} />
+          {/* CLIENT 전용 */}
+          <Route
+            path="/mypages/orderlist"
+            element={
+              <PrivateRoute allowedRoles={['CLIENT']}>
+                <Mypage_Order />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/mypages/like"
+            element={
+              <PrivateRoute allowedRoles={['CLIENT']}>
+                <Mypage_Like />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/mypages/question"
+            element={
+              <PrivateRoute allowedRoles={['CLIENT']}>
+                <Mypage_Question />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/mypages/change"
+            element={
+              <PrivateRoute allowedRoles={['CLIENT']}>
+                <Mypage_Change />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/mypages/cart"
+            element={
+              <PrivateRoute allowedRoles={['CLIENT']}>
+                <Mypage_Cart />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/mypages/pay"
+            element={
+              <PrivateRoute allowedRoles={['CLIENT']}>
+                <Mypage_Pay />
+              </PrivateRoute>
+            }
+          />
 
-          <Route path='/loading' element={<Loading />} />
-          <Route path='/aboutus' element={<AboutUs />} />
+          {/* BUSINESS 전용 */}
+          <Route
+            path="/business/request"
+            element={
+              <PrivateRoute allowedRoles={['OWNER']}>
+                <Business_Request />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/business/product"
+            element={
+              <PrivateRoute allowedRoles={['OWNER']}>
+                <Business_Product />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/business/productadd"
+            element={
+              <PrivateRoute allowedRoles={['OWNER']}>
+                <Business_ProductAdd />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/business/orderlist"
+            element={
+              <PrivateRoute allowedRoles={['OWNER']}>
+                <Business_OrderList />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/business/statistics"
+            element={
+              <PrivateRoute allowedRoles={['OWNER']}>
+                <Business_Statistics />
+              </PrivateRoute>
+            }
+          />
+
+          {/* MASTER 전용 */}
+          <Route
+            path="/admin/userlist"
+            element={
+              <PrivateRoute allowedRoles={['MASTER']}>
+                <Admin_List />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/management"
+            element={
+              <PrivateRoute allowedRoles={['MASTER']}>
+                <Admin_Management />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/allproduct"
+            element={
+              <PrivateRoute allowedRoles={['MASTER']}>
+                <Admin_AllProduct />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/statistics"
+            element={
+              <PrivateRoute allowedRoles={['MASTER']}>
+                <Admin_Statistics />
+              </PrivateRoute>
+            }
+          />
+
+          {/* 로딩 페이지 */}
+          <Route path="/loading" element={<Loading />} />
+          <Route path="/business/loading" element={<Business_Loading />} />
         </Routes>
       </div>
     </Router>

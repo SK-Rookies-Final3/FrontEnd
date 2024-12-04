@@ -44,7 +44,7 @@ const ShopDetail = () => {
     const [isColorActive, setIsColorActive] = useState(false);
     const [selectedColor, setSelectedColor] = useState("Choose a color");
 
-    // 수량 관련 상태
+    // 수량 관련 상태   
     const [isAmountActive, setIsAmountActive] = useState(false);
     const [selectedAmount, setSelectedAmount] = useState("Choose a amount");
 
@@ -56,13 +56,7 @@ const ShopDetail = () => {
                 `${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/review/${productCode}`
             );
 
-            // 응답 데이터 확인
-            if (response.status === 204 || response.data.length === 0) {
-                Swal.fire({
-                    title: "리뷰 없음",
-                    text: "이 상품에 대한 리뷰가 아직 없습니다.",
-                    icon: "info",
-                });
+            if (response.status === 204 || !response.data || response.data.length === 0) {
                 setReviews([]); // 빈 배열 설정
                 return;
             }
@@ -77,11 +71,7 @@ const ShopDetail = () => {
 
         } catch (error) {
             console.error("Error fetching reviews:", error);
-            Swal.fire({
-                title: "오류 발생",
-                text: "리뷰를 가져오는 중 문제가 발생했습니다.",
-                icon: "error",
-            });
+            setReviews([]);
         }
     };
 
@@ -181,43 +171,6 @@ const ShopDetail = () => {
     }, [product]);
 
     useEffect(() => {
-        const fetchReviews = async () => {
-            try {
-    
-                // 리뷰 API 호출
-                const response = await axios.get(
-                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/review/${productCode}`
-                );
-    
-                // 응답 데이터 확인
-                if (response.status === 204 || response.data.length === 0) {
-                    Swal.fire({
-                        title: "리뷰 없음",
-                        text: "이 상품에 대한 리뷰가 아직 없습니다.",
-                        icon: "info",
-                    });
-                    setReviews([]); // 빈 배열 설정
-                    return;
-                }
-
-                const mappedReviews = response.data.map((review) => ({
-                    ...review,
-                    reviewId: review.reviewCode,
-                }));
-    
-                // 리뷰 데이터를 상태로 설정
-                setReviews(mappedReviews);
-
-            } catch (error) {
-                console.error("Error fetching reviews:", error);
-                Swal.fire({
-                    title: "오류 발생",
-                    text: "리뷰를 가져오는 중 문제가 발생했습니다.",
-                    icon: "error",
-                });
-            }
-        };
-    
         fetchReviews();
     }, [productCode]);
     
@@ -580,10 +533,8 @@ const ShopDetail = () => {
             );
     
             console.log("리뷰 작성 성공:", response.data);
-
             await fetchReviews();
             
-            setReviews((prevReviews) => [...prevReviews, response.data]);
             setRating(0);
             setHeight("");
             setWeight("");
@@ -723,7 +674,7 @@ const ShopDetail = () => {
                         {/* 상세 텍스트 */}
                         <div className="detail-text">
                             <p>{product?.textInformation || '상세 정보가 없습니다.'}</p>
-                        </div>
+                        </div>  
                     </div>
                 );
             case '상품리뷰':

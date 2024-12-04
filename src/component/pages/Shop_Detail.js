@@ -626,7 +626,7 @@ const ShopDetail = () => {
     
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${productCode}?userId=${id}`,
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${productCode}`,
                 newReview,
                 {
                     headers: {

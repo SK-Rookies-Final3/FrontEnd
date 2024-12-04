@@ -75,6 +75,84 @@ const ShopDetail = () => {
         }
     };
 
+    useEffect(() => {
+        
+        const fetchWishlistStatus = async () => {
+            const accessToken = sessionStorage.getItem("accessToken");
+
+            if (!accessToken) {
+                console.error("Access token is missing.");
+                return;
+            }
+
+            try {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products`,
+                    {
+                        headers: {
+                            Authorization: accessToken,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+
+                // 위시리스트에 포함된 productCode 확인
+                const wishlistProductCodes = response.data.map((item) => item.productCode);
+                setWishlistItems(wishlistProductCodes);
+            } catch (error) {
+                console.error("Error fetching wishlist:", error);
+            }
+        };
+
+        fetchWishlistStatus();
+    }, [productCode]);
+
+    const handleWishlistToggle = async () => {
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        if (!accessToken) {
+            console.error("Access token is missing.");
+            return;
+        }
+
+        try {
+            console.log("Product Code:", productCode);
+            if (wishlistItems.includes(productCode)) {
+                // 위시리스트에서 제거
+                await axios.delete(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products/${productCode}`,
+                    {
+                        headers: {
+                            Authorization: accessToken,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+
+                setWishlistItems((prev) => prev.filter((code) => code !== productCode));
+            } else {
+                // 위시리스트에 추가
+                await axios.post(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products`,
+                    { 
+                        //productThumbnail, 
+                        productCode 
+                    },
+                    {
+                        headers: {
+                            Authorization: accessToken,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                setWishlistItems((prev) => [...prev, productCode]);
+            }
+        } catch (error) {
+            console.error("Error updating wishlist:", error);
+        }
+
+    
+
     // 별점 평균 계산 함수
     const calculateAverageRating = () => {
         if (!Array.isArray(reviews) || reviews.length === 0) {
@@ -92,16 +170,24 @@ const ShopDetail = () => {
         return average.toFixed(1);
     };
 
-    const handleWishlistToggle = () => {
-        setWishlistClicked(true);
-        if (wishlistItems.includes(productCode)) {
-            setWishlistItems(wishlistItems.filter(code => code !== productCode));
-        } else {
-            setWishlistItems([...wishlistItems, productCode]);
+
+    };
+
+    // 별점 평균 계산 함수
+    const calculateAverageRating = () => {
+        if (!Array.isArray(reviews) || reviews.length === 0) {
+            console.log("Reviews 배열이 비어 있거나 배열이 아님:", reviews);
+            return 0;
         }
-        setTimeout(() => {
-            setWishlistClicked(false);
-        }, 600); 
+    
+        // review.starRating을 기준으로 평균 계산
+        const totalRating = reviews.reduce((acc, review) => {
+            const rating = review.starRating || 0; 
+            return acc + rating;
+        }, 0);
+    
+        const average = totalRating / reviews.length;
+        return average.toFixed(1);
     };
 
     const handleLikeClick = (shortCode, event) => {
@@ -969,13 +1055,16 @@ const ShopDetail = () => {
 
             <div className="wishlist-cart-container">
                 <button
-                    className={`wishlist-button ${wishlistClicked ? 'clicked' : ''} ${wishlistItems.includes(productCode) ? 'product-wish' : ''}`}
+                    className={`wishlist-button ${wishlistItems.includes(productCode) ? "product-wish" : ""}`}
                     onClick={handleWishlistToggle}
                     aria-pressed={wishlistItems.includes(productCode)}
                     aria-label={wishlistItems.includes(productCode) ? "Remove from Wishlist" : "Add to Wishlist"}
                 >
-                    <span className="add-to-wishlist">Add to Wishlist</span>
-                    <span className="added">Added</span>
+                    {wishlistItems.includes(productCode) ? (
+                            <span className="added">Added</span>
+                        ) : (
+                            <span className="add-to-wishlist">Add to Wishlist</span>
+                        )}
                     <FaHeart className="fa-heart" />
                 </button>
 

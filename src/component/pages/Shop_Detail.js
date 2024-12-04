@@ -508,6 +508,22 @@ const ShopDetail = () => {
             });
             return;
         }
+
+        const userAlreadyReviewed = reviews.some((review) => review.userId === parseInt(id));
+    if (userAlreadyReviewed) {
+        Swal.fire({
+            title: "이미 리뷰를 작성하셨습니다.",
+            text: "하나의 상품에는 하나의 리뷰만 작성할 수 있습니다.",
+            icon: "warning",
+        });
+        setRating(0);
+        setHeight("");
+        setWeight("");
+        setDescription("");
+        setFileNames([]);
+        setImages([]);
+        return;
+    }
     
         const newReview = {
             starRating: rating,
@@ -662,7 +678,7 @@ const ShopDetail = () => {
                                 product.images.map((image, index) => (
                                     <img
                                         key={index}
-                                        src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${image.split(/[/\\]/).pop()}`}
+                                        src={image}
                                         alt={`Detail Image ${index + 1}`}
                                         className="detail-image"
                                     />
@@ -830,7 +846,7 @@ const ShopDetail = () => {
                     product.thumbnail.map((thumb, index) => (
                         <div key={index} className="product-image-ani">
                             <img
-                                src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${thumb.split(/[/\\]/).pop()}`}
+                                src={thumb}
                                 alt={`Product Thumbnail ${index + 1}`}
                             />
                         </div>

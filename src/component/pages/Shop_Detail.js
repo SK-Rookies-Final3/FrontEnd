@@ -244,6 +244,7 @@ const ShopDetail = () => {
                     throw new Error(`Failed to fetch product details: ${response.status}`);
                 }
                 const data = await response.json();
+                console.log(data)
 
                 setProduct(data);
             } catch (error) {
@@ -1026,13 +1027,19 @@ const ShopDetail = () => {
                 </div>
 
                 {/* 수량 선택 드롭다운 */}
-                <div className={`form-select-container ${isAmountActive ? "active" : ""}`}>
-                    <div className="form-select" onClick={handleAmountSelectClick}>
-                        <div className="form-option-placeholder">
-                            {selectedAmount !== "Choose a amount" ? selectedAmount : "Choose a amount"}
+                <div className={`form-select-container ${isAmountActive ? "active" : ""} ${product?.stock === 0 ? "disabled" : ""}`}>
+                    <div
+                        className="form-select"
+                        onClick={product?.stock > 0 ? handleAmountSelectClick : null}
+                        style={{ cursor: product?.stock > 0 ? 'pointer' : 'not-allowed', opacity: product?.stock === 0 ? 0.6 : 1 }}
+                    >
+                        <div className={`form-option-placeholder ${product?.stock === 0 ? "sold-out" : ""}`}>
+                            {product?.stock === 0
+                            ? "SOLD OUT" // 재고 없을 경우 텍스트 변경 및 클래스 추가
+                            : (selectedAmount !== "Choose a amount" ? selectedAmount : "Choose a amount")}
                         </div>
                     </div>
-                    {isAmountActive && (
+                    {isAmountActive && product?.stock > 0 && (
                         <div className="form-option-wrapper">
                             <div className="form-option-container">
                                 {Array.from({ length: Math.min(product?.stock || 0, 10) }, (_, i) => i + 1).map((amount) => (

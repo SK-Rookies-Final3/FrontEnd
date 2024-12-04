@@ -379,7 +379,7 @@ const ShopDetail = () => {
             orderItemList: [
                 {
                     productCode: productCode,
-                    amount: parseInt(selectedAmount, 10),
+                    stock: parseInt(selectedAmount, 10),
                     color: selectedColor,
                     ...sizeField,
                     name: product.name,

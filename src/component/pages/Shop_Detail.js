@@ -597,6 +597,29 @@ const ShopDetail = () => {
             });
             return;
         }
+
+        const existingReview = reviews.find((review) => review.userId === parseInt(id, 10));
+
+        if (existingReview) {
+            Swal.fire({
+                title: "이미 리뷰를 작성하셨습니다.",
+                text: "리뷰는 한 상품에 대해 한 번만 작성 가능합니다.",
+                icon: "warning",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+
+            // 리뷰 작성 폼 초기화
+            setRating(0);
+            setHeight("");
+            setWeight("");
+            setDescription("");
+            setFileKey(Date.now());
+            setFileNames([]);
+            return;
+        }
     
         const formData = new FormData();
     

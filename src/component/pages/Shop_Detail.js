@@ -616,13 +616,16 @@ const ShopDetail = () => {
     
         const newReview = {
             starRating: rating,
-            height: height || null,
-            weight: weight || null,
+            height: height || "비공개",
+            weight: weight || "비공개",
             content: description,
-            color: product.color,
-            size: product.category === "신발" ? product.shoesSize : product.clothesSize,
+            // color: product.color,
+            // size: product.category === "신발" ? product.shoesSize : product.clothesSize,
             username: username, 
+            productCode: parseInt(productCode, 10),
+            userId : parseInt(id, 10),
         };
+        console.log(newReview)
     
         try {
             const response = await axios.post(

@@ -80,7 +80,7 @@ function OrderTable({ searchQuery }) {
         const fetchOrders = async () => {
             try {
                 const response = await fetch(
-                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/owner`,
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/ownerRest`,
                     {
                         method: 'GET',
                         headers: {

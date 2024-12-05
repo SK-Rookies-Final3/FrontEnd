@@ -79,6 +79,9 @@ function OrderTable({ searchQuery }) {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
+                
+                console.log("/////////Token////////");
+                console.log(`${sessionStorage.getItem("accessToken")}`);
                 const response = await fetch(
                     `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/owner`,
                     {

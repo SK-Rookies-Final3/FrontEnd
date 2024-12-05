@@ -93,6 +93,7 @@ function QuestionContainer() {
             if (result.isConfirmed) {
                 sessionStorage.removeItem("accessToken");
                 sessionStorage.removeItem("role");
+                sessionStorage.removeItem("id");
                 console.log("로그아웃되었습니다.");
                 navigate('/');
             }

@@ -1,84 +1,132 @@
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '../css/Brand.css';
 import { useNavigate } from 'react-router-dom';
-import brandImage from '../../img/Nike.PNG'; // 이미지 경로 변경
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 
 export default function Brand() {
-  const [hoveredIndex, setHoveredIndex] = useState(null); // 현재 호버된 카테고리의 인덱스 상태
+  const [stores, setStores] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [likedProducts, setLikedProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState(null);
   const navigate = useNavigate();
 
-  const categories = [
-    { label: '나이키', hoverText: 'Nike' },
-    { label: '아디다스', hoverText: 'Adidas' },
-    { label: '폴로', hoverText: 'Polo' },
-    { label: '꼼데', hoverText: 'Comme des' },
-    { label: '베이프', hoverText: 'Bape' },
-    { label: '아미', hoverText: 'Ami' },
-    { label: '보스', hoverText: 'Boss' },
-    { label: '디젤', hoverText: 'Diesel' },
-  ];
+  const handleLikeClick = (productCode) => {
+    setLikedProducts((prev) => {
+      if (prev.includes(productCode)) {
+        return prev.filter((id) => id !== productCode);
+      } else {
+        return [...prev, productCode];
+      }
+    });
 
-  const products = [ // 상품 데이터 배열
-    { id: 1, title: '나이키 에어 포스 1 "07', price: '169,000', image: brandImage },
-    { id: 2, title: '상품2', price: '100,000', image: brandImage },
-    { id: 3, title: '상품3', price: '80,000', image: brandImage },
-    { id: 4, title: '상품4', price: '90,000', image: brandImage },
-    { id: 5, title: '상품5', price: '120,000', image: brandImage },
-    { id: 6, title: '상품6', price: '60,000', image: brandImage },
-    // 필요 시 추가 상품 데이터 추가
-  ];
+    const likedProduct = products.find((product) => product.code === productCode);
+    sessionStorage.setItem('likedProduct', JSON.stringify(likedProduct));
+  };
 
-  const handleProductClick = (productId) => {
-    navigate('/pages/shop/detail'); // 상세 페이지로 이동
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const storeResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store/`);
+        setStores(storeResponse.data);
+
+        const productResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/`);
+        const sortedProducts = productResponse.data.sort((a, b) =>
+          a.name.localeCompare(b.name, 'ko', { numeric: true })
+        );
+        setProducts(sortedProducts);
+        setFilteredProducts(sortedProducts);
+      } catch (error) {
+        console.error('API Error:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (selectedBrand === null) {
+      setFilteredProducts(products);
+    } else {
+      const selectedStore = stores.find((store) => store.name.toLowerCase() === selectedBrand.toLowerCase());
+      if (selectedStore) {
+        const filtered = products.filter((product) => product.storeId === selectedStore.id);
+        setFilteredProducts(filtered);
+      } else {
+        setFilteredProducts([]);
+      }
+    }
+  }, [selectedBrand, products, stores]);
+
+  const handleBrandClick = (brandName) => {
+    setSelectedBrand(brandName === selectedBrand ? null : brandName);
+  };
+
+  const handleAllProductsClick = () => {
+    setSelectedBrand(null);
+  };
+
+  const handleProductClick = (productCode) => {
+    navigate(`/pages/shop/detail/${productCode}`);
   };
 
   return (
     <div className="brand-container">
       <aside className="brand-sidebar">
         <div className="logo">
-          <h2>Category</h2>
+          <h2>Brand</h2>
         </div>
         <ul className="brand-links">
-          {categories.map((category, index) => (
+          <li className={selectedBrand === null ? 'active' : ''} onClick={handleAllProductsClick}>
+            <span>전체 보기</span>
+          </li>
+          {stores.map((store, index) => (
             <li
               key={index}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
+              className={selectedBrand === store.name ? 'active' : ''}
+              onClick={() => handleBrandClick(store.name)}
             >
-              <span className="icon">{category.icon}</span>
-              <span>
-                {hoveredIndex === index ? category.hoverText : category.label}
-              </span>
+              <span>{store.name}</span>
             </li>
           ))}
         </ul>
       </aside>
+
       <div className="brand-product-list">
-        {products.map(product => (
-            <div className="brand-card" key={product.id} > {/* 카드 너비 조정 */}
-            <img 
-                src={product.image} 
-                className='brand-card-img-top' 
-                alt={product.title} 
-                onClick={() => handleProductClick(product.id)} 
-                style={{ cursor: 'pointer' }} 
-            />
-            <div className='brand-card-body'>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ textAlign: 'left', cursor: 'pointer' }} onClick={() => handleProductClick(product.id)}>
-                    <h5 className='brand-card-title'>{product.title}</h5>
-                    <p className="brand-card-text">{product.price}</p>
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
+            <div className="brand-card" key={product.id}>
+              <img
+                src={product.thumbnail}
+                className="brand-card-img-top"
+                alt={product.title}
+                onClick={() => handleProductClick(product.code)}
+                style={{ cursor: 'pointer' }}
+              />
+              <div className="brand-card-body" >
+                <div className="brand-info">
+                  <h5 className="brand-card-title">{product.name}</h5>
+                  <p className="brand-card-text">{product.price.toLocaleString()}원</p>
                 </div>
-                <button
-                    type="button"
-                    style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                {/* <button
+                  type="button"
+                  className="like-button"
+                  onClick={() => handleLikeClick(product.code)}
+                  aria-label={likedProducts.includes(product.code) ? 'Remove from favorites' : 'Add to favorites'}
                 >
-                </button>
-                </div>
+                  {likedProducts.includes(product.code) ? (
+                    <AiFillHeart size={24} color="#FF5733" />
+                  ) : (
+                    <AiOutlineHeart size={24} color="#FF5733" />
+                  )}
+                </button> */}
+              </div>
             </div>
-            </div>
-         ))}
-        </div>
+          ))
+        ) : (
+          <p className="no-products">해당 브랜드에 상품이 없습니다.</p>
+        )}
+      </div>
     </div>
   );
 }

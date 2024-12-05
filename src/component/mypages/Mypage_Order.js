@@ -7,7 +7,7 @@ import { FaRegHandPointRight, FaRegHandPointLeft } from "react-icons/fa";
 import { FcCalendar } from "react-icons/fc";
 import { MdOutlineWavingHand } from "react-icons/md";
 import axios from "axios";
-import nikeImage from '../../img/Nike.PNG'; // Import your image here
+import nikeImage from '../../img/Nike.PNG';
 
 function Sidebar({ handleDeleteAccount, handleLogout }) {
     const navigate = useNavigate();
@@ -54,8 +54,9 @@ function Sidebar({ handleDeleteAccount, handleLogout }) {
 function OrderContainer() {
     const [nickname, setNickname] = useState('');
     const [Id, setId] = useState('');
-    const [orderDate, setOrderDate] = useState('');
     const navigate = useNavigate();
+    const [orders, setOrders] = useState([]);
+    const [prevOrderDate, setPrevOrderDate] = useState('');
 
     useEffect(() => {
         const accessToken = sessionStorage.getItem('accessToken');
@@ -74,21 +75,35 @@ function OrderContainer() {
             .catch(error => {
                 console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
             });
-
-            axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/orders`, {
-                headers: {
-                    Authorization: `${accessToken}`
-                }
-            })
-            .then(response => {
-                if (response.data && response.data.orders) {
-                    setOrderDate(response.data.orders[0].orderDate);
-                }
-            })
-            .catch(error => {
-                console.log("주문 날짜를 가져오는 중 오류가 발생했습니다.", error);
-            });
         }
+    }, []);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            console.log("////////사용자 토큰////////");
+            console.log(`${sessionStorage.getItem("accessToken")}`);
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/client`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `${sessionStorage.getItem("accessToken")}`
+                    }
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+    
+                const data = await response.json();
+                console.log("응답 데이터:", data);
+                setOrders(data); // 주문 데이터를 상태에 저장
+    
+            } catch (err) {
+                console.error('주문 조회를 가져오는 데 실패했습니다:', err);
+            }
+        };
+    
+        fetchProducts();
     }, []);
 
     const handleLogout = () => {
@@ -105,6 +120,7 @@ function OrderContainer() {
             if (result.isConfirmed) {
                 sessionStorage.removeItem("accessToken");
                 sessionStorage.removeItem("role");
+                sessionStorage.removeItem("id");
                 console.log("로그아웃되었습니다.");
                 navigate('/');
             }
@@ -173,29 +189,56 @@ function OrderContainer() {
             <Sidebar handleDeleteAccount={handleDeleteAccount} handleLogout={handleLogout} />
             <div className="order-content-area">
                 <div className="order-rectangle">
-                    <div className="order-circle"><MdOutlineWavingHand size={38} color='#333' /></div>
+                    <div className="order-circle">
+                        <MdOutlineWavingHand size={38} color='#333' />
+                    </div>
                     <span className="order-text">{nickname} 님 안녕하세요!</span>
                 </div>
                 <div className="order-title">
-                    <span><FaRegHandPointRight />    ------------------    주문 조회    ------------------    <FaRegHandPointLeft /></span>
-                    <div className='myorder-day'>
-                        {orderDate} 24.10.31   <FcCalendar />
-                    </div>
-                    <div className="myorder-rectangle">
-                        <div className="myorder-product-image">
-                            <img src={nikeImage} alt="Nike Product" /> {/* Use the imported image */}
-                        </div>
-                        <div className="myorder-product-info">
-                            <span className="myorder-product-name">나이키 에어 포스 1 "07</span> {/* Replace with actual product name */}
-                        </div>
-                        <div className="myorder-product-price">
-                            KRW 169,000 {/* Replace with actual price */}
-                        </div>
-                    </div>
+                    <span>
+                        <FaRegHandPointRight /> ------------------ 주문 조회 ------------------ <FaRegHandPointLeft />
+                    </span>
                 </div>
+    
+                {orders.length > 0 ? (
+                    <div className="myorder-list">
+                        {orders.map(order => (
+                            <div key={order.code} className="myorder-container">
+                                <div className="myorder-day">
+                                    {new Date(order.orderDate).toLocaleDateString()} <FcCalendar />
+                                </div>
+                                <div className="myorder-rectangle">
+                                    <div className="myorder-products">
+                                        {order.orderItems.map(item => (
+                                            <div key={item.id} className="myorder-product">
+                                               <img 
+                                                src={item.thumbnail}
+                                                alt="Product Thumbnail" 
+                                            />
+                                                <div className="myorder-product-info">
+                                                    <span className="highlights">상품명 :</span> {item.name},&nbsp;&nbsp;
+                                                    <span className="highlights">색상 :</span> {item.color},&nbsp;&nbsp;
+                                                    <span className="highlights">사이즈 :</span> 
+                                                        {item.clothesSize || item.shoesSize || "-"}
+                                                        ,&nbsp;&nbsp;
+                                                    <span className="highlights">수량 :</span> {item.stock}
+                                                </div>
+                                                <div className="myorder-product-price">
+                                                    {`${Number(item.price).toLocaleString()} 원`}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="no-orders">주문 내역이 없습니다.</div>
+                )}
             </div>
         </div>
-    );
+    );    
 }
 
 export default OrderContainer;

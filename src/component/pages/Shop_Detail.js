@@ -616,7 +616,7 @@ const ShopDetail = () => {
             setFileNames([]);
             return;
         }
-
+      
         const formData = new FormData();
 
         // reviewRequest를 JSON 문자열로 변환하여 Blob으로 추가

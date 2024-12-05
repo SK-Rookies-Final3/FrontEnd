@@ -80,6 +80,8 @@ function OrderContainer() {
 
     useEffect(() => {
         const fetchProducts = async () => {
+            console.log("////////사용자 토큰////////");
+            console.log(`${sessionStorage.getItem("accessToken")}`);
             try {
                 const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/client`, {
                     method: 'GET',

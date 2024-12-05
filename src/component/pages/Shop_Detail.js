@@ -614,7 +614,7 @@ const ShopDetail = () => {
         return;
     }
     
-        const newReview = {
+        const reviewCode = {
             starRating: rating,
             height: height || "비공개",
             weight: weight || "비공개",
@@ -625,12 +625,12 @@ const ShopDetail = () => {
             productCode: parseInt(productCode, 10),
             userId : parseInt(id, 10),
         };
-        console.log(newReview)
+        console.log(reviewCode)
     
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${productCode}`,
-                newReview,
+                reviewCode,
                 {
                     headers: {
                         Authorization: accessToken,

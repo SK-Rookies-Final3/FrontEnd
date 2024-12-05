@@ -30,6 +30,7 @@ const ShopDetail = () => {
     const [likedShorts, setLikedShorts] = useState([]);
     const { productCode } = useParams();
     const [product, setProduct] = useState(null);
+    const [thumbnail, setThumbnails] = useState([]);
 
     // ImageModal 상태 관리
     const [showImageModal, setShowImageModal] = useState(false);
@@ -518,26 +519,21 @@ const ShopDetail = () => {
         }
     };
 
-    const handleImageUpload = (e) => {
-        const selectedFiles = Array.from(e.target.files);
+    const handleThumbnailChange = (event) => {
+        const files = event.target.files;
+        if (files) {
+            const selectedFiles = Array.from(files);
+            if (selectedFiles.length > 3) {
+                Swal.fire({
+                    title: '이미지 수 초과',
+                    text: '썸네일 이미지는 최대 3개까지 첨부할 수 있습니다.',
+                    icon: 'warning',
+                });
+                return;
+            }
 
-        if (selectedFiles.length > 3) {
-            Swal.fire({
-                title: '최대 3개까지 업로드 가능합니다.',
-                text: '이미지를 업로드하려면 일부를 제거해주세요.',
-                icon: 'warning',
-                confirmButtonText: '확인',
-                confirmButtonColor: '#754F23',
-                background: '#F0EADC',
-                color: '#754F23',
-            });
-            e.target.value = "";
-            return;
+            setThumbnails(selectedFiles);
         }
-
-        const imageUrls = selectedFiles.map((file) => URL.createObjectURL(file));
-        setImages(imageUrls);
-        setFileNames(selectedFiles.map(file => file.name));
     };
 
     const handleImageNavigation = (reviewId, direction) => {
@@ -620,9 +616,9 @@ const ShopDetail = () => {
             setFileNames([]);
             return;
         }
-    
+      
         const formData = new FormData();
-    
+
         // reviewRequest를 JSON 문자열로 변환하여 Blob으로 추가
         const reviewRequestJson = JSON.stringify({
             starRating: rating,
@@ -632,15 +628,20 @@ const ShopDetail = () => {
             username: username,
             productCode: parseInt(productCode, 10),
         });
-    
+
         const reviewRequestBlob = new Blob([reviewRequestJson], { type: "application/json" });
         formData.append("reviewRequest", reviewRequestBlob);
-    
+
+        // 썸네일 이미지 추가
+        thumbnail.forEach((file, index) => {
+            formData.append('imageUrl', file);
+        });
+
         // FormData 확인 로그 추가
         console.log("FormData 확인:");
         for (let pair of formData.entries()) {
             console.log(`${pair[0]}:`, pair[1]); // 기본 로그 출력
-    
+
             // Blob인 경우 내용을 출력
             if (pair[1] instanceof Blob) {
                 const reader = new FileReader();
@@ -650,7 +651,7 @@ const ShopDetail = () => {
                 reader.readAsText(pair[1]);
             }
         }
-    
+
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${productCode}`,
@@ -664,10 +665,10 @@ const ShopDetail = () => {
                     withCredentials: true,
                 }
             );
-    
+
             console.log("리뷰 작성 성공:", response.data);
             await fetchReviews();
-    
+
             // 초기화
             setRating(0);
             setHeight("");
@@ -675,7 +676,7 @@ const ShopDetail = () => {
             setDescription("");
         } catch (error) {
             console.error("리뷰 작성 실패:", error);
-    
+
             Swal.fire({
                 title: "리뷰 작성에 실패했습니다.",
                 text: error.response?.data?.message || "다시 시도해주세요.",
@@ -845,7 +846,7 @@ const ShopDetail = () => {
                                                 type="file"
                                                 accept="image/*"
                                                 multiple
-                                                onChange={handleImageUpload}
+                                                onChange={handleThumbnailChange}
                                             />
                                             이미지 첨부
                                         </label>
@@ -919,7 +920,7 @@ const ShopDetail = () => {
                                             <p>{review.content}</p>
                                         </div>
                                         <div className="review-bottom">
-                                            <span>ID: {review.username} / {review.reviewDate}</span>
+                                            <span>ID: {review.username} / {new Date(review.reviewDate).toLocaleDateString()}</span>
 
                                             {review.userId === parseInt(sessionStorage.getItem("id")) && (
                                                 <button className="delete-button" onClick={() => {

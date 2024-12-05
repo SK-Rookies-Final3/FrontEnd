@@ -76,7 +76,7 @@ const ShopDetail = () => {
     };
 
     useEffect(() => {
-        
+
         const fetchWishlistStatus = async () => {
             const accessToken = sessionStorage.getItem("accessToken");
 
@@ -134,9 +134,9 @@ const ShopDetail = () => {
                 // 위시리스트에 추가
                 await axios.post(
                     `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products`,
-                    { 
+                    {
                         //productThumbnail, 
-                        productCode 
+                        productCode
                     },
                     {
                         headers: {
@@ -151,7 +151,27 @@ const ShopDetail = () => {
             console.error("Error updating wishlist:", error);
         }
 
-    
+
+
+        // 별점 평균 계산 함수
+        const calculateAverageRating = () => {
+            if (!Array.isArray(reviews) || reviews.length === 0) {
+                console.log("Reviews 배열이 비어 있거나 배열이 아님:", reviews);
+                return 0;
+            }
+
+            // review.starRating을 기준으로 평균 계산
+            const totalRating = reviews.reduce((acc, review) => {
+                const rating = review.starRating || 0;
+                return acc + rating;
+            }, 0);
+
+            const average = totalRating / reviews.length;
+            return average.toFixed(1);
+        };
+
+
+    };
 
     // 별점 평균 계산 함수
     const calculateAverageRating = () => {
@@ -159,33 +179,13 @@ const ShopDetail = () => {
             console.log("Reviews 배열이 비어 있거나 배열이 아님:", reviews);
             return 0;
         }
-    
+
         // review.starRating을 기준으로 평균 계산
         const totalRating = reviews.reduce((acc, review) => {
-            const rating = review.starRating || 0; 
+            const rating = review.starRating || 0;
             return acc + rating;
         }, 0);
-    
-        const average = totalRating / reviews.length;
-        return average.toFixed(1);
-    };
 
-
-    };
-
-    // 별점 평균 계산 함수
-    const calculateAverageRating = () => {
-        if (!Array.isArray(reviews) || reviews.length === 0) {
-            console.log("Reviews 배열이 비어 있거나 배열이 아님:", reviews);
-            return 0;
-        }
-    
-        // review.starRating을 기준으로 평균 계산
-        const totalRating = reviews.reduce((acc, review) => {
-            const rating = review.starRating || 0; 
-            return acc + rating;
-        }, 0);
-    
         const average = totalRating / reviews.length;
         return average.toFixed(1);
     };
@@ -260,7 +260,7 @@ const ShopDetail = () => {
     useEffect(() => {
         fetchReviews();
     }, [productCode]);
-    
+
 
     useEffect(() => {
         setAverageRating(() => {
@@ -559,19 +559,19 @@ const ShopDetail = () => {
     useEffect(() => {
         const fetchUsername = async () => {
             const accessToken = sessionStorage.getItem("accessToken");
-    
+
             if (!accessToken) {
                 console.error("Access token is missing.");
                 return;
             }
-    
+
             try {
                 const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user`, {
                     headers: {
                         Authorization: `${accessToken}`
                     }
                 });
-    
+
                 if (response.data && response.data.body) {
                     setUsername(response.data.body.username); // API에서 username 가져오기
                 } else {
@@ -581,7 +581,7 @@ const ShopDetail = () => {
                 console.error("Error fetching username:", error);
             }
         };
-    
+
         fetchUsername();
     }, []);
 
@@ -597,44 +597,46 @@ const ShopDetail = () => {
             });
             return;
         }
-
-        const userAlreadyReviewed = reviews.some((review) => review.userId === parseInt(id));
-    if (userAlreadyReviewed) {
-        Swal.fire({
-            title: "이미 리뷰를 작성하셨습니다.",
-            text: "하나의 상품에는 하나의 리뷰만 작성할 수 있습니다.",
-            icon: "warning",
-        });
-        setRating(0);
-        setHeight("");
-        setWeight("");
-        setDescription("");
-        setFileNames([]);
-        setImages([]);
-        return;
-    }
     
-        const reviewCode = {
+        const formData = new FormData();
+    
+        // reviewRequest를 JSON 문자열로 변환하여 Blob으로 추가
+        const reviewRequestJson = JSON.stringify({
             starRating: rating,
             height: height || "비공개",
             weight: weight || "비공개",
             content: description,
-            // color: product.color,
-            // size: product.category === "신발" ? product.shoesSize : product.clothesSize,
-            username: username, 
+            username: username,
             productCode: parseInt(productCode, 10),
-            userId : parseInt(id, 10),
-        };
-        console.log(reviewCode)
+        });
+    
+        const reviewRequestBlob = new Blob([reviewRequestJson], { type: "application/json" });
+        formData.append("reviewRequest", reviewRequestBlob);
+    
+        // FormData 확인 로그 추가
+        console.log("FormData 확인:");
+        for (let pair of formData.entries()) {
+            console.log(`${pair[0]}:`, pair[1]); // 기본 로그 출력
+    
+            // Blob인 경우 내용을 출력
+            if (pair[1] instanceof Blob) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    console.log(`Blob(${pair[0]}) 내용:`, e.target.result);
+                };
+                reader.readAsText(pair[1]);
+            }
+        }
     
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${productCode}`,
-                reviewCode,
+                formData,
                 {
                     headers: {
                         Authorization: accessToken,
-                        "Content-Type": "application/json",
+                        "Content-Type": "multipart/form-data",
+                        userId: id,
                     },
                     withCredentials: true,
                 }
@@ -642,13 +644,15 @@ const ShopDetail = () => {
     
             console.log("리뷰 작성 성공:", response.data);
             await fetchReviews();
-            
+    
+            // 초기화
             setRating(0);
             setHeight("");
             setWeight("");
             setDescription("");
         } catch (error) {
             console.error("리뷰 작성 실패:", error);
+    
             Swal.fire({
                 title: "리뷰 작성에 실패했습니다.",
                 text: error.response?.data?.message || "다시 시도해주세요.",
@@ -656,7 +660,7 @@ const ShopDetail = () => {
             });
         }
     };
-    
+
     const handleDeleteReview = async (reviewId) => {
         Swal.fire({
             icon: 'warning',
@@ -672,7 +676,7 @@ const ShopDetail = () => {
             if (result.isConfirmed) {
                 try {
                     const accessToken = sessionStorage.getItem("accessToken");
-    
+
                     if (!accessToken) {
                         Swal.fire({
                             title: "로그인 정보가 없습니다.",
@@ -682,7 +686,7 @@ const ShopDetail = () => {
                         return;
                     }
                     console.log(`Deleting Review with URL: ${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${reviewId}`);
-    
+
                     // userId 제거 후 백엔드에 삭제 요청
                     const response = await axios.delete(
                         `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${reviewId}`,
@@ -694,7 +698,7 @@ const ShopDetail = () => {
                             withCredentials: true,
                         }
                     );
-    
+
                     if (response.status === 204) {
                         Swal.fire({
                             title: "리뷰가 삭제되었습니다.",
@@ -704,7 +708,7 @@ const ShopDetail = () => {
                             background: "#F0EADC",
                             color: "#754F23",
                         });
-    
+
                         setReviews((prevReviews) => prevReviews.filter((review) => review.reviewCode !== reviewId));
                     }
                 } catch (error) {
@@ -718,7 +722,7 @@ const ShopDetail = () => {
             }
         });
     };
-    
+
 
     const handleImageClick = (images, index) => {
         setSelectedImages(images);
@@ -738,7 +742,7 @@ const ShopDetail = () => {
                     <div>
                         <div className="video-gallery">
                             {[1, 2, 3, 4, 5, 6].map((video, index) => {
-                                const shortCode = `short-${index + 1}`; 
+                                const shortCode = `short-${index + 1}`;
                                 return (
                                     <div
                                         key={index}
@@ -782,7 +786,7 @@ const ShopDetail = () => {
                         {/* 상세 텍스트 */}
                         <div className="detail-text">
                             <p>{product?.textInformation || '상세 정보가 없습니다.'}</p>
-                        </div>  
+                        </div>
                     </div>
                 );
             case '상품리뷰':
@@ -871,7 +875,7 @@ const ShopDetail = () => {
                                                 </div>
                                             )}
                                         </div>
-                                    ): (
+                                    ) : (
                                         <p>이미지가 없습니다.</p>
                                     )}
                                     <div className="review-content">
@@ -893,12 +897,12 @@ const ShopDetail = () => {
                                         </div>
                                         <div className="review-bottom">
                                             <span>ID: {review.username} / {review.reviewDate}</span>
-                                        
+
                                             {review.userId === parseInt(sessionStorage.getItem("id")) && (
                                                 <button className="delete-button" onClick={() => {
                                                     handleDeleteReview(review.reviewId);
-                                                    }}>
-                                                    <FaTrash /> 
+                                                }}>
+                                                    <FaTrash />
                                                 </button>
                                             )}
                                         </div>
@@ -1040,8 +1044,8 @@ const ShopDetail = () => {
                     >
                         <div className={`form-option-placeholder ${product?.stock === 0 ? "sold-out" : ""}`}>
                             {product?.stock === 0
-                            ? "SOLD OUT" // 재고 없을 경우 텍스트 변경 및 클래스 추가
-                            : (selectedAmount !== "Choose a amount" ? selectedAmount : "Choose a amount")}
+                                ? "SOLD OUT" // 재고 없을 경우 텍스트 변경 및 클래스 추가
+                                : (selectedAmount !== "Choose a amount" ? selectedAmount : "Choose a amount")}
                         </div>
                     </div>
                     {isAmountActive && product?.stock > 0 && (
@@ -1073,10 +1077,10 @@ const ShopDetail = () => {
                     aria-label={wishlistItems.includes(productCode) ? "Remove from Wishlist" : "Add to Wishlist"}
                 >
                     {wishlistItems.includes(productCode) ? (
-                            <span className="added">Added</span>
-                        ) : (
-                            <span className="add-to-wishlist">Add to Wishlist</span>
-                        )}
+                        <span className="added">Added</span>
+                    ) : (
+                        <span className="add-to-wishlist">Add to Wishlist</span>
+                    )}
                     <FaHeart className="fa-heart" />
                 </button>
 

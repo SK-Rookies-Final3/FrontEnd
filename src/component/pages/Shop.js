@@ -33,7 +33,7 @@ export default function Shop() {
   // 백엔드에서 상품 데이터 가져오기
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/`); // 백엔드 엔드포인트
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product`); // 백엔드 엔드포인트
       const sortedProducts = response.data.sort((a, b) => {
         return a.name.localeCompare(b.name, 'ko', { numeric: true });
       });

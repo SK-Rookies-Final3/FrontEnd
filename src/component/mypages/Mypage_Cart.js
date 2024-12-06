@@ -75,7 +75,7 @@ function Mypage_Cart() {
                 });
 
                 const data = response.data;
-                console.log("Fetched cart items:", data); // 데이터 로그 찍기
+                console.log("일반 장바구니 : ", data); // 데이터 로그 찍기
 
                 // 데이터 상태에 저장
                 setStock(data);
@@ -155,7 +155,7 @@ function Mypage_Cart() {
             if (!details) return;
 
             const newTargetItem = {
-                stamp_id: parseInt(e.timeStamp),
+                itemCode: parseInt(e.timeStamp),
                 top: e.clientY - box.top,
                 left: e.clientX - box.left,
                 details: details,
@@ -178,9 +178,9 @@ function Mypage_Cart() {
                 ...activeTab,
                 items: targets.map(target => ({
                     tabId: activeTab.id,
-                    stamp_id: target.stamp_id,
-                    top: positionRef.current[target.stamp_id]?.top || target.top,
-                    left: positionRef.current[target.stamp_id]?.left || target.left,
+                    itemCode: target.itemCode,
+                    top: positionRef.current[target.itemCode]?.top || target.top,
+                    left: positionRef.current[target.itemCode]?.left || target.left,
                     details: target.details,
                 }))
             };
@@ -200,7 +200,7 @@ function Mypage_Cart() {
 
         // 배열에서 드래그 중인 아이템을 마지막으로 이동
         setTargets((prevTargets) => {
-            const targetIndex = prevTargets.findIndex((target) => target.stamp_id === targetId);
+            const targetIndex = prevTargets.findIndex((target) => target.itemCode === targetId);
             if (targetIndex !== -1) {
                 const targetItem = prevTargets[targetIndex];
                 const updatedTargets = [...prevTargets];
@@ -211,7 +211,7 @@ function Mypage_Cart() {
             return prevTargets;
         });
 
-        const targetItem = targets.find((target) => target.stamp_id === targetId);
+        const targetItem = targets.find((target) => target.itemCode === targetId);
         if (targetItem) {
             const itemElement = document.getElementById(targetId);
             const itemRect = itemElement.getBoundingClientRect();
@@ -233,7 +233,7 @@ function Mypage_Cart() {
 
                 setTargets((prevTargets) =>
                     prevTargets.map((target) =>
-                        target.stamp_id === targetId
+                        target.itemCode === targetId
                             ? { ...target, left: newLeft, top: newTop }
                             : target
                     )
@@ -260,7 +260,7 @@ function Mypage_Cart() {
                     // target-box 외부에 놓였을 때 이전 위치로 복귀
                     setTargets((prevTargets) =>
                         prevTargets.map((target) =>
-                            target.stamp_id === targetId
+                            target.itemCode === targetId
                                 ? { ...target, left: originalX.current, top: originalY.current }
                                 : target
                         )
@@ -273,33 +273,135 @@ function Mypage_Cart() {
         }
     };
 
-    const deleteTarget = (stamp_id) => {
-        setTargets((targets) => targets.filter((target) => target.stamp_id !== stamp_id));
+    const deleteTarget = (itemCode) => {
+        setTargets((targets) => targets.filter((target) => target.itemCode !== itemCode));
     };
 
-    const addTabToSecondBox = () => {
-        const tabId = Date.now();
-        const newTab = {
-            id: tabId,
-            name: `탭 ${savedTabs.length + 1}`,
-            items: targets.map(target => ({
-                tabId: tabId,
-                stamp_id: target.stamp_id,
-                top: positionRef.current[target.stamp_id]?.top || target.top,
-                left: positionRef.current[target.stamp_id]?.left || target.left,
-                details: target.details,
-            }))
+    // 커스텀 장바구니 가져오기 함수 분리
+    const fetchCustomCartItems = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/custom`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': sessionStorage.getItem('accessToken'),
+                },
+            });
+
+            const data = response.data;
+            console.log("커스텀장바구니 : ", data);
+            // 커스텀 장바구니 데이터 상태에 저장
+            setCustomCartData(data);
+        } catch (error) {
+            console.error("Failed to fetch custom cart items:", error);
+            Swal.fire({
+                title: "커스텀 장바구니 데이터를 가져오는 데 실패했습니다.",
+                text: error.response?.data?.message || error.message || "",
+                icon: "error",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+        }
+    };
+
+    useEffect(() => {
+        fetchCustomCartItems();
+    }, []);
+
+    const addTabToSecondBox = async () => {
+        const userId = sessionStorage.getItem('id');
+        const accessToken = sessionStorage.getItem('accessToken');
+
+        const items = targets.map(target => ({
+            itemCode: target.itemCode,
+            top: positionRef.current[target.itemCode]?.top || target.top,
+            left: positionRef.current[target.itemCode]?.left || target.left,
+            productImage: target.details.productImage,
+            productName: target.details.productName
+        }));
+
+        try {
+            const response = await axios.post(
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/custom`,
+                {
+                    userId: userId,
+                    items: items
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': accessToken,
+                    },
+                }
+            );
+
+            console.log("Custom cart save response:", response.data);
+
+            await fetchCustomCartItems();
+
+            // 성공적으로 저장 후 타겟 초기화
+            setTargets([]);
+        } catch (error) {
+            console.error("Failed to save custom cart items:", error);
+            Swal.fire({
+                title: "커스텀 장바구니 저장 실패",
+                text: error.response?.data?.message || error.message || "",
+                icon: "error",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+        }
+    };
+
+    const [customCartData, setCustomCartData] = useState([]);
+    // 커스텀 장바구니 가져오기
+    useEffect(() => {
+        const fetchCustomCartItems = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/custom`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': sessionStorage.getItem('accessToken'),
+                    },
+                });
+
+                const data = response.data;
+                console.log("커스텀장바구니 : ", data);
+                // 커스텀 장바구니 데이터 상태에 저장
+                setCustomCartData(data);
+            } catch (error) {
+                console.error("Failed to fetch custom cart items:", error);
+                Swal.fire({
+                    title: "커스텀 장바구니 데이터를 가져오는 데 실패했습니다.",
+                    text: error.response?.data?.message || error.message || "",
+                    icon: "error",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#754F23",
+                    background: "#F0EADC",
+                    color: "#754F23",
+                });
+            }
         };
-
-        setSavedTabs([...savedTabs, newTab]);
-        setTargets([]);
-        console.log("newTab targets:", newTab.items);
-    };
+        fetchCustomCartItems();
+    }, []);
 
     const showTabInBox = (tab) => {
+        const mappedTargets = tab.items.map(item => ({
+            itemCode: item.itemCode,
+            top: item.top,
+            left: item.left,
+            details: {
+                productName: item.productName,
+                productImage: item.productImage,
+            },
+        }));
+
         setActiveTab(tab);
-        setTargets(tab.items);
-        console.log("newTab targets:", tab.items);
+        setTargets(mappedTargets);
+        console.log("newTab targets:", mappedTargets);
     };
 
     const closeActiveTab = () => {
@@ -552,7 +654,9 @@ function Mypage_Cart() {
                                 <div
                                     key={tab.id}
                                     ref={el => tabRefs.current[tab.id] = el}
-                                    className="item-node saved-tab" onClick={() => showTabInBox(tab)}>
+                                    className="item-node saved-tab"
+                                    onClick={() => showTabInBox(tab)}
+                                >
                                     <div className="saved-tab-content">
                                         {tab.name}
                                     </div>
@@ -571,6 +675,36 @@ function Mypage_Cart() {
                                     </div>
                                 </div>
                             ))}
+
+                            {Array.isArray(customCartData) && customCartData.map((cart) => (
+                                <div
+                                    key={cart.tabId}
+                                    ref={el => tabRefs.current[cart.tabId] = el}
+                                    className="item-node saved-tab"
+                                    onClick={() => showTabInBox({
+                                        id: cart.tabId,
+                                        name: cart.title,
+                                        items: cart.items
+                                    })}
+                                >
+                                    <div className="saved-tab-content">
+                                        {cart.title}
+                                    </div>
+                                    <div
+                                        className="circle"
+                                        onClick={() => handleAnimation(cart.tabId)}
+                                        ref={el => circleRefs.current[cart.tabId] = el}
+                                    >
+                                        <span className="icon">
+                                            <FaTrashAlt />
+                                        </span>
+                                        <div
+                                            className="circle_loader"
+                                            ref={el => circleLoaderRefs.current[cart.tabId] = el}
+                                        ></div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
@@ -585,8 +719,8 @@ function Mypage_Cart() {
 
                         {targets.map((target) => (
                             <div
-                                key={target.stamp_id}
-                                id={target.stamp_id}
+                                key={target.itemCode}
+                                id={target.itemCode}
                                 className="target-item"
                                 style={{ top: `${target.top}px`, left: `${target.left}px` }}
 
@@ -596,12 +730,12 @@ function Mypage_Cart() {
                                         className="pin-icon top-center-handle"
                                         onMouseDown={(e) => {
                                             e.preventDefault();
-                                            targetDragStartHandler(e, target.stamp_id);
+                                            targetDragStartHandler(e, target.itemCode);
                                         }}
                                     >
                                         <BsPinAngleFill />
                                     </div>
-                                    <button onClick={() => deleteTarget(target.stamp_id)} className="close-delete-button">
+                                    <button onClick={() => deleteTarget(target.itemCode)} className="close-delete-button">
                                         <IoMdCloseCircleOutline />
                                     </button>
                                 </div>

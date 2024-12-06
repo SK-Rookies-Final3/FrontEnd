@@ -1,18 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import "../css/Mypage_Cart.css";
-import test1 from "../../img/Nike.PNG";
-import test2 from "../../img/product.jpg";
-import test3 from "../../img/product-d.jpg";
 import { BsPinAngleFill } from "react-icons/bs";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { FaTrashAlt } from 'react-icons/fa';
-
-// 상품 가격 배열
-const STOCK_PRICE = [
-    { id: 1, name: "신발", price: 1000, image: test1, size: 260, color: "BROWN", amount: 1 },
-    { id: 2, name: "상하의", price: 2000, image: test2, size: "S", color: "WHITE", amount: 3 },
-    { id: 3, name: "셔츠", price: 3000, image: test3, size: "M", color: "GRAY", amount: 8 },
-];
 
 function Mypage_Cart() {
     const [targets, setTargets] = useState([]);
@@ -28,16 +18,21 @@ function Mypage_Cart() {
     const tabRefs = useRef({});
 
     // 상품 목록을 관리하기 위한 상태 추가
-    const [stock, setStock] = useState(STOCK_PRICE);
+    const [stock, setStock] = useState([]);
 
     // 선택된 항목을 저장하는 상태
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false); // 전체 선택 상태
 
+    // 삭제 중인 항목들을 추적하는 상태
+    const [deletingItems, setDeletingItems] = useState([]);
+
+    // 로딩 상태
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
     let posX = 0;
     let posY = 0;
-    // let originalX = 0;
-    // let originalY = 0;
     const originalX = useRef(0);
     const originalY = useRef(0);
     const offsetX = useRef(0);
@@ -45,13 +40,15 @@ function Mypage_Cart() {
 
     useEffect(() => {
         const updateBox = () => {
-            const box = targetBoxRef.current.getBoundingClientRect();
-            setBox({
-                top: box.top,
-                left: box.left,
-                bottom: box.top + box.height,
-                right: box.left + box.width,
-            });
+            if (targetBoxRef.current) {
+                const box = targetBoxRef.current.getBoundingClientRect();
+                setBox({
+                    top: box.top,
+                    left: box.left,
+                    bottom: box.top + box.height,
+                    right: box.left + box.width,
+                });
+            }
         };
 
         // 초기 렌더링 시 box 좌표 계산
@@ -61,6 +58,39 @@ function Mypage_Cart() {
         window.addEventListener("resize", updateBox);
 
         return () => window.removeEventListener("resize", updateBox);
+    }, []);
+
+    // 컴포넌트 마운트 시 API에서 데이터 가져오기
+    useEffect(() => {
+        const fetchCartItems = async () => {
+            setIsLoading(true);
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': sessionStorage.getItem('accessToken'),
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Fetched cart items:", data); // 데이터 로그 찍기
+
+                // 데이터 상태에 저장
+                setStock(data);
+            } catch (error) {
+                console.error("Failed to fetch cart items:", error);
+                alert("장바구니 데이터를 가져오는 데 실패했습니다.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCartItems();
     }, []);
 
     // 애니메이션 핸들러
@@ -86,7 +116,7 @@ function Mypage_Cart() {
                         setActiveTab(null);
                         setTargets([]);
                     }, 1000);
-                });
+                }, 100);
             }, 100);
         }
     };
@@ -115,7 +145,9 @@ function Mypage_Cart() {
     const dragEndHandler = (e) => {
         if (box.left < e.clientX && e.clientX < box.right && box.top < e.clientY && e.clientY < box.bottom) {
             const targetId = parseInt(e.target.id);
-            const details = STOCK_PRICE.find((item) => item.id === targetId);
+            const details = stock.find((item) => item.id === targetId);
+
+            if (!details) return;
 
             const newTargetItem = {
                 stamp_id: parseInt(e.timeStamp),
@@ -157,79 +189,6 @@ function Mypage_Cart() {
             console.log("Edited tab targets:", updatedTab.items);
         }
     };
-
-    // const targetDragStartHandler = (e) => {
-    //     const img = new Image();
-    //     e.dataTransfer.setDragImage(img, 0, 0);
-    //     e.dataTransfer.setData("targetId", e.target.id || "");
-    //     posX = e.clientX - e.target.offsetLeft;
-    //     posY = e.clientY - e.target.offsetTop;
-    //     originalX = e.target.offsetLeft;
-    //     originalY = e.target.offsetTop;
-    // };
-
-    // const targetDragStartHandler = (e, targetId) => {
-    //     posX = e.clientX;
-    //     posY = e.clientY;
-
-    //     const handleMouseMove = (moveEvent) => {
-    //         // 드래그가 종료된 위치에서 좌표 저장
-    //         const dx = moveEvent.clientX - posX;
-    //         const dy = moveEvent.clientY - posY;
-    //         posX = moveEvent.clientX;
-    //         posY = moveEvent.clientY;
-
-    //         setTargets((targets) =>
-    //             targets.map((target) =>
-    //                 target.stamp_id === targetId
-    //                     ? { ...target, top: target.top + dy, left: target.left + dx }
-    //                     : target
-    //             )
-    //         );
-    //     };
-
-    //     // document에 이벤트 리스너를 붙이면 화면 어디에서든 해당 이벤트를 감지
-    //     const handleMouseUp = () => {
-    //         // 이벤트가 더 이상 발생하지 않도록 정리
-    //         document.removeEventListener("mousemove", handleMouseMove);
-    //         document.removeEventListener("mouseup", handleMouseUp);
-    //     };
-
-    //     // 특정 이벤트가 발생할 때 실행할 동작을 정의
-    //     document.addEventListener("mousemove", handleMouseMove);
-    //     document.addEventListener("mouseup", handleMouseUp);
-    // };
-
-    // const targetDragEndHandler = (e) => {
-    //     const targetId = parseInt(e.dataTransfer.getData("targetId"));
-
-    //     if (box.left < e.clientX && e.clientX < box.right && box.top < e.clientY && e.clientY < box.bottom) {
-    //         setTargets((targets) => {
-    //             const newTargets = targets.map((target) =>
-    //                 target.stamp_id === targetId
-    //                     ? { ...target, top: e.clientY - box.top, left: e.clientX - box.left }
-    //                     : target
-    //             );
-
-    //             // positionRef에 최신 좌표 업데이트
-    //             positionRef.current[targetId] = {
-    //                 top: e.clientY - box.top,
-    //                 left: e.clientX - box.left,
-    //             };
-
-    //             return newTargets;
-    //         });
-    //     } else {
-    //         e.target.style.left = `${originalX}px`;
-    //         e.target.style.top = `${originalY}px`;
-
-    //         // positionRef에 원래 좌표로 복원
-    //         positionRef.current[targetId] = {
-    //             top: originalY,
-    //             left: originalX,
-    //         };
-    //     }
-    // };
 
     const targetDragStartHandler = (e, targetId) => {
         e.preventDefault();
@@ -309,48 +268,6 @@ function Mypage_Cart() {
         }
     };
 
-    const targetDragEndHandler = (e, targetId) => {
-        const boxRect = targetBoxRef.current.getBoundingClientRect();
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-
-        if (boxRect.left < e.clientX &&
-            e.clientX < boxRect.right &&
-            boxRect.top < e.clientY &&
-            e.clientY < boxRect.bottom) {
-
-            setTargets((targets) => {
-                const newTargets = targets.map((target) =>
-                    target.stamp_id === targetId
-                        ? {
-                            ...target,
-                            top: e.clientY + scrollTop - boxRect.top,
-                            left: e.clientX + scrollLeft - boxRect.left
-                        }
-                        : target
-                );
-
-                // positionRef 업데이트
-                positionRef.current[targetId] = {
-                    top: e.clientY + scrollTop - boxRect.top,
-                    left: e.clientX + scrollLeft - boxRect.left
-                };
-
-                return newTargets;
-            });
-        } else {
-            // target-box 외부에 놓였을 때 이전 위치로 복귀
-            const previousPosition = positionRef.current[targetId];
-            setTargets((targets) =>
-                targets.map((target) =>
-                    target.stamp_id === targetId
-                        ? { ...target, top: previousPosition.top, left: previousPosition.left }
-                        : target
-                )
-            );
-        }
-    };
-
     const deleteTarget = (stamp_id) => {
         setTargets((targets) => targets.filter((target) => target.stamp_id !== stamp_id));
     };
@@ -366,14 +283,12 @@ function Mypage_Cart() {
                 top: positionRef.current[target.stamp_id]?.top || target.top,
                 left: positionRef.current[target.stamp_id]?.left || target.left,
                 details: target.details,
-                // customName: `탭 ${savedTabs.length + 1}`
             }))
         };
 
         setSavedTabs([...savedTabs, newTab]);
         setTargets([]);
         console.log("newTab targets:", newTab.items);
-        // console.log("Current targets:", targets);
     };
 
     const showTabInBox = (tab) => {
@@ -392,7 +307,7 @@ function Mypage_Cart() {
         if (selectAll) {
             setSelectedItems([]); // 전체 해제
         } else {
-            setSelectedItems(STOCK_PRICE.map(item => item.id));
+            setSelectedItems(stock.map(item => item.id));
         }
         setSelectAll(!selectAll);
     };
@@ -403,35 +318,76 @@ function Mypage_Cart() {
             const newSelectedItems = prevSelectedItems.includes(itemId)
                 ? prevSelectedItems.filter((id) => id !== itemId)
                 : [...prevSelectedItems, itemId];
-            setSelectAll(newSelectedItems.length === STOCK_PRICE.length);
+            setSelectAll(newSelectedItems.length === stock.length);
             return newSelectedItems;
         });
     };
 
     // 수량 업데이트
-    const [amount, setAmount] = useState(
-        STOCK_PRICE.reduce((acc, item) => {
-            acc[item.id] = item.amount;
-            return acc;
-        }, {})
-    );
+    const [amount, setAmount] = useState({});
+
+    // API로부터 데이터를 가져온 후 초기 amount 설정
+    useEffect(() => {
+        const initialAmount = {};
+        stock.forEach(item => {
+            initialAmount[item.id] = item.quantity;
+        });
+        setAmount(initialAmount);
+    }, [stock]);
 
     // 선택된 상품 삭제
-    const deleteSelectedItems = () => {
-        // 선택된 항목들에 대해 fade-out 클래스 추가
-        selectedItems.forEach((itemId) => {
-            const row = document.querySelector(`tr[data-id='${itemId}']`);
-            if (row) {
-                row.classList.add('fade-out');
-            }
-        });
+    const deleteSelectedItems = async () => {
+        if (selectedItems.length === 0) {
+            alert("삭제할 항목을 선택해주세요.");
+            return;
+        }
 
-        // 일정 시간 후에 항목 삭제
-        setTimeout(() => {
-            setStock((prevStock) => prevStock.filter((item) => !selectedItems.includes(item.id)));
-            setSelectedItems([]);
-            setSelectAll(false);
-        }, 500); // 0.5초 후 삭제 (애니메이션 시간과 맞춤)
+        // 사용자 확인
+        const confirmDelete = window.confirm("선택한 항목들을 삭제하시겠습니까?");
+        if (!confirmDelete) return;
+
+        setIsDeleting(true);
+
+        try {
+            // DELETE 요청을 병렬로 처리
+            const deletePromises = selectedItems.map(async (id) => {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': sessionStorage.getItem('accessToken') || '', // Bearer 제외
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to delete item with id ${id}. Status: ${response.status}`);
+                }
+
+                return id;
+            });
+
+            // 모든 DELETE 요청 완료 대기
+            const deletedIds = await Promise.all(deletePromises);
+            console.log("Successfully deleted items:", deletedIds);
+
+            // Fade-out 애니메이션 트리거
+            setDeletingItems(deletedIds);
+
+            // 애니메이션 시간 후 UI에서 삭제
+            setTimeout(() => {
+                setStock((prevStock) => prevStock.filter((item) => !deletedIds.includes(item.id)));
+                setSelectedItems([]);
+                setSelectAll(false);
+                setDeletingItems([]);
+                alert("선택한 항목들이 성공적으로 삭제되었습니다.");
+            }, 500); // 0.5초 후 삭제 (애니메이션 시간과 맞춤)
+
+        } catch (error) {
+            console.error("Error deleting selected items:", error);
+            alert("선택한 항목들을 삭제하는 데 실패했습니다.");
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     // 수량 변경
@@ -443,10 +399,9 @@ function Mypage_Cart() {
     };
 
     // 선택된 항목들의 총 가격 계산
-    const selectedTotalPrice = STOCK_PRICE.reduce((acc, item) => {
+    const selectedTotalPrice = stock.reduce((acc, item) => {
         return selectedItems.includes(item.id) ? acc + item.price * amount[item.id] : acc;
     }, 0);
-
 
     return (
         <>
@@ -455,7 +410,7 @@ function Mypage_Cart() {
                 <div className="targetcart-container">
                     <div className="left-box">
                         <div className="item-box">
-                            {STOCK_PRICE.map((item) => (
+                            {stock.map((item) => (
                                 <div
                                     key={item.id}
                                     id={item.id}
@@ -465,7 +420,7 @@ function Mypage_Cart() {
                                     onDragEnd={dragEndHandler}
                                     className="item-node"
                                 >
-                                    {item.name}
+                                    {item.productName}
                                 </div>
                             ))}
                         </div>
@@ -498,31 +453,6 @@ function Mypage_Cart() {
                     </div>
 
                     <div ref={targetBoxRef} className="target-box" onDragOver={(e) => e.preventDefault()}>
-                        {/* {targets.map((target) => (
-                            <div
-                                key={target.stamp_id}
-                                id={target.stamp_id}
-                                draggable
-                                onDragStart={targetDragStartHandler}
-                                onDrag={dragHandler}
-                                onDragEnd={targetDragEndHandler}
-                                className="target-item"
-                                style={{ top: `${target.top}px`, left: `${target.left - 80}px` }}
-                            >
-                                <div className="icon-row">
-                                    <div className="pin-icon">
-                                        <BsPinAngleFill />
-                                    </div>
-                                    <button onClick={() => deleteTarget(target.stamp_id)} className="close-delete-button">
-                                        <IoMdCloseCircleOutline />
-                                    </button>
-                                </div>
-                                <div>
-                                    {target.details.name} - {target.details.price}원
-                                </div>
-                                <img src={target.details.image} alt={target.details.name} width="140" height="140" />
-                            </div>
-                        ))} */}
 
                         <button
                             className="reset-button"
@@ -553,9 +483,9 @@ function Mypage_Cart() {
                                         <IoMdCloseCircleOutline />
                                     </button>
                                 </div>
-                                <img src={target.details.image} alt={target.details.name} width="140" />
+                                <img src={target.details.productImage} alt={target.details.productName} width="140" />
                                 <div>
-                                    {target.details.name} - {target.details.price}원
+                                    {target.details.productName}
                                 </div>
                             </div>
                         ))}
@@ -589,75 +519,89 @@ function Mypage_Cart() {
                         * 배송은 2-5일 정도 소요되며 택배사의 상황에 따라 지연될 수 있습니다 *
                     </p>
 
-                    <table className="cart-table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectAll}
-                                        onChange={handleSelectAllChange}
-                                    />
-                                </th>
-                                <th>상품 사진</th>
-                                <th>상품 이름</th>
-                                <th>상품 상세</th>
-                                <th>수량</th>
-                                <th>주문금액</th>
-                                <th>배송 정보</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {stock.map((item) => (
-                                <tr key={item.id} data-id={item.id}>
-                                    <td>
+                    {isLoading ? (
+                        <p>로딩 중...</p>
+                    ) : (
+                        <table className="cart-table">
+                            <thead>
+                                <tr>
+                                    <th>
                                         <input
                                             type="checkbox"
-                                            checked={selectedItems.includes(item.id)}
-                                            onChange={() => handleCheckboxChange(item.id)}
+                                            checked={selectAll}
+                                            onChange={handleSelectAllChange}
                                         />
-                                    </td>
-                                    <td>
-                                        <img src={item.image} alt={item.name} className="product-image" />
-                                    </td>
-                                    <td>
-                                        <span>{item.name}</span>
-                                    </td>
-                                    <td>
-                                        <span>{item.size} / </span>
-                                        <span>{item.color}</span>
-                                    </td>
-                                    <td>
-                                        <select
-                                            value={amount[item.id]}
-                                            onChange={(e) => handleAmountChange(item.id, parseInt(e.target.value))}
-                                        >
-                                            {[...Array(10).keys()].map((num) => (
-                                                <option key={num + 1} value={num + 1}>
-                                                    {num + 1}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <span>{item.price} KRW</span>
-                                    </td>
-                                    <td>
-                                        무료 택배
-                                    </td>
+                                    </th>
+                                    <th>상품 사진</th>
+                                    <th>상품 이름</th>
+                                    <th>상품 상세</th>
+                                    <th>수량</th>
+                                    <th>주문금액</th>
+                                    <th>배송 정보</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {stock.map((item) => (
+                                    <tr
+                                        key={item.id}
+                                        data-id={item.id}
+                                        className={deletingItems.includes(item.id) ? 'fade-out' : ''}
+                                    >
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedItems.includes(item.id)}
+                                                onChange={() => handleCheckboxChange(item.id)}
+                                            />
+                                        </td>
+                                        <td>
+                                            <img src={item.productImage} alt={item.productName} className="product-image" />
+                                        </td>
+                                        <td>
+                                            <span>{item.productName}</span>
+                                        </td>
+                                        <td>
+                                            <span>{item.size} / </span>
+                                            <span>{item.color}</span>
+                                        </td>
+                                        <td>
+                                            <select
+                                                value={amount[item.id] || item.quantity}
+                                                onChange={(e) => handleAmountChange(item.id, parseInt(e.target.value))}
+                                            >
+                                                {[...Array(10).keys()].map((num) => (
+                                                    <option key={num + 1} value={num + 1}>
+                                                        {num + 1}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <span>{item.price.toLocaleString()} KRW</span>
+                                        </td>
+                                        <td>
+                                            무료 택배
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
 
                     <div className="cart-actions">
-                        <button className="action-button" onClick={deleteSelectedItems}>선택상품 삭제</button>
+                        <button
+                            className="action-button"
+                            onClick={deleteSelectedItems}
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? '삭제 중...' : '선택상품 삭제'}
+                        </button>
                     </div>
 
                     <div className="total-summary">
                         <p>총 주문 상품 {selectedItems.length}개</p>
                         <p>
-                            {selectedTotalPrice} KRW + 0 KRW = {selectedTotalPrice} KRW
+                            {selectedTotalPrice.toLocaleString()} KRW + 0 KRW = {selectedTotalPrice.toLocaleString()} KRW
                         </p>
                     </div>
 
@@ -671,6 +615,7 @@ function Mypage_Cart() {
             </div>
         </>
     );
+
 }
 
 export default Mypage_Cart;

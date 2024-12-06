@@ -3,6 +3,8 @@ import "../css/Mypage_Cart.css";
 import { BsPinAngleFill } from "react-icons/bs";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { FaTrashAlt } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 function Mypage_Cart() {
     const [targets, setTargets] = useState([]);
@@ -65,26 +67,29 @@ function Mypage_Cart() {
         const fetchCartItems = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items`, {
-                    method: 'GET',
+                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': sessionStorage.getItem('accessToken'),
                     },
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
+                const data = response.data;
                 console.log("Fetched cart items:", data); // 데이터 로그 찍기
 
                 // 데이터 상태에 저장
                 setStock(data);
             } catch (error) {
                 console.error("Failed to fetch cart items:", error);
-                alert("장바구니 데이터를 가져오는 데 실패했습니다.");
+                Swal.fire({
+                    title: "장바구니 데이터를 가져오는 데 실패했습니다.",
+                    text: error.response?.data?.message || error.message || "",
+                    icon: "error",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#754F23",
+                    background: "#F0EADC",
+                    color: "#754F23",
+                });
             } finally {
                 setIsLoading(false);
             }
@@ -335,31 +340,32 @@ function Mypage_Cart() {
         setAmount(initialAmount);
     }, [stock]);
 
-    // 선택된 상품 삭제
-    const deleteSelectedItems = async () => {
-        if (selectedItems.length === 0) {
-            alert("삭제할 항목을 선택해주세요.");
-            return;
-        }
+    // 수량 변경
+    const handleAmountChange = (itemId, newAmount) => {
+        setAmount((prevAmount) => ({
+            ...prevAmount,
+            [itemId]: newAmount,
+        }));
+    };
 
-        // 사용자 확인
-        const confirmDelete = window.confirm("선택한 항목들을 삭제하시겠습니까?");
-        if (!confirmDelete) return;
+    // 선택된 항목들의 총 가격 계산
+    const selectedTotalPrice = stock.reduce((acc, item) => {
+        return selectedItems.includes(item.id) ? acc + item.price * (amount[item.id] || item.quantity) : acc;
+    }, 0);
 
-        setIsDeleting(true);
-
+    // 선택된 상품 삭제 함수 분리 (추후에 재사용 가능)
+    const removeItemsFromCart = async (itemIds) => {
         try {
             // DELETE 요청을 병렬로 처리
-            const deletePromises = selectedItems.map(async (id) => {
-                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items/${id}`, {
-                    method: 'DELETE',
+            const deletePromises = itemIds.map(async (id) => {
+                const response = await axios.delete(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items/${id}`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': sessionStorage.getItem('accessToken') || '', // Bearer 제외
                     },
                 });
 
-                if (!response.ok) {
+                if (response.status !== 200 && response.status !== 204) { // assuming 200 or 204 is success
                     throw new Error(`Failed to delete item with id ${id}. Status: ${response.status}`);
                 }
 
@@ -379,29 +385,145 @@ function Mypage_Cart() {
                 setSelectedItems([]);
                 setSelectAll(false);
                 setDeletingItems([]);
-                alert("선택한 항목들이 성공적으로 삭제되었습니다.");
             }, 500); // 0.5초 후 삭제 (애니메이션 시간과 맞춤)
 
+            return deletedIds;
         } catch (error) {
-            console.error("Error deleting selected items:", error);
-            alert("선택한 항목들을 삭제하는 데 실패했습니다.");
+            console.error("장바구니 항목 삭제 실패", error);
+            throw error; // 에러를 상위로 전달
+        }
+    };
+
+    // 선택된 상품 삭제
+    const deleteSelectedItems = async () => {
+        if (selectedItems.length === 0) {
+            Swal.fire({
+                title: "삭제할 항목을 선택해주세요.",
+                icon: "warning",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+            return;
+        }
+
+        // 사용자 확인
+        const confirmDelete = await Swal.fire({
+            title: "선택한 항목들을 삭제하시겠습니까?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "삭제",
+            cancelButtonText: "취소",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            background: "#F0EADC",
+            color: "#754F23",
+        });
+
+        if (!confirmDelete.isConfirmed) return;
+
+        setIsDeleting(true);
+
+        try {
+            await removeItemsFromCart(selectedItems);
+        } catch (error) {
+            // 에러는 removeItemsFromCart 함수 내에서 처리됩니다.
         } finally {
             setIsDeleting(false);
         }
     };
 
-    // 수량 변경
-    const handleAmountChange = (itemId, newAmount) => {
-        setAmount((prevAmount) => ({
-            ...prevAmount,
-            [itemId]: newAmount,
-        }));
-    };
+    // 주문 함수 수정
+    const addOrder = async () => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        if (!accessToken) {
+            Swal.fire({
+                title: "로그인이 필요합니다",
+                text: "주문을 진행하려면 로그인이 필요합니다.",
+                icon: "warning",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+            return;
+        }
 
-    // 선택된 항목들의 총 가격 계산
-    const selectedTotalPrice = stock.reduce((acc, item) => {
-        return selectedItems.includes(item.id) ? acc + item.price * amount[item.id] : acc;
-    }, 0);
+        const selectedOrderItems = stock.filter(item => selectedItems.includes(item.id));
+
+        if (selectedOrderItems.length === 0) {
+            Swal.fire({
+                title: "주문할 항목이 없습니다",
+                text: "주문할 상품을 선택해주세요.",
+                icon: "warning",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+            return;
+        }
+
+        const orderItemList = selectedOrderItems.map(item => {
+            const orderItem = {
+                productCode: Number(item.productCode),
+                stock: Number(item.quantity),
+                color: item.color,
+                price: Number(item.price),
+                name: item.productName,
+                size: item.size,
+                thumbnail: item.productImage
+            };
+
+            return orderItem;
+        });
+
+        const requestData = {
+            orderItemList: orderItemList,
+        };
+
+        console.log("Order Request Data:", requestData);
+
+        try {
+            const response = await axios.post(
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order`,
+                requestData,
+                {
+                    headers: {
+                        Authorization: accessToken,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            console.log("Order Response:", response.data);
+
+            Swal.fire({
+                title: "주문이 완료되었습니다!",
+                icon: "success",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+
+            // 주문 성공 시 장바구니 항목 삭제 (fade-out 애니메이션 포함)
+            await removeItemsFromCart(selectedItems);
+
+        } catch (error) {
+            console.error("주문 오류:", error);
+            Swal.fire({
+                title: "주문 오류",
+                text: error.response?.data?.message || "주문 중 오류가 발생했습니다.",
+                icon: "error",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+        }
+    };
 
     return (
         <>
@@ -512,7 +634,6 @@ function Mypage_Cart() {
                     </div>
                 </div>
 
-
                 <div className="cart-list-container">
                     <h2>Cart</h2>
                     <p className="delivery-info">
@@ -605,7 +726,7 @@ function Mypage_Cart() {
                         </p>
                     </div>
 
-                    <button className="order-button">주문하기</button>
+                    <button className="order-button" onClick={addOrder}>주문하기</button>
 
                     <p className="payment-info">
                         일부 상품은 배송비가 추가될 수 있습니다.
@@ -615,7 +736,6 @@ function Mypage_Cart() {
             </div>
         </>
     );
-
 }
 
 export default Mypage_Cart;

@@ -65,6 +65,8 @@ const ShopDetail = () => {
             const mappedReviews = response.data.map((review) => ({
                 ...review,
                 reviewId: review.reviewCode,
+                images: review.imageUrl || [],
+                currentImageIndex: 0,
             }));
 
             // 리뷰 데이터를 상태로 설정
@@ -882,57 +884,69 @@ const ShopDetail = () => {
                         </div>
 
                         <div className="review-list">
-                            {reviews.map((review) => (
-                                <div key={review.id} className={`review-item ${review.isDeleting ? 'fade-out' : ''}`}>
-                                    {Array.isArray(review.images) && review.images.length > 0 ? (
-                                        <div className="review-images">
-                                            <img
-                                                src={review.images[review.currentImageIndex] || review.images[0]} // 안전하게 첫 이미지를 기본으로 표시
-                                                alt={`Review image ${review.currentImageIndex + 1}`}
-                                                className="review-image"
-                                                onClick={() => handleImageClick(review.images, review.currentImageIndex)}
-                                            />
-                                            {review.images.length > 1 && (
-                                                <div className="image-navigation">
-                                                    <button onClick={() => handleImageNavigation(review.id, 'prev')}><FaArrowLeft /></button>
-                                                    <button onClick={() => handleImageNavigation(review.id, 'next')}><FaArrowRight /></button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <p>이미지가 없습니다.</p>
-                                    )}
-                                    <div className="review-content">
-                                        <div className="review-top">
-                                            <StarRatings
-                                                rating={review.starRating}
-                                                starRatedColor="gold"
-                                                numberOfStars={5}
-                                                starDimension="20px"
-                                                starSpacing="3px"
-                                                name="review-rating"
-                                            />
-                                        </div>
-                                        <div className="review-middle">
-                                            <span>{review.height} cm / {review.weight} kg</span>
-                                        </div>
-                                        <div className="review-description">
-                                            <p>{review.content}</p>
-                                        </div>
-                                        <div className="review-bottom">
-                                            <span>ID: {review.username} / {new Date(review.reviewDate).toLocaleDateString()}</span>
-
-                                            {review.userId === parseInt(sessionStorage.getItem("id")) && (
-                                                <button className="delete-button" onClick={() => {
-                                                    handleDeleteReview(review.reviewId);
-                                                }}>
-                                                    <FaTrash />
-                                                </button>
-                                            )}
+                            {reviews.length > 0 ? (
+                                reviews.map((review) => (
+                                    <div key={review.id} className={`review-item ${review.isDeleting ? "fade-out" : ""}`}>
+                                        {Array.isArray(review.images) && review.images.length > 0 ? (
+                                            <div className="review-images">
+                                                <img
+                                                    src={review.images[review.currentImageIndex] || review.images[0]}
+                                                    alt={`Review image ${review.currentImageIndex + 1}`}
+                                                    className="review-image"
+                                                    onClick={() => handleImageClick(review.images, review.currentImageIndex)}
+                                                />
+                                                {review.images.length > 1 && (
+                                                    <div className="image-navigation">
+                                                        <button onClick={() => handleImageNavigation(review.id, "prev")}>
+                                                            <FaArrowLeft />
+                                                        </button>
+                                                        <button onClick={() => handleImageNavigation(review.id, "next")}>
+                                                            <FaArrowRight />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <p>이미지가 없습니다.</p>
+                                        )}
+                                        <div className="review-content">
+                                            <div className="review-top">
+                                                <StarRatings
+                                                    rating={review.starRating}
+                                                    starRatedColor="gold"
+                                                    numberOfStars={5}
+                                                    starDimension="20px"
+                                                    starSpacing="3px"
+                                                    name="review-rating"
+                                                />
+                                            </div>
+                                            <div className="review-middle">
+                                                <span>
+                                                    {review.height} cm / {review.weight} kg
+                                                </span>
+                                            </div>
+                                            <div className="review-description">
+                                                <p>{review.content}</p>
+                                            </div>
+                                            <div className="review-bottom">
+                                                <span>
+                                                    ID: {review.username} / {new Date(review.reviewDate).toLocaleDateString()}
+                                                </span>
+                                                {review.userId === parseInt(sessionStorage.getItem("id")) && (
+                                                    <button
+                                                        className="delete-button"
+                                                        onClick={() => handleDeleteReview(review.id)}
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                <p>리뷰가 없습니다.</p>
+                            )}
                         </div>
                         <ImageModal
                             showModal={showImageModal}

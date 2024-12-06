@@ -324,99 +324,6 @@ const ShopDetail = () => {
     //     setTimeout(() => setWishlistClicked(false), 1500);
     // };
 
-    // const addCart = async () => {
-    //     if (selectedSize === "Choose a size" || selectedColor === "Choose a color" || selectedAmount === "Choose a amount") {
-    //         Swal.fire({
-    //             title: '선택사항을 모두 선택해주세요!',
-    //             text: '상품을 장바구니에 추가하려면 모든 선택사항을 선택해야 합니다.',
-    //             icon: 'warning',
-    //             confirmButtonText: '확인',
-    //             confirmButtonColor: '#754F23',
-    //             background: '#F0EADC',
-    //             color: '#754F23',
-    //         });
-    //         return;
-    //     }
-
-    //     const accessToken = sessionStorage.getItem("accessToken");
-    //     if (!accessToken) {
-    //         Swal.fire({
-    //             title: "로그인이 필요합니다",
-    //             text: "장바구니에 추가하려면 로그인이 필요합니다.",
-    //             icon: "warning",
-    //             confirmButtonText: "확인",
-    //             confirmButtonColor: "#754F23",
-    //             background: "#F0EADC",
-    //             color: "#754F23",
-    //         });
-    //         return;
-    //     }
-
-    //     if (!product) {
-    //         Swal.fire({
-    //             title: "상품 정보가 로드되지 않았습니다",
-    //             text: "잠시 후 다시 시도해주세요.",
-    //             icon: "error",
-    //             confirmButtonText: "확인",
-    //             confirmButtonColor: "#754F23",
-    //             background: "#F0EADC",
-    //             color: "#754F23",
-    //         });
-    //         return;
-    //     }
-
-    //     // 요청 데이터 구성
-    //     const requestData = {
-    //         productCode: productCode,
-    //         productName: product.name,
-    //         price: product.price,
-    //         quantity: selectedAmount,
-    //         color: selectedColor,
-    //         size: selectedSize,
-    //         thumbnail: product.thumbnail[0]
-    //     };
-
-    //     console.log("Cart Request Data:", requestData);
-
-    //     try {
-    //         const response = await axios.post(
-    //             `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items`,
-    //             requestData,
-    //             {
-    //                 headers: {
-    //                     Authorization: accessToken,
-    //                     "Content-Type": "application/json",
-    //                 },
-    //             }
-    //         );
-
-    //         console.log("Cart Response:", response.data);
-
-    //         Swal.fire({
-    //             title: "장바구니에 추가되었습니다!",
-    //             icon: "success",
-    //             confirmButtonText: "확인",
-    //             confirmButtonColor: "#754F23",
-    //             background: "#F0EADC",
-    //             color: "#754F23",
-    //         });
-
-    //         setCartClicked(true);
-    //         setTimeout(() => setCartClicked(false), 2000);
-    //     } catch (error) {
-    //         console.error("장바구니 추가 오류:", error);
-    //         Swal.fire({
-    //             title: "장바구니 추가 실패",
-    //             text: error.response?.data?.message || "장바구니에 추가하는 중 오류가 발생했습니다.",
-    //             icon: "error",
-    //             confirmButtonText: "확인",
-    //             confirmButtonColor: "#754F23",
-    //             background: "#F0EADC",
-    //             color: "#754F23",
-    //         });
-    //     }
-    // };
-
     const addCart = async () => {
         if (selectedSize === "Choose a size" || selectedColor === "Choose a color" || selectedAmount === "Choose a amount") {
             Swal.fire({
@@ -459,30 +366,21 @@ const ShopDetail = () => {
         }
 
         // 요청 데이터 구성
-        const sizeField = !isNaN(Number(selectedSize))
-            ? { shoesSize: selectedSize }
-            : { clothesSize: selectedSize };
-
         const requestData = {
-            orderItemList: [
-                {
-                    productCode: productCode,
-                    stock: parseInt(selectedAmount, 10),
-                    color: selectedColor,
-                    ...sizeField,
-                    name: product.name,
-                    thumbnail: product.thumbnail[0],
-                    price: product.price,
-                }
-            ]
+            productCode: productCode,
+            productName: product.name,
+            price: product.price,
+            quantity: selectedAmount,
+            color: selectedColor,
+            size: selectedSize,
+            productImage: product.thumbnail[0]
         };
 
-        console.log("Order Request Data:", requestData);
-
+        console.log("Cart Request Data:", requestData);
 
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order`,
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items`,
                 requestData,
                 {
                     headers: {
@@ -492,10 +390,10 @@ const ShopDetail = () => {
                 }
             );
 
-            console.log("Order Response:", response.data);
+            console.log("Cart Response:", response.data);
 
             Swal.fire({
-                title: "주문이 완료되었습니다!",
+                title: "장바구니에 추가되었습니다!",
                 icon: "success",
                 confirmButtonText: "확인",
                 confirmButtonColor: "#754F23",
@@ -506,10 +404,10 @@ const ShopDetail = () => {
             setCartClicked(true);
             setTimeout(() => setCartClicked(false), 2000);
         } catch (error) {
-            console.error("주문 오류:", error);
+            console.error("장바구니 추가 오류:", error);
             Swal.fire({
-                title: "주문 오류",
-                text: error.response?.data?.message || "주문 오류",
+                title: "장바구니 추가 실패",
+                text: error.response?.data?.message || "장바구니에 추가하는 중 오류가 발생했습니다.",
                 icon: "error",
                 confirmButtonText: "확인",
                 confirmButtonColor: "#754F23",
@@ -518,6 +416,108 @@ const ShopDetail = () => {
             });
         }
     };
+
+    // const addCart = async () => {
+    //     if (selectedSize === "Choose a size" || selectedColor === "Choose a color" || selectedAmount === "Choose a amount") {
+    //         Swal.fire({
+    //             title: '선택사항을 모두 선택해주세요!',
+    //             text: '상품을 장바구니에 추가하려면 모든 선택사항을 선택해야 합니다.',
+    //             icon: 'warning',
+    //             confirmButtonText: '확인',
+    //             confirmButtonColor: '#754F23',
+    //             background: '#F0EADC',
+    //             color: '#754F23',
+    //         });
+    //         return;
+    //     }
+
+    //     const accessToken = sessionStorage.getItem("accessToken");
+    //     if (!accessToken) {
+    //         Swal.fire({
+    //             title: "로그인이 필요합니다",
+    //             text: "장바구니에 추가하려면 로그인이 필요합니다.",
+    //             icon: "warning",
+    //             confirmButtonText: "확인",
+    //             confirmButtonColor: "#754F23",
+    //             background: "#F0EADC",
+    //             color: "#754F23",
+    //         });
+    //         return;
+    //     }
+
+    //     if (!product) {
+    //         Swal.fire({
+    //             title: "상품 정보가 로드되지 않았습니다",
+    //             text: "잠시 후 다시 시도해주세요.",
+    //             icon: "error",
+    //             confirmButtonText: "확인",
+    //             confirmButtonColor: "#754F23",
+    //             background: "#F0EADC",
+    //             color: "#754F23",
+    //         });
+    //         return;
+    //     }
+
+    //     // 요청 데이터 구성
+    //     const sizeField = !isNaN(Number(selectedSize))
+    //         ? { shoesSize: selectedSize }
+    //         : { clothesSize: selectedSize };
+
+    //     const requestData = {
+    //         orderItemList: [
+    //             {
+    //                 productCode: productCode,
+    //                 stock: parseInt(selectedAmount, 10),
+    //                 color: selectedColor,
+    //                 ...sizeField,
+    //                 name: product.name,
+    //                 thumbnail: product.thumbnail[0],
+    //                 price: product.price,
+    //             }
+    //         ]
+    //     };
+
+    //     console.log("Order Request Data:", requestData);
+
+
+    //     try {
+    //         const response = await axios.post(
+    //             `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order`,
+    //             requestData,
+    //             {
+    //                 headers: {
+    //                     Authorization: accessToken,
+    //                     "Content-Type": "application/json",
+    //                 },
+    //             }
+    //         );
+
+    //         console.log("Order Response:", response.data);
+
+    //         Swal.fire({
+    //             title: "주문이 완료되었습니다!",
+    //             icon: "success",
+    //             confirmButtonText: "확인",
+    //             confirmButtonColor: "#754F23",
+    //             background: "#F0EADC",
+    //             color: "#754F23",
+    //         });
+
+    //         setCartClicked(true);
+    //         setTimeout(() => setCartClicked(false), 2000);
+    //     } catch (error) {
+    //         console.error("주문 오류:", error);
+    //         Swal.fire({
+    //             title: "주문 오류",
+    //             text: error.response?.data?.message || "주문 오류",
+    //             icon: "error",
+    //             confirmButtonText: "확인",
+    //             confirmButtonColor: "#754F23",
+    //             background: "#F0EADC",
+    //             color: "#754F23",
+    //         });
+    //     }
+    // };
 
     const handleThumbnailChange = (event) => {
         const files = event.target.files;

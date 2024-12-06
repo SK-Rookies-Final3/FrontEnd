@@ -28,10 +28,10 @@ export default function Brand() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const storeResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store/`);
+        const storeResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store`);
         setStores(storeResponse.data);
 
-        const productResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/`);
+        const productResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product`);
         const sortedProducts = productResponse.data.sort((a, b) =>
           a.name.localeCompare(b.name, 'ko', { numeric: true })
         );
@@ -97,7 +97,6 @@ export default function Brand() {
           filteredProducts.map((product) => (
             <div className="brand-card" key={product.id}>
               <img
-                // src={`${process.env.REACT_APP_API_BASE_URL_APIgateway}/uploads/${product.thumbnail?.split(/[/\\]/).pop()}`}
                 src={product.thumbnail}
                 className="brand-card-img-top"
                 alt={product.title}

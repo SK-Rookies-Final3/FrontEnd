@@ -31,6 +31,7 @@ const ShopDetail = () => {
     const { productCode } = useParams();
     const [product, setProduct] = useState(null);
     const [thumbnail, setThumbnails] = useState([]);
+    const [shortsData, setShortsData] = useState([]);
 
     // ImageModal 상태 관리
     const [showImageModal, setShowImageModal] = useState(false);
@@ -262,6 +263,49 @@ const ShopDetail = () => {
 
     useEffect(() => {
         fetchReviews();
+    }, [productCode]);
+
+    useEffect(() => {
+        setAverageRating(() => {
+            try {
+                const avg = calculateAverageRating();
+                return avg;
+            } catch (error) {
+                console.error("평균 별점 계산 중 오류 발생:", error);
+                return 0;
+            }
+        });
+    }, [reviews]);
+
+    // Function to convert YouTube URL to embed URL
+    const convertToEmbedUrl = (url) => {
+        const match = url.match(/(?:\?v=|\/shorts\/)([a-zA-Z0-9_-]{11})/);
+        if (match && match[1]) {
+            return `https://www.youtube.com/embed/${match[1]}`;
+        }
+        return url;
+    };
+
+    useEffect(() => {
+        const fetchShortsData = async () => {
+            const accessToken = sessionStorage.getItem("accessToken");
+            try {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/${productCode}/shorts`,
+                    {
+                        headers: {
+                            Authorization: `${accessToken}`
+                        }
+                    }
+                );
+                console.log("ai:", response.data);
+                setShortsData(response.data); // Save Shorts data to state
+            } catch (error) {
+                console.error("Error fetching shorts data:", error);
+            }
+        };
+
+        fetchShortsData();
     }, [productCode]);
 
 
@@ -586,7 +630,7 @@ const ShopDetail = () => {
     const handleSubmitReview = async () => {
         const accessToken = sessionStorage.getItem("accessToken");
         const id = sessionStorage.getItem("id");
-    
+
         if (!accessToken || !id || !username) {
             Swal.fire({
                 title: "로그인 정보가 없습니다.",
@@ -618,7 +662,7 @@ const ShopDetail = () => {
             setFileNames([]);
             return;
         }
-      
+
         const formData = new FormData();
 
         // reviewRequest를 JSON 문자열로 변환하여 Blob으로 추가
@@ -767,22 +811,22 @@ const ShopDetail = () => {
                 return (
                     <div>
                         <div className="video-gallery">
-                            {[1, 2, 3, 4, 5, 6].map((video, index) => {
+                            {shortsData.map((video, index) => {
                                 const shortCode = `short-${index + 1}`;
                                 return (
                                     <div
                                         key={index}
                                         className="video-item"
-                                        onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}
+                                        onClick={() => handleVideoClick(video.shortsUrl)} // Video click to open modal
                                     >
-                                        <img src={short} alt={`Reel ${index + 1}`} />
+                                        <img src={video.thumbnailUrl} alt={`Reel ${index + 1}`} />
                                         <button
-                                            className={`button-like ${likedShorts.includes(shortCode) ? 'liked' : ''}`}
-                                            onClick={(e) => handleLikeClick(shortCode, e)} // 클릭 시 좋아요 상태 변경
+                                            className={`button-like ${likedShorts.includes(shortCode) ? "liked" : ""}`}
+                                            onClick={(e) => handleLikeClick(shortCode, e)} // Handle like button click
                                             aria-label="Like button"
                                         >
                                             <FaHeart className="fa" />
-                                            <span>{likedShorts.includes(shortCode) ? 'Liked' : 'Like'}</span>
+                                            <span>{likedShorts.includes(shortCode) ? "Liked" : "Like"}</span>
                                         </button>
                                     </div>
                                 );

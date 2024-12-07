@@ -66,15 +66,15 @@ function OrderContainer() {
                     Authorization: `${accessToken}`
                 }
             })
-            .then(response => {
-                if (response.data && response.data.body) {
-                    setNickname(response.data.body.nickname);
-                    setId(response.data.body.id);
-                }
-            })
-            .catch(error => {
-                console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
-            });
+                .then(response => {
+                    if (response.data && response.data.body) {
+                        setNickname(response.data.body.nickname);
+                        setId(response.data.body.id);
+                    }
+                })
+                .catch(error => {
+                    console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
+                });
         }
     }, []);
 
@@ -89,20 +89,20 @@ function OrderContainer() {
                         'Authorization': `${sessionStorage.getItem("accessToken")}`
                     }
                 });
-    
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-    
+
                 const data = await response.json();
                 console.log("응답 데이터:", data);
                 setOrders(data); // 주문 데이터를 상태에 저장
-    
+
             } catch (err) {
                 console.error('주문 조회를 가져오는 데 실패했습니다:', err);
             }
         };
-    
+
         fetchProducts();
     }, []);
 
@@ -199,7 +199,7 @@ function OrderContainer() {
                         <FaRegHandPointRight /> ------------------ 주문 조회 ------------------ <FaRegHandPointLeft />
                     </span>
                 </div>
-    
+
                 {orders.length > 0 ? (
                     <div className="myorder-list">
                         {orders.map(order => (
@@ -211,19 +211,20 @@ function OrderContainer() {
                                     <div className="myorder-products">
                                         {order.orderItems.map(item => (
                                             <div key={item.id} className="myorder-product">
-                                               <img 
-                                                src={item.thumbnail}
-                                                alt="Product Thumbnail" 
-                                            />
+                                                <img
+                                                    src={item.thumbnail}
+                                                    alt="Product Thumbnail"
+                                                />
                                                 <div className="myorder-product-info">
                                                     <span className="highlights">상품명 :</span> {item.name},&nbsp;&nbsp;
                                                     <span className="highlights">색상 :</span> {item.color},&nbsp;&nbsp;
-                                                    <span className="highlights">사이즈 :</span> 
-                                                        {item.clothesSize || item.shoesSize || item.size}
-                                                        ,&nbsp;&nbsp;
-                                                    <span className="highlights">수량 :</span> {item.stock}
+                                                    <span className="highlights">사이즈 :</span>
+                                                    {item.clothesSize || item.shoesSize || item.size}
+                                                    ,&nbsp;&nbsp;
+                                                    <span className="highlights">수량 :</span> {item.stock}&nbsp;&nbsp;&nbsp;&nbsp;
                                                 </div>
                                                 <div className="myorder-product-price">
+                                                <span className="highlights" style={{ color: '#FF8A79' }} >상태 :</span> {order.status === 0 ? '주문 대기' : order.status === 1 ? '주문 완료' : '배송 대기'} /&nbsp;
                                                     {`${Number(item.price).toLocaleString()} 원`}
                                                 </div>
                                             </div>
@@ -238,7 +239,7 @@ function OrderContainer() {
                 )}
             </div>
         </div>
-    );    
+    );
 }
 
 export default OrderContainer;

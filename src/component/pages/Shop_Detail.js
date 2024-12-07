@@ -817,7 +817,7 @@ const ShopDetail = () => {
                                     <div
                                         key={index}
                                         className="video-item"
-                                        onClick={() => handleVideoClick(video.shortsUrl)} // Video click to open modal
+                                        onClick={() => handleVideoClick(convertToEmbedUrl(video.shortsUrl))} // Convert URL before passing
                                     >
                                         <img src={video.thumbnailUrl} alt={`Reel ${index + 1}`} />
                                         <button

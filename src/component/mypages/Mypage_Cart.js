@@ -99,7 +99,7 @@ function Mypage_Cart() {
     }, []);
 
     // 애니메이션 핸들러
-    const handleAnimation = (tabId) => {
+    const handleAnimation = async (tabId) => {
         if (
             circleLoaderRefs.current[tabId] &&
             circleRefs.current[tabId] &&
@@ -108,19 +108,43 @@ function Mypage_Cart() {
             circleLoaderRefs.current[tabId].classList.remove('animation');
             circleRefs.current[tabId].classList.remove('animation_circle');
             tabRefs.current[tabId].classList.remove('animation_card');
-
+    
             setTimeout(() => {
                 circleLoaderRefs.current[tabId].classList.add('animation');
                 setTimeout(() => {
                     circleRefs.current[tabId].classList.add('animation_circle');
                     tabRefs.current[tabId].classList.add('animation_card');
-
-                    // 애니메이션 완료 후 탭 삭제
-                    setTimeout(() => {
-                        setSavedTabs(prev => prev.filter(tab => tab.id !== tabId));
-                        setActiveTab(null);
-                        setTargets([]);
-                    }, 1000);
+    
+                    // 애니메이션 완료 후 삭제 요청
+                    setTimeout(async () => {
+                        try {
+                            const accessToken = sessionStorage.getItem('accessToken');
+                            await axios.delete(
+                                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/custom/${tabId}`,
+                                {
+                                    headers: {
+                                        'Authorization': accessToken,
+                                    },
+                                }
+                            );
+    
+                            // 탭 삭제 및 상태 업데이트
+                            setSavedTabs(prev => prev.filter(tab => tab.id !== tabId));
+                            setActiveTab(null);
+                            setTargets([]);
+                        } catch (error) {
+                            console.error("Failed to delete custom cart item:", error);
+                            Swal.fire({
+                                title: "삭제 실패",
+                                text: error.response?.data?.message || error.message || "",
+                                icon: "error",
+                                confirmButtonText: "확인",
+                                confirmButtonColor: "#754F23",
+                                background: "#F0EADC",
+                                color: "#754F23",
+                            });
+                        }
+                    }, 1000); // 애니메이션 시간과 맞춤
                 }, 100);
             }, 100);
         }

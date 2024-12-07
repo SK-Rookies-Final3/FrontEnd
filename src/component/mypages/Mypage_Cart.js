@@ -1,18 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import "../css/Mypage_Cart.css";
-import test1 from "../../img/Nike.PNG";
-import test2 from "../../img/product.jpg";
-import test3 from "../../img/product-d.jpg";
 import { BsPinAngleFill } from "react-icons/bs";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { FaTrashAlt } from 'react-icons/fa';
-
-// 상품 가격 배열
-const STOCK_PRICE = [
-    { id: 1, name: "신발", price: 1000, image: test1, size: 260, color: "BROWN", amount: 1 },
-    { id: 2, name: "상하의", price: 2000, image: test2, size: "S", color: "WHITE", amount: 3 },
-    { id: 3, name: "셔츠", price: 3000, image: test3, size: "M", color: "GRAY", amount: 8 },
-];
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 function Mypage_Cart() {
     const [targets, setTargets] = useState([]);
@@ -28,16 +20,21 @@ function Mypage_Cart() {
     const tabRefs = useRef({});
 
     // 상품 목록을 관리하기 위한 상태 추가
-    const [stock, setStock] = useState(STOCK_PRICE);
+    const [stock, setStock] = useState([]);
 
     // 선택된 항목을 저장하는 상태
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false); // 전체 선택 상태
 
+    // 삭제 중인 항목들을 추적하는 상태
+    const [deletingItems, setDeletingItems] = useState([]);
+
+    // 로딩 상태
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
     let posX = 0;
     let posY = 0;
-    // let originalX = 0;
-    // let originalY = 0;
     const originalX = useRef(0);
     const originalY = useRef(0);
     const offsetX = useRef(0);
@@ -45,13 +42,15 @@ function Mypage_Cart() {
 
     useEffect(() => {
         const updateBox = () => {
-            const box = targetBoxRef.current.getBoundingClientRect();
-            setBox({
-                top: box.top,
-                left: box.left,
-                bottom: box.top + box.height,
-                right: box.left + box.width,
-            });
+            if (targetBoxRef.current) {
+                const box = targetBoxRef.current.getBoundingClientRect();
+                setBox({
+                    top: box.top,
+                    left: box.left,
+                    bottom: box.top + box.height,
+                    right: box.left + box.width,
+                });
+            }
         };
 
         // 초기 렌더링 시 box 좌표 계산
@@ -61,6 +60,42 @@ function Mypage_Cart() {
         window.addEventListener("resize", updateBox);
 
         return () => window.removeEventListener("resize", updateBox);
+    }, []);
+
+    // 컴포넌트 마운트 시 API에서 데이터 가져오기
+    useEffect(() => {
+        const fetchCartItems = async () => {
+            setIsLoading(true);
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': sessionStorage.getItem('accessToken'),
+                    },
+                });
+
+                const data = response.data;
+                console.log("일반 장바구니 : ", data); // 데이터 로그 찍기
+
+                // 데이터 상태에 저장
+                setStock(data);
+            } catch (error) {
+                console.error("Failed to fetch cart items:", error);
+                Swal.fire({
+                    title: "장바구니 데이터를 가져오는 데 실패했습니다.",
+                    text: error.response?.data?.message || error.message || "",
+                    icon: "error",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#754F23",
+                    background: "#F0EADC",
+                    color: "#754F23",
+                });
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCartItems();
     }, []);
 
     // 애니메이션 핸들러
@@ -86,7 +121,7 @@ function Mypage_Cart() {
                         setActiveTab(null);
                         setTargets([]);
                     }, 1000);
-                });
+                }, 100);
             }, 100);
         }
     };
@@ -115,10 +150,12 @@ function Mypage_Cart() {
     const dragEndHandler = (e) => {
         if (box.left < e.clientX && e.clientX < box.right && box.top < e.clientY && e.clientY < box.bottom) {
             const targetId = parseInt(e.target.id);
-            const details = STOCK_PRICE.find((item) => item.id === targetId);
+            const details = stock.find((item) => item.id === targetId);
+
+            if (!details) return;
 
             const newTargetItem = {
-                stamp_id: parseInt(e.timeStamp),
+                itemCode: parseInt(e.timeStamp),
                 top: e.clientY - box.top,
                 left: e.clientX - box.left,
                 details: details,
@@ -137,106 +174,16 @@ function Mypage_Cart() {
 
     const editTabChanges = () => {
         if (activeTab) {
-            const updatedTab = {
-                ...activeTab,
-                items: targets.map(target => ({
-                    tabId: activeTab.id,
-                    stamp_id: target.stamp_id,
-                    top: positionRef.current[target.stamp_id]?.top || target.top,
-                    left: positionRef.current[target.stamp_id]?.left || target.left,
-                    details: target.details,
-                }))
-            };
-
-            setSavedTabs(prevTabs =>
-                prevTabs.map(tab => (tab.id === activeTab.id ? updatedTab : tab))
-            );
-
-            setActiveTab(null);
-            setTargets([]);
-            console.log("Edited tab targets:", updatedTab.items);
+            addTabToSecondBox();
         }
     };
-
-    // const targetDragStartHandler = (e) => {
-    //     const img = new Image();
-    //     e.dataTransfer.setDragImage(img, 0, 0);
-    //     e.dataTransfer.setData("targetId", e.target.id || "");
-    //     posX = e.clientX - e.target.offsetLeft;
-    //     posY = e.clientY - e.target.offsetTop;
-    //     originalX = e.target.offsetLeft;
-    //     originalY = e.target.offsetTop;
-    // };
-
-    // const targetDragStartHandler = (e, targetId) => {
-    //     posX = e.clientX;
-    //     posY = e.clientY;
-
-    //     const handleMouseMove = (moveEvent) => {
-    //         // 드래그가 종료된 위치에서 좌표 저장
-    //         const dx = moveEvent.clientX - posX;
-    //         const dy = moveEvent.clientY - posY;
-    //         posX = moveEvent.clientX;
-    //         posY = moveEvent.clientY;
-
-    //         setTargets((targets) =>
-    //             targets.map((target) =>
-    //                 target.stamp_id === targetId
-    //                     ? { ...target, top: target.top + dy, left: target.left + dx }
-    //                     : target
-    //             )
-    //         );
-    //     };
-
-    //     // document에 이벤트 리스너를 붙이면 화면 어디에서든 해당 이벤트를 감지
-    //     const handleMouseUp = () => {
-    //         // 이벤트가 더 이상 발생하지 않도록 정리
-    //         document.removeEventListener("mousemove", handleMouseMove);
-    //         document.removeEventListener("mouseup", handleMouseUp);
-    //     };
-
-    //     // 특정 이벤트가 발생할 때 실행할 동작을 정의
-    //     document.addEventListener("mousemove", handleMouseMove);
-    //     document.addEventListener("mouseup", handleMouseUp);
-    // };
-
-    // const targetDragEndHandler = (e) => {
-    //     const targetId = parseInt(e.dataTransfer.getData("targetId"));
-
-    //     if (box.left < e.clientX && e.clientX < box.right && box.top < e.clientY && e.clientY < box.bottom) {
-    //         setTargets((targets) => {
-    //             const newTargets = targets.map((target) =>
-    //                 target.stamp_id === targetId
-    //                     ? { ...target, top: e.clientY - box.top, left: e.clientX - box.left }
-    //                     : target
-    //             );
-
-    //             // positionRef에 최신 좌표 업데이트
-    //             positionRef.current[targetId] = {
-    //                 top: e.clientY - box.top,
-    //                 left: e.clientX - box.left,
-    //             };
-
-    //             return newTargets;
-    //         });
-    //     } else {
-    //         e.target.style.left = `${originalX}px`;
-    //         e.target.style.top = `${originalY}px`;
-
-    //         // positionRef에 원래 좌표로 복원
-    //         positionRef.current[targetId] = {
-    //             top: originalY,
-    //             left: originalX,
-    //         };
-    //     }
-    // };
 
     const targetDragStartHandler = (e, targetId) => {
         e.preventDefault();
 
         // 배열에서 드래그 중인 아이템을 마지막으로 이동
         setTargets((prevTargets) => {
-            const targetIndex = prevTargets.findIndex((target) => target.stamp_id === targetId);
+            const targetIndex = prevTargets.findIndex((target) => target.itemCode === targetId);
             if (targetIndex !== -1) {
                 const targetItem = prevTargets[targetIndex];
                 const updatedTargets = [...prevTargets];
@@ -247,7 +194,7 @@ function Mypage_Cart() {
             return prevTargets;
         });
 
-        const targetItem = targets.find((target) => target.stamp_id === targetId);
+        const targetItem = targets.find((target) => target.itemCode === targetId);
         if (targetItem) {
             const itemElement = document.getElementById(targetId);
             const itemRect = itemElement.getBoundingClientRect();
@@ -269,7 +216,7 @@ function Mypage_Cart() {
 
                 setTargets((prevTargets) =>
                     prevTargets.map((target) =>
-                        target.stamp_id === targetId
+                        target.itemCode === targetId
                             ? { ...target, left: newLeft, top: newTop }
                             : target
                     )
@@ -296,7 +243,7 @@ function Mypage_Cart() {
                     // target-box 외부에 놓였을 때 이전 위치로 복귀
                     setTargets((prevTargets) =>
                         prevTargets.map((target) =>
-                            target.stamp_id === targetId
+                            target.itemCode === targetId
                                 ? { ...target, left: originalX.current, top: originalY.current }
                                 : target
                         )
@@ -309,77 +256,143 @@ function Mypage_Cart() {
         }
     };
 
-    const targetDragEndHandler = (e, targetId) => {
-        const boxRect = targetBoxRef.current.getBoundingClientRect();
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    const deleteTarget = (itemCode) => {
+        setTargets((targets) => targets.filter((target) => target.itemCode !== itemCode));
+    };
 
-        if (boxRect.left < e.clientX &&
-            e.clientX < boxRect.right &&
-            boxRect.top < e.clientY &&
-            e.clientY < boxRect.bottom) {
-
-            setTargets((targets) => {
-                const newTargets = targets.map((target) =>
-                    target.stamp_id === targetId
-                        ? {
-                            ...target,
-                            top: e.clientY + scrollTop - boxRect.top,
-                            left: e.clientX + scrollLeft - boxRect.left
-                        }
-                        : target
-                );
-
-                // positionRef 업데이트
-                positionRef.current[targetId] = {
-                    top: e.clientY + scrollTop - boxRect.top,
-                    left: e.clientX + scrollLeft - boxRect.left
-                };
-
-                return newTargets;
+    // 커스텀 장바구니 가져오기 함수 분리
+    const fetchCustomCartItems = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/custom`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': sessionStorage.getItem('accessToken'),
+                },
             });
-        } else {
-            // target-box 외부에 놓였을 때 이전 위치로 복귀
-            const previousPosition = positionRef.current[targetId];
-            setTargets((targets) =>
-                targets.map((target) =>
-                    target.stamp_id === targetId
-                        ? { ...target, top: previousPosition.top, left: previousPosition.left }
-                        : target
-                )
-            );
+
+            const data = response.data;
+            console.log("커스텀장바구니 : ", data);
+            // 커스텀 장바구니 데이터 상태에 저장
+            setCustomCartData(data);
+        } catch (error) {
+            console.error("Failed to fetch custom cart items:", error);
+            Swal.fire({
+                title: "커스텀 장바구니 데이터를 가져오는 데 실패했습니다.",
+                text: error.response?.data?.message || error.message || "",
+                icon: "error",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
         }
     };
 
-    const deleteTarget = (stamp_id) => {
-        setTargets((targets) => targets.filter((target) => target.stamp_id !== stamp_id));
-    };
+    useEffect(() => {
+        fetchCustomCartItems();
+    }, []);
 
-    const addTabToSecondBox = () => {
-        const tabId = Date.now();
-        const newTab = {
-            id: tabId,
-            name: `탭 ${savedTabs.length + 1}`,
-            items: targets.map(target => ({
-                tabId: tabId,
-                stamp_id: target.stamp_id,
-                top: positionRef.current[target.stamp_id]?.top || target.top,
-                left: positionRef.current[target.stamp_id]?.left || target.left,
-                details: target.details,
-                // customName: `탭 ${savedTabs.length + 1}`
-            }))
+    const addTabToSecondBox = async () => {
+        const userId = sessionStorage.getItem('id');
+        const accessToken = sessionStorage.getItem('accessToken');
+    
+        const items = targets.map(target => ({
+            itemCode: target.itemCode,
+            top: positionRef.current[target.itemCode]?.top || target.top,
+            left: positionRef.current[target.itemCode]?.left || target.left,
+            productImage: target.details.productImage,
+            productName: target.details.productName
+        }));
+    
+        const payload = {
+            userId: userId,
+            items: items,
         };
-
-        setSavedTabs([...savedTabs, newTab]);
-        setTargets([]);
-        console.log("newTab targets:", newTab.items);
-        // console.log("Current targets:", targets);
+    
+        // activeTab이 존재하면 id를 추가
+        if (activeTab) {
+            payload.tabId = activeTab.id;
+        }
+    
+        try {
+            const response = await axios.post(
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/custom`,
+                payload,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': accessToken,
+                    },
+                }
+            );
+    
+            console.log("Custom cart save response:", response.data);
+    
+            await fetchCustomCartItems();
+    
+            // 저장 후 타겟 및 activeTab 초기화
+            setTargets([]);
+            setActiveTab(null);
+        } catch (error) {
+            console.error("Failed to save custom cart items:", error);
+            Swal.fire({
+                title: "커스텀 장바구니 저장 실패",
+                text: error.response?.data?.message || error.message || "",
+                icon: "error",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+        }
     };
+
+    const [customCartData, setCustomCartData] = useState([]);
+    // 커스텀 장바구니 가져오기
+    useEffect(() => {
+        const fetchCustomCartItems = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/custom`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': sessionStorage.getItem('accessToken'),
+                    },
+                });
+
+                const data = response.data;
+                console.log("커스텀장바구니 : ", data);
+                // 커스텀 장바구니 데이터 상태에 저장
+                setCustomCartData(data);
+            } catch (error) {
+                console.error("Failed to fetch custom cart items:", error);
+                Swal.fire({
+                    title: "커스텀 장바구니 데이터를 가져오는 데 실패했습니다.",
+                    text: error.response?.data?.message || error.message || "",
+                    icon: "error",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#754F23",
+                    background: "#F0EADC",
+                    color: "#754F23",
+                });
+            }
+        };
+        fetchCustomCartItems();
+    }, []);
 
     const showTabInBox = (tab) => {
+        const mappedTargets = tab.items.map(item => ({
+            itemCode: item.itemCode,
+            top: item.top,
+            left: item.left,
+            details: {
+                productName: item.productName,
+                productImage: item.productImage,
+            },
+        }));
+
         setActiveTab(tab);
-        setTargets(tab.items);
-        console.log("newTab targets:", tab.items);
+        setTargets(mappedTargets);
+        console.log("newTab targets:", mappedTargets);
     };
 
     const closeActiveTab = () => {
@@ -392,7 +405,7 @@ function Mypage_Cart() {
         if (selectAll) {
             setSelectedItems([]); // 전체 해제
         } else {
-            setSelectedItems(STOCK_PRICE.map(item => item.id));
+            setSelectedItems(stock.map(item => item.id));
         }
         setSelectAll(!selectAll);
     };
@@ -403,36 +416,22 @@ function Mypage_Cart() {
             const newSelectedItems = prevSelectedItems.includes(itemId)
                 ? prevSelectedItems.filter((id) => id !== itemId)
                 : [...prevSelectedItems, itemId];
-            setSelectAll(newSelectedItems.length === STOCK_PRICE.length);
+            setSelectAll(newSelectedItems.length === stock.length);
             return newSelectedItems;
         });
     };
 
     // 수량 업데이트
-    const [amount, setAmount] = useState(
-        STOCK_PRICE.reduce((acc, item) => {
-            acc[item.id] = item.amount;
-            return acc;
-        }, {})
-    );
+    const [amount, setAmount] = useState({});
 
-    // 선택된 상품 삭제
-    const deleteSelectedItems = () => {
-        // 선택된 항목들에 대해 fade-out 클래스 추가
-        selectedItems.forEach((itemId) => {
-            const row = document.querySelector(`tr[data-id='${itemId}']`);
-            if (row) {
-                row.classList.add('fade-out');
-            }
+    // API로부터 데이터를 가져온 후 초기 amount 설정
+    useEffect(() => {
+        const initialAmount = {};
+        stock.forEach(item => {
+            initialAmount[item.id] = item.quantity;
         });
-
-        // 일정 시간 후에 항목 삭제
-        setTimeout(() => {
-            setStock((prevStock) => prevStock.filter((item) => !selectedItems.includes(item.id)));
-            setSelectedItems([]);
-            setSelectAll(false);
-        }, 500); // 0.5초 후 삭제 (애니메이션 시간과 맞춤)
-    };
+        setAmount(initialAmount);
+    }, [stock]);
 
     // 수량 변경
     const handleAmountChange = (itemId, newAmount) => {
@@ -443,10 +442,181 @@ function Mypage_Cart() {
     };
 
     // 선택된 항목들의 총 가격 계산
-    const selectedTotalPrice = STOCK_PRICE.reduce((acc, item) => {
-        return selectedItems.includes(item.id) ? acc + item.price * amount[item.id] : acc;
+    const selectedTotalPrice = stock.reduce((acc, item) => {
+        return selectedItems.includes(item.id) ? acc + item.price * (amount[item.id] || item.quantity) : acc;
     }, 0);
 
+    // 선택된 상품 삭제 함수 분리 (추후에 재사용 가능)
+    const removeItemsFromCart = async (itemIds) => {
+        try {
+            // DELETE 요청을 병렬로 처리
+            const deletePromises = itemIds.map(async (id) => {
+                const response = await axios.delete(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items/${id}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': sessionStorage.getItem('accessToken') || '', // Bearer 제외
+                    },
+                });
+
+                if (response.status !== 200 && response.status !== 204) { // assuming 200 or 204 is success
+                    throw new Error(`Failed to delete item with id ${id}. Status: ${response.status}`);
+                }
+
+                return id;
+            });
+
+            // 모든 DELETE 요청 완료 대기
+            const deletedIds = await Promise.all(deletePromises);
+            console.log("Successfully deleted items:", deletedIds);
+
+            // Fade-out 애니메이션 트리거
+            setDeletingItems(deletedIds);
+
+            // 애니메이션 시간 후 UI에서 삭제
+            setTimeout(() => {
+                setStock((prevStock) => prevStock.filter((item) => !deletedIds.includes(item.id)));
+                setSelectedItems([]);
+                setSelectAll(false);
+                setDeletingItems([]);
+            }, 500); // 0.5초 후 삭제 (애니메이션 시간과 맞춤)
+
+            return deletedIds;
+        } catch (error) {
+            console.error("장바구니 항목 삭제 실패", error);
+            throw error; // 에러를 상위로 전달
+        }
+    };
+
+    // 선택된 상품 삭제
+    const deleteSelectedItems = async () => {
+        if (selectedItems.length === 0) {
+            Swal.fire({
+                title: "삭제할 항목을 선택해주세요.",
+                icon: "warning",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+            return;
+        }
+
+        // 사용자 확인
+        const confirmDelete = await Swal.fire({
+            title: "선택한 항목들을 삭제하시겠습니까?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "삭제",
+            cancelButtonText: "취소",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            background: "#F0EADC",
+            color: "#754F23",
+        });
+
+        if (!confirmDelete.isConfirmed) return;
+
+        setIsDeleting(true);
+
+        try {
+            await removeItemsFromCart(selectedItems);
+        } catch (error) {
+            // 에러는 removeItemsFromCart 함수 내에서 처리됩니다.
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    // 주문 함수 수정
+    const addOrder = async () => {
+        const accessToken = sessionStorage.getItem("accessToken");
+        if (!accessToken) {
+            Swal.fire({
+                title: "로그인이 필요합니다",
+                text: "주문을 진행하려면 로그인이 필요합니다.",
+                icon: "warning",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+            return;
+        }
+
+        const selectedOrderItems = stock.filter(item => selectedItems.includes(item.id));
+
+        if (selectedOrderItems.length === 0) {
+            Swal.fire({
+                title: "주문할 항목이 없습니다",
+                text: "주문할 상품을 선택해주세요.",
+                icon: "warning",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+            return;
+        }
+
+        const orderItemList = selectedOrderItems.map(item => {
+            const orderItem = {
+                productCode: Number(item.productCode),
+                stock: Number(item.quantity),
+                color: item.color,
+                price: Number(item.price),
+                name: item.productName,
+                size: item.size,
+                thumbnail: item.productImage
+            };
+
+            return orderItem;
+        });
+
+        const requestData = {
+            orderItemList: orderItemList,
+        };
+
+        console.log("Order Request Data:", requestData);
+
+        try {
+            const response = await axios.post(
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order`,
+                requestData,
+                {
+                    headers: {
+                        Authorization: accessToken,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            console.log("Order Response:", response.data);
+
+            Swal.fire({
+                title: "주문이 완료되었습니다!",
+                icon: "success",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+
+            // 주문 성공 시 장바구니 항목 삭제 (fade-out 애니메이션 포함)
+            await removeItemsFromCart(selectedItems);
+
+        } catch (error) {
+            console.error("주문 오류:", error);
+            Swal.fire({
+                title: "주문 오류",
+                text: error.response?.data?.message || "주문 중 오류가 발생했습니다.",
+                icon: "error",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+        }
+    };
 
     return (
         <>
@@ -455,7 +625,7 @@ function Mypage_Cart() {
                 <div className="targetcart-container">
                     <div className="left-box">
                         <div className="item-box">
-                            {STOCK_PRICE.map((item) => (
+                            {stock.map((item) => (
                                 <div
                                     key={item.id}
                                     id={item.id}
@@ -465,7 +635,7 @@ function Mypage_Cart() {
                                     onDragEnd={dragEndHandler}
                                     className="item-node"
                                 >
-                                    {item.name}
+                                    {item.productName}
                                 </div>
                             ))}
                         </div>
@@ -475,7 +645,9 @@ function Mypage_Cart() {
                                 <div
                                     key={tab.id}
                                     ref={el => tabRefs.current[tab.id] = el}
-                                    className="item-node saved-tab" onClick={() => showTabInBox(tab)}>
+                                    className="item-node saved-tab"
+                                    onClick={() => showTabInBox(tab)}
+                                >
                                     <div className="saved-tab-content">
                                         {tab.name}
                                     </div>
@@ -494,35 +666,40 @@ function Mypage_Cart() {
                                     </div>
                                 </div>
                             ))}
+
+                            {Array.isArray(customCartData) && customCartData.map((cart) => (
+                                <div
+                                    key={cart.tabId}
+                                    ref={el => tabRefs.current[cart.tabId] = el}
+                                    className="item-node saved-tab"
+                                    onClick={() => showTabInBox({
+                                        id: cart.tabId,
+                                        name: cart.title,
+                                        items: cart.items
+                                    })}
+                                >
+                                    <div className="saved-tab-content">
+                                        {cart.title}
+                                    </div>
+                                    <div
+                                        className="circle"
+                                        onClick={() => handleAnimation(cart.tabId)}
+                                        ref={el => circleRefs.current[cart.tabId] = el}
+                                    >
+                                        <span className="icon">
+                                            <FaTrashAlt />
+                                        </span>
+                                        <div
+                                            className="circle_loader"
+                                            ref={el => circleLoaderRefs.current[cart.tabId] = el}
+                                        ></div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
                     <div ref={targetBoxRef} className="target-box" onDragOver={(e) => e.preventDefault()}>
-                        {/* {targets.map((target) => (
-                            <div
-                                key={target.stamp_id}
-                                id={target.stamp_id}
-                                draggable
-                                onDragStart={targetDragStartHandler}
-                                onDrag={dragHandler}
-                                onDragEnd={targetDragEndHandler}
-                                className="target-item"
-                                style={{ top: `${target.top}px`, left: `${target.left - 80}px` }}
-                            >
-                                <div className="icon-row">
-                                    <div className="pin-icon">
-                                        <BsPinAngleFill />
-                                    </div>
-                                    <button onClick={() => deleteTarget(target.stamp_id)} className="close-delete-button">
-                                        <IoMdCloseCircleOutline />
-                                    </button>
-                                </div>
-                                <div>
-                                    {target.details.name} - {target.details.price}원
-                                </div>
-                                <img src={target.details.image} alt={target.details.name} width="140" height="140" />
-                            </div>
-                        ))} */}
 
                         <button
                             className="reset-button"
@@ -533,8 +710,8 @@ function Mypage_Cart() {
 
                         {targets.map((target) => (
                             <div
-                                key={target.stamp_id}
-                                id={target.stamp_id}
+                                key={target.itemCode}
+                                id={target.itemCode}
                                 className="target-item"
                                 style={{ top: `${target.top}px`, left: `${target.left}px` }}
 
@@ -544,18 +721,18 @@ function Mypage_Cart() {
                                         className="pin-icon top-center-handle"
                                         onMouseDown={(e) => {
                                             e.preventDefault();
-                                            targetDragStartHandler(e, target.stamp_id);
+                                            targetDragStartHandler(e, target.itemCode);
                                         }}
                                     >
                                         <BsPinAngleFill />
                                     </div>
-                                    <button onClick={() => deleteTarget(target.stamp_id)} className="close-delete-button">
+                                    <button onClick={() => deleteTarget(target.itemCode)} className="close-delete-button">
                                         <IoMdCloseCircleOutline />
                                     </button>
                                 </div>
-                                <img src={target.details.image} alt={target.details.name} width="140" />
+                                <img src={target.details.productImage} alt={target.details.productName} width="140" />
                                 <div>
-                                    {target.details.name} - {target.details.price}원
+                                    {target.details.productName}
                                 </div>
                             </div>
                         ))}
@@ -582,86 +759,99 @@ function Mypage_Cart() {
                     </div>
                 </div>
 
-
                 <div className="cart-list-container">
                     <h2>Cart</h2>
                     <p className="delivery-info">
                         * 배송은 2-5일 정도 소요되며 택배사의 상황에 따라 지연될 수 있습니다 *
                     </p>
 
-                    <table className="cart-table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectAll}
-                                        onChange={handleSelectAllChange}
-                                    />
-                                </th>
-                                <th>상품 사진</th>
-                                <th>상품 이름</th>
-                                <th>상품 상세</th>
-                                <th>수량</th>
-                                <th>주문금액</th>
-                                <th>배송 정보</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {stock.map((item) => (
-                                <tr key={item.id} data-id={item.id}>
-                                    <td>
+                    {isLoading ? (
+                        <p>로딩 중...</p>
+                    ) : (
+                        <table className="cart-table">
+                            <thead>
+                                <tr>
+                                    <th>
                                         <input
                                             type="checkbox"
-                                            checked={selectedItems.includes(item.id)}
-                                            onChange={() => handleCheckboxChange(item.id)}
+                                            checked={selectAll}
+                                            onChange={handleSelectAllChange}
                                         />
-                                    </td>
-                                    <td>
-                                        <img src={item.image} alt={item.name} className="product-image" />
-                                    </td>
-                                    <td>
-                                        <span>{item.name}</span>
-                                    </td>
-                                    <td>
-                                        <span>{item.size} / </span>
-                                        <span>{item.color}</span>
-                                    </td>
-                                    <td>
-                                        <select
-                                            value={amount[item.id]}
-                                            onChange={(e) => handleAmountChange(item.id, parseInt(e.target.value))}
-                                        >
-                                            {[...Array(10).keys()].map((num) => (
-                                                <option key={num + 1} value={num + 1}>
-                                                    {num + 1}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <span>{item.price} KRW</span>
-                                    </td>
-                                    <td>
-                                        무료 택배
-                                    </td>
+                                    </th>
+                                    <th>상품 사진</th>
+                                    <th>상품 이름</th>
+                                    <th>상품 상세</th>
+                                    <th>수량</th>
+                                    <th>주문금액</th>
+                                    <th>배송 정보</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {stock.map((item) => (
+                                    <tr
+                                        key={item.id}
+                                        data-id={item.id}
+                                        className={deletingItems.includes(item.id) ? 'fade-out' : ''}
+                                    >
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedItems.includes(item.id)}
+                                                onChange={() => handleCheckboxChange(item.id)}
+                                            />
+                                        </td>
+                                        <td>
+                                            <img src={item.productImage} alt={item.productName} className="product-image" />
+                                        </td>
+                                        <td>
+                                            <span>{item.productName}</span>
+                                        </td>
+                                        <td>
+                                            <span>{item.size} / </span>
+                                            <span>{item.color}</span>
+                                        </td>
+                                        <td>
+                                            <select
+                                                value={amount[item.id] || item.quantity}
+                                                onChange={(e) => handleAmountChange(item.id, parseInt(e.target.value))}
+                                            >
+                                                {[...Array(10).keys()].map((num) => (
+                                                    <option key={num + 1} value={num + 1}>
+                                                        {num + 1}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <span>{item.price.toLocaleString()} KRW</span>
+                                        </td>
+                                        <td>
+                                            무료 택배
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
 
                     <div className="cart-actions">
-                        <button className="action-button" onClick={deleteSelectedItems}>선택상품 삭제</button>
+                        <button
+                            className="action-button"
+                            onClick={deleteSelectedItems}
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? '삭제 중...' : '선택상품 삭제'}
+                        </button>
                     </div>
 
                     <div className="total-summary">
                         <p>총 주문 상품 {selectedItems.length}개</p>
                         <p>
-                            {selectedTotalPrice} KRW + 0 KRW = {selectedTotalPrice} KRW
+                            {selectedTotalPrice.toLocaleString()} KRW + 0 KRW = {selectedTotalPrice.toLocaleString()} KRW
                         </p>
                     </div>
 
-                    <button className="order-button">주문하기</button>
+                    <button className="order-button" onClick={addOrder}>주문하기</button>
 
                     <p className="payment-info">
                         일부 상품은 배송비가 추가될 수 있습니다.

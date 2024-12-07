@@ -92,7 +92,7 @@ function ProductTable({ searchQuery }) {
     useEffect(() => {
         const fetchStoreId = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store/`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store`, {
                     headers: {
                         'Authorization': accessToken
                     }

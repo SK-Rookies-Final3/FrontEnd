@@ -46,7 +46,7 @@ export default function Business_ProductAdd() {
       }
 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store/`);
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store`);
         // 받은 스토어 목록에서 userId가 일치하는 스토어 필터링
         const userStores = response.data.filter(store => store.userId === parseInt(userId, 10));
         if (userStores.length === 0) {

@@ -979,7 +979,7 @@ const ShopDetail = () => {
                                                 {review.userId === parseInt(sessionStorage.getItem("id")) && (
                                                     <button
                                                         className="delete-button"
-                                                        onClick={() => handleDeleteReview(review.id)}
+                                                        onClick={() => handleDeleteReview(review.reviewCode)}
                                                     >
                                                         <FaTrash />
                                                     </button>

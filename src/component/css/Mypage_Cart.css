@@ -597,6 +597,11 @@ h2 {
     margin-top: 20px;
 }
 
+.order-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
 .payment-info {
     font-size: 12px;
     color: #888;

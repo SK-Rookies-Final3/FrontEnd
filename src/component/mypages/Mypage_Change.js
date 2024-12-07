@@ -285,77 +285,27 @@ function ChangeContainer() {
 
                     <div className='input-group'>
                         <label>닉네임</label>
-                        {isEditingNickname ? (
-                            <input type="text" value={nickname} onChange={handleNicknameChange} />
-                        ) : (
-                            <input type="text" value={nickname} readOnly />
-                        )}
-                        <button className="edit-button" onClick={toggleNicknameEdit}>
-                            {isEditingNickname ? "완료" : "닉네임 수정"}
-                        </button>
+                        <input type="text" value={nickname} onChange={handleNicknameChange} />
                     </div>
 
                     <div className='input-group'>
                         <label>이메일</label>
-                        {isEditingEmail ? (
-                            <input type="email" value={email} onChange={handleEmailChange} />
-                        ) : (
-                            <input type="email" value={email} readOnly />
-                        )}
-                        <button className="edit-button" onClick={toggleEmailEdit}>
-                            {isEditingEmail ? "완료" : "이메일 수정"}
-                        </button>
+                        <input type="email" value={email} onChange={handleEmailChange} />
                     </div>
 
                     <div className='input-group'>
                         <label>나이</label>
-                        {isEditingAge ? (
-                            <input type="number" value={age} onChange={handleAgeChange}
-                                onKeyDown={(e) => {
-                                    if (["e", "E", "+", "-"].includes(e.key)) {
-                                        e.preventDefault();
-                                    }
-                                }} />
-                        ) : (
-                            <input type="number" value={age} readOnly />
-                        )}
-                        <button className="edit-button" onClick={toggleAgeEdit}>
-                            {isEditingAge ? "완료" : "나이 수정"}
-                        </button>
+                        <input type="number" value={age} onChange={handleAgeChange}></input>
                     </div>
 
                     <div className='input-group'>
                         <label>키</label>
-                        {isEditingHeight ? (
-                            <input type="number" value={height} onChange={handleHeightChange}
-                                onKeyDown={(e) => {
-                                    if (["e", "E", "+", "-"].includes(e.key)) {
-                                        e.preventDefault();
-                                    }
-                                }} />
-                        ) : (
-                            <input type="number" value={height} readOnly />
-                        )}
-                        <button className="edit-button" onClick={toggleHeightEdit}>
-                            {isEditingHeight ? "완료" : "키 수정"}
-                        </button>
+                        <input type="number" value={height} onChange={handleHeightChange}></input>
                     </div>
 
                     <div className='input-group'>
                         <label>몸무게</label>
-                        {isEditingWeight ? (
-                            <input type="number" value={weight} onChange={handleWeightChange}
-                                onKeyDown={(e) => {
-                                    if (["e", "E", "+", "-"].includes(e.key)) {
-                                        e.preventDefault();
-                                    }
-                                }} />
-                        ) : (
-                            <input type="number" value={weight} readOnly />
-                        )}
-                        <button className="edit-button" onClick={toggleWeightEdit}>
-                            {isEditingWeight ? "완료" : "몸무게 수정"}
-                        </button>
+                        <input type="number" value={weight} onChange={handleWeightChange}></input>
                     </div>
 
                     <div className='input-group'>

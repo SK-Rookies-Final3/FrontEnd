@@ -89,34 +89,51 @@
 
 .pay-product-item {
   display: flex;
-  justify-content: space-between; /* 좌측 사진, 중앙 상품명, 우측 가격 배치 */
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-  width: 100%;
+  padding: 15px 0;
+  border-bottom: 1px solid #ccc;
 }
 
 .pay-product-image {
   width: 80px; /* 정사각형 사진 크기 */
-  height: 80px;
-  background-color: #ccc; /* 사진 대신 배경색으로 placeholder */
+  /* height: 80px; */
   border-radius: 8px;
+}
+
+.pay-product-details {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .pay-product-name {
   font-size: 18px;
-  text-align: center; /* 상품명이 가운데 정렬 */
-  width: 400px;
+  flex: 2;
 }
 
 .pay-quantity {
   font-size: 18px;
-  width: 50px;
+  color: #666;
+  flex: 1;
+  text-align: center;
+}
+
+.pay-product-info {
+  font-size: 16px;
+  color: #888;
+  flex: 1;
+  text-align: center;
 }
 
 .pay-product-price {
   font-size: 18px;
+  font-weight: bold;
   color: #754F23;
-
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .pay-btn {
@@ -128,9 +145,13 @@
   height: 45px;
   align-self: center; 
   font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.kakaopay-logo {
+.pay-btn img.kakaopay-logo {
   width: 40px;
   margin-right: 10px;
 }

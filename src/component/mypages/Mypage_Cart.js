@@ -676,6 +676,7 @@ function Mypage_Cart() {
         const selectedOrderItems = stock
             .filter(item => selectedItems.includes(item.id))
             .map(item => ({
+                id: item.id,
                 productCode: Number(item.productCode),
                 stock: Number(item.quantity),
                 color: item.color,

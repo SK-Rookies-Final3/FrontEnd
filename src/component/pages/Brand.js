@@ -73,10 +73,10 @@ export default function Brand() {
   return (
     <div className="brand-container">
       <aside className="brand-sidebar">
+        <ul className="brand-links">
         <div className="logo">
           <h2>Brand</h2>
         </div>
-        <ul className="brand-links">
           <li className={selectedBrand === null ? 'active' : ''} onClick={handleAllProductsClick}>
             <span>전체 보기</span>
           </li>

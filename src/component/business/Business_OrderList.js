@@ -190,11 +190,12 @@ function OrderTable({ searchQuery }) {
         }
     };
 
-    const handleDropdownToggle = (orderNo) => {
-        if (activeDropdown === orderNo) {
+    const handleDropdownToggle = (orderCode, itemId) => {
+        const dropdownKey = `${orderCode}-${itemId}`;
+        if (activeDropdown === dropdownKey) {
             setActiveDropdown(null);
         } else {
-            setActiveDropdown(orderNo);
+            setActiveDropdown(dropdownKey);
         }
     };
 
@@ -267,8 +268,8 @@ function OrderTable({ searchQuery }) {
                                 </td>
                                 <td>
                                     <div
-                                        className={`dropdown ${activeDropdown === order.code ? 'active' : ''}`}
-                                        onClick={() => handleDropdownToggle(order.code)}
+                                        className={`dropdown ${activeDropdown === `${order.code}-${item.id}` ? 'active' : ''}`}
+                                        onClick={() => handleDropdownToggle(order.code, item.id)}
                                     >
                                         {order.status === 0
                                             ? "주문 대기"

@@ -79,7 +79,7 @@ function OrderTable({ searchQuery }) {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                
+
                 console.log("/////////Token////////");
                 console.log(`${sessionStorage.getItem("accessToken")}`);
                 const response = await fetch(
@@ -145,13 +145,49 @@ function OrderTable({ searchQuery }) {
         return map;
     }, [users]);
 
-    const handleStatusChange = (orderNo, newStatus) => {
-        setOrders((prevOrders) =>
-            prevOrders.map((order) =>
-                order.code === orderNo ? { ...order, status: newStatus } : order
-            )
-        );
-        setActiveDropdown(null);
+    const handleStatusChange = async (orderCode, newStatus) => {
+        try {
+            const response = await fetch(
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/owner/${orderCode}/status`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `${sessionStorage.getItem("accessToken")}`,
+                    },
+                    body: JSON.stringify({ status: newStatus }),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: '상태가 성공적으로 변경되었습니다.',
+                background: '#F0EADC',
+                confirmButtonColor: '#754F23',
+            });
+
+            // 주문 상태를 업데이트
+            setOrders((prevOrders) =>
+                prevOrders.map((order) =>
+                    order.code === orderCode ? { ...order, status: newStatus } : order
+                )
+            );
+
+            setActiveDropdown(null);
+        } catch (err) {
+            console.error('상태 변경에 실패했습니다:', err);
+            Swal.fire({
+                icon: 'error',
+                title: '상태 변경에 실패했습니다.',
+                text: '다시 시도해 주세요.',
+                background: '#F0EADC',
+                confirmButtonColor: '#754F23',
+            });
+        }
     };
 
     const handleDropdownToggle = (orderNo) => {
@@ -244,6 +280,15 @@ function OrderTable({ searchQuery }) {
                                         <span className="left-icon"></span>
                                         <span className="right-icon"></span>
                                         <div className="items">
+                                            <a
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleStatusChange(order.code, 0);
+                                                }}
+                                            >
+                                                주문 대기
+                                            </a>
                                             <a
                                                 href="#"
                                                 onClick={(e) => {

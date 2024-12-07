@@ -5,6 +5,7 @@ import { IoMdCloseCircleOutline } from "react-icons/io";
 import { FaTrashAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 function Mypage_Cart() {
     const [targets, setTargets] = useState([]);
@@ -13,6 +14,7 @@ function Mypage_Cart() {
     const targetBoxRef = useRef(null);
     const [box, setBox] = useState({ top: 0, left: 0, bottom: 0, right: 0 });
     const positionRef = useRef({});
+    const [productStock, setProductStock] = useState({});
 
     // 애니메이션을 위한 refs
     const circleRefs = useRef({});
@@ -97,6 +99,33 @@ function Mypage_Cart() {
 
         fetchCartItems();
     }, []);
+
+    // stock 목록에 있는 모든 상품에 대해 재고 정보를 가져옴
+    useEffect(() => {
+        const fetchProductDetails = async (productCode, itemId) => {
+            try {
+                const response = await fetch(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/${productCode}`
+                );
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch product details: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log(data);
+
+                setProductStock((prevStock) => ({
+                    ...prevStock,
+                    [itemId]: data.stock,
+                }));
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+            }
+        };
+
+        stock.forEach((item) => {
+            fetchProductDetails(item.productCode, item.id);
+        });
+    }, [stock]);
 
     // 애니메이션 핸들러
     const handleAnimation = async (tabId) => {
@@ -642,6 +671,23 @@ function Mypage_Cart() {
         }
     };
 
+    const navigate = useNavigate();
+    const goToPayPage = () => {
+        const selectedOrderItems = stock
+            .filter(item => selectedItems.includes(item.id))
+            .map(item => ({
+                productCode: Number(item.productCode),
+                stock: Number(item.quantity),
+                color: item.color,
+                price: Number(item.price),
+                name: item.productName,
+                size: item.size,
+                thumbnail: item.productImage,
+            }));
+
+        navigate('/mypages/pay', { state: { products: selectedOrderItems } });
+    };
+
     return (
         <>
             <h2>장바구니</h2>
@@ -839,7 +885,7 @@ function Mypage_Cart() {
                                                 value={amount[item.id] || item.quantity}
                                                 onChange={(e) => handleAmountChange(item.id, parseInt(e.target.value))}
                                             >
-                                                {[...Array(10).keys()].map((num) => (
+                                                {[...Array(Math.min(productStock[item.id] || 10, 10)).keys()].map((num) => (
                                                     <option key={num + 1} value={num + 1}>
                                                         {num + 1}
                                                     </option>
@@ -875,7 +921,8 @@ function Mypage_Cart() {
                         </p>
                     </div>
 
-                    <button className="order-button" onClick={addOrder}>주문하기</button>
+                    {/* <button className="order-button" onClick={addOrder}>주문하기</button> */}
+                    <button className="order-button" onClick={goToPayPage}>주문하기</button>
 
                     <p className="payment-info">
                         일부 상품은 배송비가 추가될 수 있습니다.

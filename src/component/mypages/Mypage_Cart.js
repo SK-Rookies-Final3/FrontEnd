@@ -174,24 +174,7 @@ function Mypage_Cart() {
 
     const editTabChanges = () => {
         if (activeTab) {
-            const updatedTab = {
-                ...activeTab,
-                items: targets.map(target => ({
-                    tabId: activeTab.id,
-                    itemCode: target.itemCode,
-                    top: positionRef.current[target.itemCode]?.top || target.top,
-                    left: positionRef.current[target.itemCode]?.left || target.left,
-                    details: target.details,
-                }))
-            };
-
-            setSavedTabs(prevTabs =>
-                prevTabs.map(tab => (tab.id === activeTab.id ? updatedTab : tab))
-            );
-
-            setActiveTab(null);
-            setTargets([]);
-            console.log("Edited tab targets:", updatedTab.items);
+            addTabToSecondBox();
         }
     };
 
@@ -312,7 +295,7 @@ function Mypage_Cart() {
     const addTabToSecondBox = async () => {
         const userId = sessionStorage.getItem('id');
         const accessToken = sessionStorage.getItem('accessToken');
-
+    
         const items = targets.map(target => ({
             itemCode: target.itemCode,
             top: positionRef.current[target.itemCode]?.top || target.top,
@@ -320,14 +303,21 @@ function Mypage_Cart() {
             productImage: target.details.productImage,
             productName: target.details.productName
         }));
-
+    
+        const payload = {
+            userId: userId,
+            items: items,
+        };
+    
+        // activeTab이 존재하면 id를 추가
+        if (activeTab) {
+            payload.tabId = activeTab.id;
+        }
+    
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/custom`,
-                {
-                    userId: userId,
-                    items: items
-                },
+                payload,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -335,13 +325,14 @@ function Mypage_Cart() {
                     },
                 }
             );
-
+    
             console.log("Custom cart save response:", response.data);
-
+    
             await fetchCustomCartItems();
-
-            // 성공적으로 저장 후 타겟 초기화
+    
+            // 저장 후 타겟 및 activeTab 초기화
             setTargets([]);
+            setActiveTab(null);
         } catch (error) {
             console.error("Failed to save custom cart items:", error);
             Swal.fire({

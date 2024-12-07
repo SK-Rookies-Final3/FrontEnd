@@ -31,7 +31,7 @@ html, body {
 }
 
 .brand-sidebar:hover {
-  width: 220px;
+  width: 170px;
 }
 
 .brand-sidebar .logo {
@@ -44,8 +44,8 @@ html, body {
 .brand-sidebar .logo h2 {
   font-size: 1.15rem;
   font-weight: 600;
-  margin-left: 15px;
-  margin-left: 50px;
+  margin-left: 5px;
+  /* margin-left: 50px; */
   /* display: none; */
 }
 
@@ -64,6 +64,8 @@ html, body {
   overflow-y: auto;
   scrollbar-width: none;
   height: calc(100% - 140px);
+  
+  margin-left: 60px;
 }
 
 .brand-links::-webkit-scrollbar {
@@ -74,6 +76,7 @@ html, body {
   display: flex;
   border-radius: 4px;
   align-items: center;
+  margin-left: 50px;
 }
 
 .brand-links li:hover {

@@ -21,6 +21,7 @@
   display: flex; /* 아이템들을 가로로 나열 */
   align-items: center;
   justify-content: flex-start; /* 아이템들을 왼쪽 정렬 */
+  flex-direction: column;
 }
 
 .myorder-product {
@@ -28,7 +29,9 @@
   align-items: center;
   margin-right: 20px; /* 아이템 간 간격 */
   width: 100%; /* 전체 폭 사용 */
-  justify-content: space-between; 
+  justify-content: space-between;
+  margin-top: 10px; 
+  margin-bottom: 10px;
 }
 
 .myorder-product img {
@@ -56,7 +59,7 @@
   text-overflow: ellipsis;
   text-align: left;
   flex-grow: 1; 
-  margin-left: 150px;
+  margin-left: 80px;
 }
 
 .myorder-product-price {

@@ -137,13 +137,13 @@ function Mypage_Cart() {
             circleLoaderRefs.current[tabId].classList.remove('animation');
             circleRefs.current[tabId].classList.remove('animation_circle');
             tabRefs.current[tabId].classList.remove('animation_card');
-    
+
             setTimeout(() => {
                 circleLoaderRefs.current[tabId].classList.add('animation');
                 setTimeout(() => {
                     circleRefs.current[tabId].classList.add('animation_circle');
                     tabRefs.current[tabId].classList.add('animation_card');
-    
+
                     // 애니메이션 완료 후 삭제 요청
                     setTimeout(async () => {
                         try {
@@ -156,7 +156,7 @@ function Mypage_Cart() {
                                     },
                                 }
                             );
-    
+
                             // 탭 삭제 및 상태 업데이트
                             setSavedTabs(prev => prev.filter(tab => tab.id !== tabId));
                             setActiveTab(null);
@@ -348,7 +348,7 @@ function Mypage_Cart() {
     const addTabToSecondBox = async () => {
         const userId = sessionStorage.getItem('id');
         const accessToken = sessionStorage.getItem('accessToken');
-    
+
         const items = targets.map(target => ({
             itemCode: target.itemCode,
             top: positionRef.current[target.itemCode]?.top || target.top,
@@ -356,17 +356,17 @@ function Mypage_Cart() {
             productImage: target.details.productImage,
             productName: target.details.productName
         }));
-    
+
         const payload = {
             userId: userId,
             items: items,
         };
-    
+
         // activeTab이 존재하면 id를 추가
         if (activeTab) {
             payload.tabId = activeTab.id;
         }
-    
+
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/custom`,
@@ -378,11 +378,11 @@ function Mypage_Cart() {
                     },
                 }
             );
-    
+
             console.log("Custom cart save response:", response.data);
-    
+
             await fetchCustomCartItems();
-    
+
             // 저장 후 타겟 및 activeTab 초기화
             setTargets([]);
             setActiveTab(null);
@@ -923,7 +923,13 @@ function Mypage_Cart() {
                     </div>
 
                     {/* <button className="order-button" onClick={addOrder}>주문하기</button> */}
-                    <button className="order-button" onClick={goToPayPage}>주문하기</button>
+                    <button
+                        className="order-button"
+                        onClick={goToPayPage}
+                        disabled={selectedItems.length === 0}
+                    >
+                        주문하기
+                    </button>
 
                     <p className="payment-info">
                         일부 상품은 배송비가 추가될 수 있습니다.

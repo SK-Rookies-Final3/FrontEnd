@@ -579,6 +579,7 @@ const ShopDetail = () => {
             }
 
             setThumbnails(selectedFiles);
+            setFileNames(selectedFiles.map((file) => file.name));
         }
     };
 
@@ -660,6 +661,7 @@ const ShopDetail = () => {
             setDescription("");
             setFileKey(Date.now());
             setFileNames([]);
+            setThumbnails([]);
             return;
         }
 
@@ -720,6 +722,9 @@ const ShopDetail = () => {
             setHeight("");
             setWeight("");
             setDescription("");
+            setFileKey(Date.now());
+            setFileNames([]);
+            setThumbnails([]);
         } catch (error) {
             console.error("리뷰 작성 실패:", error);
 

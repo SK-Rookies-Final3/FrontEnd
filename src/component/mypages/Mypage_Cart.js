@@ -580,6 +580,29 @@ function Mypage_Cart() {
         }
     };
 
+    const handleOutOfStockClick = async (itemId) => {
+        const confirmDelete = await Swal.fire({
+            title: "해당 상품은 재고가 없습니다.",
+            text: "이 상품을 삭제하시겠습니까?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "삭제",
+            cancelButtonText: "취소",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            background: "#F0EADC",
+            color: "#754F23",
+        });
+
+        if (confirmDelete.isConfirmed) {
+            try {
+                await removeItemsFromCart([itemId]);
+            } catch (error) {
+                console.error("Failed to delete item:", error);
+            }
+        }
+    };
+
     // 주문 함수 수정
     const addOrder = async () => {
         const accessToken = sessionStorage.getItem("accessToken");
@@ -858,49 +881,55 @@ function Mypage_Cart() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {stock.map((item) => (
-                                    <tr
-                                        key={item.id}
-                                        data-id={item.id}
-                                        className={deletingItems.includes(item.id) ? 'fade-out' : ''}
-                                    >
-                                        <td>
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedItems.includes(item.id)}
-                                                onChange={() => handleCheckboxChange(item.id)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <img src={item.productImage} alt={item.productName} className="product-image" />
-                                        </td>
-                                        <td>
-                                            <span>{item.productName}</span>
-                                        </td>
-                                        <td>
-                                            <span>{item.size} / </span>
-                                            <span>{item.color}</span>
-                                        </td>
-                                        <td>
-                                            <select
-                                                value={amount[item.id] || item.quantity}
-                                                onChange={(e) => handleAmountChange(item.id, parseInt(e.target.value))}
-                                            >
-                                                {[...Array(Math.min(productStock[item.id] || 10, 10)).keys()].map((num) => (
-                                                    <option key={num + 1} value={num + 1}>
-                                                        {num + 1}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <span>{item.price.toLocaleString()} KRW</span>
-                                        </td>
-                                        <td>
-                                            무료 택배
-                                        </td>
-                                    </tr>
-                                ))}
+                                {stock.map((item) => {
+                                    const isOutOfStock = (productStock[item.id] || 0) === 0;
+
+                                    return (
+                                        <tr
+                                            key={item.id}
+                                            data-id={item.id}
+                                            className={`${deletingItems.includes(item.id) ? 'fade-out' : ''} ${isOutOfStock ? 'blurred' : ''}`}
+                                            onClick={() => isOutOfStock && handleOutOfStockClick(item.id)}
+                                        >
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedItems.includes(item.id)}
+                                                    onChange={() => handleCheckboxChange(item.id)}
+                                                    disabled={isOutOfStock}
+                                                />
+                                            </td>
+                                            <td>
+                                                <img src={item.productImage} alt={item.productName} className="product-image" />
+                                            </td>
+                                            <td>
+                                                <span>{item.productName}</span>
+                                            </td>
+                                            <td>
+                                                <span>{item.size} / {item.color}</span>
+                                            </td>
+                                            <td>
+                                                <select
+                                                    value={amount[item.id] || item.quantity}
+                                                    onChange={(e) => handleAmountChange(item.id, parseInt(e.target.value))}
+                                                    disabled={isOutOfStock}
+                                                >
+                                                    {[...Array(Math.min(productStock[item.id] || 0, 10)).keys()].map((num) => (
+                                                        <option key={num + 1} value={num + 1}>
+                                                            {num + 1}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <span>{item.price.toLocaleString()} KRW</span>
+                                            </td>
+                                            <td>
+                                                무료 택배
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     )}

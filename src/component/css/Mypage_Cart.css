@@ -519,6 +519,12 @@ h2 {
     transform: translate(-50%, -50%);
 }
 
+.blurred {
+    filter: blur(1px);
+    opacity: 0.8;
+    cursor: pointer;
+}
+
 .product-info {
     display: flex;
     align-items: center;

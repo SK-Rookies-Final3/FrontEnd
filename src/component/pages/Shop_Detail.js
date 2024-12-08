@@ -32,6 +32,7 @@ const ShopDetail = () => {
     const [product, setProduct] = useState(null);
     const [thumbnail, setThumbnails] = useState([]);
     const [shortsData, setShortsData] = useState([]);
+    const [orders, setOrders] = useState([]);
 
     // ImageModal 상태 관리
     const [showImageModal, setShowImageModal] = useState(false);
@@ -371,6 +372,21 @@ const ShopDetail = () => {
     // };
 
     const addCart = async () => {
+        const role = sessionStorage.getItem("role");
+    
+        if (role !== "CLIENT") {
+            Swal.fire({
+                title: "권한이 없습니다",
+                text: "장바구니 기능은 CLIENT만 가능합니다.",
+                icon: "warning",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+            return;
+        }
+    
         if (selectedSize === "Choose a size" || selectedColor === "Choose a color" || selectedAmount === "Choose a amount") {
             Swal.fire({
                 title: '선택사항을 모두 선택해주세요!',
@@ -383,7 +399,7 @@ const ShopDetail = () => {
             });
             return;
         }
-
+    
         const accessToken = sessionStorage.getItem("accessToken");
         if (!accessToken) {
             Swal.fire({
@@ -397,7 +413,7 @@ const ShopDetail = () => {
             });
             return;
         }
-
+    
         if (!product) {
             Swal.fire({
                 title: "상품 정보가 로드되지 않았습니다",
@@ -410,7 +426,7 @@ const ShopDetail = () => {
             });
             return;
         }
-
+    
         // 요청 데이터 구성
         const requestData = {
             productCode: productCode,
@@ -421,9 +437,9 @@ const ShopDetail = () => {
             size: selectedSize,
             productImage: product.thumbnail[0]
         };
-
+    
         console.log("Cart Request Data:", requestData);
-
+    
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items`,
@@ -435,9 +451,9 @@ const ShopDetail = () => {
                     },
                 }
             );
-
+    
             console.log("Cart Response:", response.data);
-
+    
             Swal.fire({
                 title: "장바구니에 추가되었습니다!",
                 icon: "success",
@@ -446,7 +462,7 @@ const ShopDetail = () => {
                 background: "#F0EADC",
                 color: "#754F23",
             });
-
+    
             setCartClicked(true);
             setTimeout(() => setCartClicked(false), 2000);
         } catch (error) {
@@ -628,10 +644,59 @@ const ShopDetail = () => {
         fetchUsername();
     }, []);
 
+    useEffect(() => {
+        const fetchOrders = async () => {
+            const accessToken = sessionStorage.getItem("accessToken");
+    
+            if (!accessToken) {
+                console.error("Access token is missing.");
+                return;
+            }
+    
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/client`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': accessToken
+                    }
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+    
+                const data = await response.json();
+                // console.log("주문 데이터:", data);
+                setOrders(data);
+            } catch (err) {
+                console.error('주문 조회를 가져오는 데 실패했습니다:', err);
+            }
+        };
+    
+        fetchOrders();
+    }, []);
+
     const handleSubmitReview = async () => {
+        const hasOrderedProduct = orders.some(order =>
+            order.orderItems.some(item => item.productCode === parseInt(productCode, 10))
+        );
+    
+        if (!hasOrderedProduct) {
+            Swal.fire({
+                title: "리뷰 작성 불가",
+                text: "이 상품을 주문한 사용자만 리뷰를 작성할 수 있습니다.",
+                icon: "warning",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+            return;
+        }
+    
         const accessToken = sessionStorage.getItem("accessToken");
         const id = sessionStorage.getItem("id");
-
+    
         if (!accessToken || !id || !username) {
             Swal.fire({
                 title: "로그인 정보가 없습니다.",
@@ -640,9 +705,9 @@ const ShopDetail = () => {
             });
             return;
         }
-
+    
         const existingReview = reviews.find((review) => review.userId === parseInt(id, 10));
-
+    
         if (existingReview) {
             Swal.fire({
                 title: "이미 리뷰를 작성하셨습니다.",
@@ -653,7 +718,7 @@ const ShopDetail = () => {
                 background: "#F0EADC",
                 color: "#754F23",
             });
-
+    
             // 리뷰 작성 폼 초기화
             setRating(0);
             setHeight("");
@@ -664,10 +729,10 @@ const ShopDetail = () => {
             setThumbnails([]);
             return;
         }
-
+    
+        // 나머지 리뷰 작성 로직
         const formData = new FormData();
-
-        // reviewRequest를 JSON 문자열로 변환하여 Blob으로 추가
+    
         const reviewRequestJson = JSON.stringify({
             starRating: rating,
             height: height || "비공개",
@@ -676,30 +741,14 @@ const ShopDetail = () => {
             username: username,
             productCode: parseInt(productCode, 10),
         });
-
+    
         const reviewRequestBlob = new Blob([reviewRequestJson], { type: "application/json" });
         formData.append("reviewRequest", reviewRequestBlob);
-
-        // 썸네일 이미지 추가
-        thumbnail.forEach((file, index) => {
+    
+        thumbnail.forEach((file) => {
             formData.append('imageUrl', file);
         });
-
-        // FormData 확인 로그 추가
-        console.log("FormData 확인:");
-        for (let pair of formData.entries()) {
-            console.log(`${pair[0]}:`, pair[1]); // 기본 로그 출력
-
-            // Blob인 경우 내용을 출력
-            if (pair[1] instanceof Blob) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    console.log(`Blob(${pair[0]}) 내용:`, e.target.result);
-                };
-                reader.readAsText(pair[1]);
-            }
-        }
-
+    
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${productCode}`,
@@ -713,10 +762,10 @@ const ShopDetail = () => {
                     withCredentials: true,
                 }
             );
-
+    
             console.log("리뷰 작성 성공:", response.data);
             await fetchReviews();
-
+    
             // 초기화
             setRating(0);
             setHeight("");
@@ -727,7 +776,7 @@ const ShopDetail = () => {
             setThumbnails([]);
         } catch (error) {
             console.error("리뷰 작성 실패:", error);
-
+    
             Swal.fire({
                 title: "리뷰 작성에 실패했습니다.",
                 text: error.response?.data?.message || "다시 시도해주세요.",

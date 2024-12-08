@@ -487,11 +487,37 @@ function Mypage_Cart() {
     }, [stock]);
 
     // 수량 변경
-    const handleAmountChange = (itemId, newAmount) => {
-        setAmount((prevAmount) => ({
-            ...prevAmount,
-            [itemId]: newAmount,
-        }));
+    const handleAmountChange = async (id, newAmount) => {
+        try {
+            const response = await axios.put(
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/items/increase/${id}`,
+                {},
+                {
+                    headers: {
+                        'Authorization': sessionStorage.getItem('accessToken'),
+                    },
+                    params: { quantity: newAmount },
+                }
+            );
+    
+            setAmount((prevAmount) => ({
+                ...prevAmount,
+                [id]: newAmount,
+            }));
+    
+            console.log(`Item ${id} quantity ${newAmount} updated successfully:`, response.data);
+        } catch (error) {
+            console.error(`수량 변경 실패 id - ${id} / quantity - ${newAmount} : `, error);
+            Swal.fire({
+                title: "수량 변경 실패",
+                text: error.response?.data?.message || error.message || "",
+                icon: "error",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+        }
     };
 
     // 선택된 항목들의 총 가격 계산

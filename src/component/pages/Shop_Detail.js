@@ -142,7 +142,7 @@ const ShopDetail = () => {
                         //productThumbnail, 
                         productCode,
                         productName: product.name,
-                        productImage: product.thumbnail,
+                        productImage: product.thumbnail[0],
                     },
                     {
                         headers: {

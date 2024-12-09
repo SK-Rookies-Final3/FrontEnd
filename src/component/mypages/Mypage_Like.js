@@ -57,6 +57,7 @@ function LikeContainer() {
     const [nickname, setNickname] = useState('');
     const [Id, setId] = useState('');
     const [activeTab, setActiveTab] = useState("상품");
+    const [wishlistProducts, setWishlistProducts] = useState([]);
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     const [videoSrc, setVideoSrc] = useState('');
@@ -69,17 +70,32 @@ function LikeContainer() {
                     Authorization: `${accessToken}`
                 }
             })
-                .then(response => {
-                    if (response.data && response.data.body) {
-                        setNickname(response.data.body.nickname);
-                        setId(response.data.body.id);
-                    }
-                })
-                .catch(error => {
-                    console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
-                });
+            .then(response => {
+                if (response.data && response.data.body) {
+                    setNickname(response.data.body.nickname);
+                    setId(response.data.body.id);
+                }
+            })
+            .catch(error => {
+                console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
+            });
+    
+            axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products`, {
+                headers: {
+                    Authorization: accessToken,
+                }
+            })
+            .then(response => {
+                console.log(response.data)
+                if (response.data ) {
+                    setWishlistProducts(response.data);
+                }
+            })
+            .catch(error => {
+                console.error("위시리스트를 가져오는 중 오류가 발생했습니다.", error);
+            });
         }
-    }, []);
+    }, []);    
 
     const handleVideoClick = (url) => {
         setVideoSrc(url);
@@ -197,9 +213,12 @@ function LikeContainer() {
 
                 {activeTab === "상품" ? (
                     <div className="product-wish-images">
-                        <img src={product} alt="Product 1" />
-                        <img src={product} alt="Product 2" />
-                        <img src={product} alt="Product 3" />
+                        {wishlistProducts.map((product, index) => (
+                            <div key={index} className="product-item">
+                                <img src={product.productImage} alt={`Product ${product.productCode}`} />
+                                <p>{product.productCode}</p>
+                            </div>
+                        ))}
                     </div>
                 ) : (
                     <div className="short-wish-content">

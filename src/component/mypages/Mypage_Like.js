@@ -87,8 +87,12 @@ function LikeContainer() {
             })
             .then(response => {
                 console.log(response.data)
-                if (response.data ) {
-                    setWishlistProducts(response.data);
+                if (response.data) {
+                    // 중복 제거
+                    const uniqueProducts = response.data.filter((product, index, self) => 
+                        index === self.findIndex((p) => p.productCode === product.productCode)
+                    );
+                    setWishlistProducts(uniqueProducts);
                 }
             })
             .catch(error => {
@@ -216,7 +220,7 @@ function LikeContainer() {
                         {wishlistProducts.map((product, index) => (
                             <div key={index} className="product-item">
                                 <img src={product.productImage} alt={`Product ${product.productCode}`} />
-                                <p>{product.productCode}</p>
+                                <p>{product.productName}</p>
                             </div>
                         ))}
                     </div>

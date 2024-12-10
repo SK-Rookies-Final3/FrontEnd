@@ -11,7 +11,7 @@ const Business_Loading = () => {
                         <span>AI가 상품에 맞는 숏츠를 분석 중 입니다.</span>
                     </h2>
                     <h3>
-                        <span>다소 시간이 걸릴 수 있으니 양해 부탁드립니다.</span>
+                        <span>다소 시간이 걸릴 수 있으니 뒤로가기나 다른 페이지로 이동하지 말고 기다려주세요.</span>
                     </h3>
                     <div className="grass">
                         <div class="splash">

@@ -1,5 +1,6 @@
 .error2 {
     min-height: 100vh;
+    min-width: 100vw;
     background: linear-gradient(to bottom, #F0EADC, #fbd786, #f7798a);
     display: flex;
     flex-direction: column;

@@ -345,6 +345,46 @@ function Mypage_Cart() {
         fetchCustomCartItems();
     }, []);
 
+    const customCartNameHandler = async (items) => {
+
+        let customCartName;
+
+        const cart_payload = items.map(item => ({
+            product_id: item.itemCode,
+            product_name: item.productName
+        }));
+
+
+        let body = {
+            "custom_cart_id": "100",
+            "custom_cart_data": {
+                "custom_cart_product_data": [cart_payload]
+            }
+        }
+        console.log(body)
+        try {
+            const response = await axios.post(
+                `https://lambda.dotblossom.today/api/cart/custom/generate`,
+                body, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }
+            );
+
+            console.log("cart Response:", response.data);
+            customCartName = response.data.response_text;
+            if (customCartName == null) {
+                customCartName = "string01"
+            }
+        }
+        catch (e) {
+            // console.log(e);
+            // console.log(customCartName)
+        }
+        return customCartName;
+    }
+
     const addTabToSecondBox = async () => {
         const userId = sessionStorage.getItem('id');
         const accessToken = sessionStorage.getItem('accessToken');
@@ -356,18 +396,30 @@ function Mypage_Cart() {
             productImage: target.details.productImage,
             productName: target.details.productName
         }));
+        const customCartName = await customCartNameHandler(items) || "string_test";
 
         const payload = {
             userId: userId,
             items: items,
+            title: customCartName
+            // functions
         };
-
         // activeTab이 존재하면 id를 추가
         if (activeTab) {
             payload.tabId = activeTab.id;
         }
 
+        Swal.fire({
+            title: "AI가 멋진 제목을 지어드릴게요!",
+            text: "커스텀 장바구니를 저장 중...",
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         try {
+
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/cart/custom`,
                 payload,
@@ -499,12 +551,12 @@ function Mypage_Cart() {
                     params: { quantity: newAmount },
                 }
             );
-    
+
             setAmount((prevAmount) => ({
                 ...prevAmount,
                 [id]: newAmount,
             }));
-    
+
             console.log(`Item ${id} quantity ${newAmount} updated successfully:`, response.data);
         } catch (error) {
             console.error(`수량 변경 실패 id - ${id} / quantity - ${newAmount} : `, error);

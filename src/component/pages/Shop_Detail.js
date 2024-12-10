@@ -32,6 +32,7 @@ const ShopDetail = () => {
     const [product, setProduct] = useState(null);
     const [thumbnail, setThumbnails] = useState([]);
     const [shortsData, setShortsData] = useState([]);
+    const [orders, setOrders] = useState([]);
 
     // ImageModal 상태 관리
     const [showImageModal, setShowImageModal] = useState(false);
@@ -373,6 +374,20 @@ const ShopDetail = () => {
     // };
 
     const addCart = async () => {
+        const role = sessionStorage.getItem("role");
+        if (role !== "CLIENT") {
+            Swal.fire({
+                title: "권한이 없습니다",
+                text: "장바구니 기능은 CLIENT만 가능합니다.",
+                icon: "warning",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+            return;
+        }
+
         if (selectedSize === "Choose a size" || selectedColor === "Choose a color" || selectedAmount === "Choose a amount") {
             Swal.fire({
                 title: '선택사항을 모두 선택해주세요!',
@@ -581,6 +596,7 @@ const ShopDetail = () => {
             }
 
             setThumbnails(selectedFiles);
+            setFileNames(selectedFiles.map((file) => file.name));
         }
     };
 
@@ -629,7 +645,51 @@ const ShopDetail = () => {
         fetchUsername();
     }, []);
 
+    useEffect(() => {
+        const fetchOrders = async () => {
+            const accessToken = sessionStorage.getItem("accessToken");
+            if (!accessToken) {
+                console.error("Access token is missing.");
+                return;
+            }
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/client`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': accessToken
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                // console.log("주문 데이터:", data);
+                setOrders(data);
+            } catch (err) {
+                console.error('주문 조회를 가져오는 데 실패했습니다:', err);
+            }
+        };
+        fetchOrders();
+    }, []);
+
     const handleSubmitReview = async () => {
+
+        const hasOrderedProduct = orders.some(order =>
+            order.orderItems.some(item => item.productCode === parseInt(productCode, 10))
+        );
+        if (!hasOrderedProduct) {
+            Swal.fire({
+                title: "리뷰 작성 불가",
+                text: "이 상품을 주문한 사용자만 리뷰를 작성할 수 있습니다.",
+                icon: "warning",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#754F23",
+                background: "#F0EADC",
+                color: "#754F23",
+            });
+            return;
+        }
+
         const accessToken = sessionStorage.getItem("accessToken");
         const id = sessionStorage.getItem("id");
 
@@ -662,6 +722,7 @@ const ShopDetail = () => {
             setDescription("");
             setFileKey(Date.now());
             setFileNames([]);
+            setThumbnails([]);
             return;
         }
 
@@ -722,6 +783,9 @@ const ShopDetail = () => {
             setHeight("");
             setWeight("");
             setDescription("");
+            setFileKey(Date.now());
+            setFileNames([]);
+            setThumbnails([]);
         } catch (error) {
             console.error("리뷰 작성 실패:", error);
 

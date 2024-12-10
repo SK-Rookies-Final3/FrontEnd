@@ -276,7 +276,7 @@ function LikeContainer() {
                         ))}
                     </div>
                 ) : (
-                    <div className="product-wish-images">
+                    <div className="shorts-wish-images">
                         <div className="video-wish-gallery">
                             {likedShorts.length > 0 ? (
                                 likedShorts.map((short, index) => (

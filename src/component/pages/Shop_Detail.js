@@ -102,7 +102,8 @@ const ShopDetail = () => {
                 );
 
                 // 위시리스트에 포함된 productCode 확인
-                const wishlistProductCodes = response.data.map((item) => item.productCode);
+                const wishlistProductCodes = response.data.map((item) => String(item.productCode));
+                console.log("Wishlist Items:", wishlistProductCodes);
                 setWishlistItems(wishlistProductCodes);
             } catch (error) {
                 console.error("Error fetching wishlist:", error);
@@ -122,7 +123,7 @@ const ShopDetail = () => {
 
         try {
             console.log("Product Code:", productCode);
-            if (wishlistItems.includes(productCode)) {
+            if (wishlistItems.includes(String(productCode))) {
                 // 위시리스트에서 제거
                 await axios.delete(
                     `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products/${productCode}`,
@@ -133,14 +134,13 @@ const ShopDetail = () => {
                         },
                     }
                 );
-
-                setWishlistItems((prev) => prev.filter((code) => code !== productCode));
+                console.log(`Product ${productCode} successfully removed from the wishlist.`);
+                setWishlistItems((prev) => prev.filter((code) => code !== String(productCode)));
             } else {
                 // 위시리스트에 추가
                 await axios.post(
                     `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products`,
                     {
-                        //productThumbnail, 
                         productCode,
                         productName: product.name,
                         productImage: product.thumbnail[0],
@@ -152,7 +152,7 @@ const ShopDetail = () => {
                         },
                     }
                 );
-                setWishlistItems((prev) => [...prev, productCode, product.name, product.image]);
+                setWishlistItems((prev) => [...prev, String(productCode)]);
             }
         } catch (error) {
             console.error("Error updating wishlist:", error);

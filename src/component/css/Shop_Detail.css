@@ -190,6 +190,7 @@
     border-radius: 20px;
     transition: all 0.5s ease;
     cursor: pointer;
+    object-fit: cover;
 }
 
 /* 상세정보 섹션 */

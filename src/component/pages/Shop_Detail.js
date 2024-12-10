@@ -117,15 +117,15 @@ const ShopDetail = () => {
 
     const handleWishlistToggle = async () => {
         const accessToken = sessionStorage.getItem("accessToken");
-    
+
         if (!accessToken) {
             console.error("Access token is missing.");
             return;
         }
-    
+
         try {
             const item = wishlistItems.find((item) => item.productCode === String(productCode));
-    
+
             if (item) {
                 // 위시리스트에서 제거
                 await axios.delete(
@@ -201,15 +201,102 @@ const ShopDetail = () => {
         return average.toFixed(1);
     };
 
-    const handleLikeClick = (shortCode, event) => {
-        event.stopPropagation();
-        setLikedShorts((prevLikedShorts) => {
-            if (prevLikedShorts.includes(shortCode)) {
-                return prevLikedShorts.filter((code) => code !== shortCode);
-            } else {
-                return [...prevLikedShorts, shortCode];
+    useEffect(() => {
+        const fetchLikedShorts = async () => {
+            const accessToken = sessionStorage.getItem("accessToken");
+    
+            if (!accessToken) {
+                console.error("Access token is missing.");
+                return;
             }
-        });
+    
+            try {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/shorts`,
+                    {
+                        headers: {
+                            Authorization: accessToken,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+    
+                console.log("Response Data:", response.data);
+    
+                // `id`와 `shortsCode` 함께 저장
+                const likedShortsData = response.data.map((item) => ({
+                    id: item.id,
+                    shortsCode: item.shortsCode,
+                }));
+    
+                setLikedShorts(likedShortsData);
+            } catch (error) {
+                console.error("Error fetching liked shorts:", error);
+            }
+        };
+    
+        fetchLikedShorts();
+    }, []);
+
+    const handleLikeToggle = async (short) => {
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        if (!accessToken) {
+            console.error("Access token is missing.");
+            return;
+        }
+
+        const requestData = {
+            shortsCode: short.id,
+            shortsThumbnail: short.thumbnailUrl,
+            shortsUrl: short.shortsUrl,
+        };
+
+        try {
+            const likedItem = likedShorts.find((liked) => liked.shortsCode === short.id);
+
+            if (likedItem) {
+                // 좋아요 해제: `id` 사용
+                console.log(`Removing shortsCode: ${short.id} from wishlist`);
+
+                await axios.delete(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/shorts/${likedItem.id}`,
+                    {
+                        headers: {
+                            Authorization: accessToken,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+
+                setLikedShorts((prev) => prev.filter((item) => item.shortsCode !== short.id));
+                console.log(`Shorts ${short.id} successfully removed from the wishlist.`);
+            } else {
+                // 좋아요 추가
+                console.log(`Adding shortsCode: ${short.id} to wishlist`);
+
+                const response = await axios.post(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/shorts`,
+                    requestData,
+                    {
+                        headers: {
+                            Authorization: accessToken,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+
+                setLikedShorts((prev) => [...prev, { id: response.data.id, shortsCode: short.id }]);
+                console.log(`Shorts ${short.id} successfully added to the wishlist.`);
+            }
+        } catch (error) {
+            console.error("Error updating liked shorts:", error);
+            if (error.response) {
+                console.error("Error Response Data:", error.response.data);
+                console.error("Error Response Status:", error.response.status);
+                console.error("Error Response Headers:", error.response.headers);
+            }
+        }
     };
 
     useEffect(() => {
@@ -881,26 +968,21 @@ const ShopDetail = () => {
                 return (
                     <div>
                         <div className="video-gallery">
-                            {shortsData.map((video, index) => {
-                                const shortCode = `short-${index + 1}`;
-                                return (
-                                    <div
-                                        key={index}
-                                        className="video-item"
-                                        onClick={() => handleVideoClick(convertToEmbedUrl(video.shortsUrl))} // Convert URL before passing
-                                    >
-                                        <img src={video.thumbnailUrl} alt={`Reel ${index + 1}`} />
-                                        <button
-                                            className={`button-like ${likedShorts.includes(shortCode) ? "liked" : ""}`}
-                                            onClick={(e) => handleLikeClick(shortCode, e)} // Handle like button click
-                                            aria-label="Like button"
-                                        >
-                                            <FaHeart className="fa" />
-                                            <span>{likedShorts.includes(shortCode) ? "Liked" : "Like"}</span>
-                                        </button>
-                                    </div>
-                                );
-                            })}
+                        {shortsData.map((short, index) => (
+    <div key={short.id} className="video-item" onClick={() => handleVideoClick(convertToEmbedUrl(short.shortsUrl))}>
+        <img src={short.thumbnailUrl} alt={`Reel ${index + 1}`} />
+        <button
+            className={`button-like ${likedShorts.some((liked) => liked.shortsCode === short.id) ? "liked" : ""}`}
+            onClick={(e) => {
+                e.stopPropagation();
+                handleLikeToggle(short);
+            }}
+        >
+            <FaHeart className="fa" />
+            <span>{likedShorts.some((liked) => liked.shortsCode === short.id) ? "Liked" : "Like"}</span>
+        </button>
+    </div>
+))}
                         </div>
                         <ShortModal showModal={showModal} videoSrc={videoSrc} onClose={handleCloseModal} />
                     </div>

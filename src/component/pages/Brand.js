@@ -12,19 +12,6 @@ export default function Brand() {
   const [selectedBrand, setSelectedBrand] = useState(null);
   const navigate = useNavigate();
 
-  const handleLikeClick = (productCode) => {
-    setLikedProducts((prev) => {
-      if (prev.includes(productCode)) {
-        return prev.filter((id) => id !== productCode);
-      } else {
-        return [...prev, productCode];
-      }
-    });
-
-    const likedProduct = products.find((product) => product.code === productCode);
-    sessionStorage.setItem('likedProduct', JSON.stringify(likedProduct));
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {

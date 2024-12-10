@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import '../css/Mypage_Pay.css';
 import kakaopay from '../../img/kakaopay.png';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -12,6 +12,19 @@ export default function Mypage_Pay() {
   const location = useLocation();
   const navigate = useNavigate();
   const products = location.state?.products || [];
+
+  useEffect(() => {
+    const jquery = document.createElement("script");
+    jquery.src = "http://code.jquery.com/jquery-1.12.4.min.js";
+    const iamport = document.createElement("script");
+    iamport.src = "http://cdn.iamport.kr/js/iamport.payment-1.1.7.js";
+    document.head.appendChild(jquery);
+    document.head.appendChild(iamport);
+    return () => {
+    document.head.removeChild(jquery);
+    document.head.removeChild(iamport);
+    };
+}, []);
 
   const handleAddressSearch = () => {
     new window.daum.Postcode({
@@ -74,108 +87,108 @@ export default function Mypage_Pay() {
     }
   };
 
-  // 주문 처리 함수
   const addOrder = async () => {
-    const accessToken = sessionStorage.getItem('accessToken');
-
-    if (!accessToken) {
-      Swal.fire({
-        title: '로그인이 필요합니다',
-        text: '주문을 진행하려면 로그인이 필요합니다.',
-        icon: 'warning',
-        confirmButtonText: '확인',
-        confirmButtonColor: '#754F23',
-        background: '#F0EADC',
-        color: '#754F23',
-      });
-      return;
-    }
-
-    if (!address.trim() || !receiver.trim() || phone.replace(/\D/g, '').length !== 11) {
-      Swal.fire({
-        title: '입력 오류',
-        text: '주소, 수령인, 연락처를 모두 정확히 입력해주세요.',
-        icon: 'warning',
-        confirmButtonText: '확인',
-        confirmButtonColor: '#754F23',
-        background: '#F0EADC',
-        color: '#754F23',
-      });
-      return;
-    }
-
-    if (products.length === 0) {
-      Swal.fire({
-        title: '주문할 항목이 없습니다',
-        text: '주문할 상품을 선택해주세요.',
-        icon: 'warning',
-        confirmButtonText: '확인',
-        confirmButtonColor: '#754F23',
-        background: '#F0EADC',
-        color: '#754F23',
-      });
-      return;
-    }
-
-    const orderItemList = products.map((product) => ({
-      productCode: Number(product.productCode),
-      stock: Number(product.stock),
-      color: product.color,
-      price: Number(product.price),
-      name: product.name,
-      size: product.size,
-      thumbnail: product.thumbnail,
-    }));
-
-    const requestData = {
-      orderItemList: orderItemList,
-      address: address,
-      receiver: receiver,
-      phone: phone,
-    };
+    const totalPrice = products.reduce((sum, product) => sum + product.price * product.stock, 0);
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order`,
-        requestData,
+      const { IMP } = window;
+      IMP.init('imp03224481'); // 가맹점 식별 코드
+      console.log(totalPrice + totalPrice.type)
+      IMP.request_pay(
         {
-          headers: {
-            Authorization: accessToken,
-            'Content-Type': 'application/json',
-          },
+          pg: 'kakaopay.TC0ONETIME',
+          pay_method: 'card',
+          merchant_uid: `order_${new Date().getTime()}`,
+          name: "Shortpingoo",
+          amount: totalPrice,
+        },
+        async (rsp) => {
+          if (rsp.success) {
+            try {
+              const token = sessionStorage.getItem('accessToken');
+
+              const orderItemList = products.map((product) => ({
+                productCode: product.productCode,
+                stock: product.stock,
+                color: product.color,
+                price: product.price,
+                name: product.name,
+                size: product.size,
+                thumbnail: product.thumbnail,
+              }));
+              console.log("===================")
+              console.log(orderItemList)
+
+              // OrderRequest 생성
+              const requestData = {
+                impUid: rsp.imp_uid,
+                orderItemList: orderItemList,
+              };
+              console.log("===================")
+              console.log(requestData)
+              const verifyResponse = await axios.post(
+                `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order`,
+                requestData,
+                {
+                  headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json',
+                  },
+                }
+              );
+  
+              if (rsp.paid_amount) {
+                Swal.fire({
+                  title: "결제 성공",
+                  text: "결제가 성공적으로 완료되었습니다.",
+                  icon: "success",
+                  confirmButtonText: "확인",
+                }).then(async () => {
+                  try {
+                    // 장바구니에서 항목 삭제
+                    const itemIds = products.map((product) => product.id);
+                    await removeItemsFromCart(itemIds);
+              
+                    // 결제 후 장바구니 페이지로 이동
+                    navigate('/mypages/cart');
+                  } catch (error) {
+                    console.error('장바구니 항목 삭제 중 오류 발생:', error);
+                    Swal.fire({
+                      icon: 'error',
+                      title: '장바구니 항목 삭제 실패',
+                      text: '장바구니 항목 삭제 중 오류가 발생했습니다.',
+                    });
+                  }
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: '결제 실패',
+                  text: '결제 금액이 일치하지 않습니다.',
+                });
+              }
+            } catch (error) {
+              console.error('결제 검증 중 오류 발생:', error);
+              Swal.fire({
+                icon: 'error',
+                title: '결제 검증 중 오류 발생',
+                text: `${error.message}`,
+              });
+            }
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: '결제 실패',
+              text: `${rsp.error_msg}`,
+            });
+          }
         }
       );
-
-      console.log('Order Response:', response.data);
-
-      Swal.fire({
-        title: '주문이 완료되었습니다!',
-        icon: 'success',
-        confirmButtonText: '확인',
-        confirmButtonColor: '#754F23',
-        background: '#F0EADC',
-        color: '#754F23',
-      });
-
-      // 주문 완료 후 장바구니에서 해당 항목 삭제
-      const itemIds = products.map((product) => product.id);
-      await removeItemsFromCart(itemIds);
-
-      // 장바구니 페이지로 이동
-      navigate('/mypages/cart');
     } catch (error) {
-      console.error('주문 오류:', error);
-      Swal.fire({
-        title: '주문 오류',
-        text: error.response?.data?.message || '주문 중 오류가 발생했습니다.',
-        icon: 'error',
-        confirmButtonText: '확인',
-        confirmButtonColor: '#754F23',
-        background: '#F0EADC',
-        color: '#754F23',
-      });
+      console.error('결제 요청 중 오류 발생:', error);
     }
   };
+  
 
   return (
     <div className='pay-container'>

@@ -58,6 +58,7 @@ function LikeContainer() {
     const [Id, setId] = useState('');
     const [activeTab, setActiveTab] = useState("상품");
     const [wishlistProducts, setWishlistProducts] = useState([]);
+    const [likedShorts, setLikedShorts] = useState([]);
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     const [videoSrc, setVideoSrc] = useState('');
@@ -70,36 +71,82 @@ function LikeContainer() {
                     Authorization: `${accessToken}`
                 }
             })
-            .then(response => {
-                if (response.data && response.data.body) {
-                    setNickname(response.data.body.nickname);
-                    setId(response.data.body.id);
-                }
-            })
-            .catch(error => {
-                console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
-            });
-    
+                .then(response => {
+                    if (response.data && response.data.body) {
+                        setNickname(response.data.body.nickname);
+                        setId(response.data.body.id);
+                    }
+                })
+                .catch(error => {
+                    console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
+                });
+
             axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products`, {
                 headers: {
                     Authorization: accessToken,
                 }
             })
-            .then(response => {
-                console.log(response.data)
-                if (response.data) {
-                    // 중복 제거
-                    const uniqueProducts = response.data.filter((product, index, self) => 
-                        index === self.findIndex((p) => p.productCode === product.productCode)
-                    );
-                    setWishlistProducts(uniqueProducts);
-                }
-            })
-            .catch(error => {
-                console.error("위시리스트를 가져오는 중 오류가 발생했습니다.", error);
-            });
+                .then(response => {
+                    console.log(response.data)
+                    if (response.data) {
+                        // 중복 제거
+                        const uniqueProducts = response.data.filter((product, index, self) =>
+                            index === self.findIndex((p) => p.productCode === product.productCode)
+                        );
+                        setWishlistProducts(uniqueProducts);
+                    }
+                })
+                .catch(error => {
+                    console.error("위시리스트를 가져오는 중 오류가 발생했습니다.", error);
+                });
         }
-    }, []);    
+    }, []);
+
+    useEffect(() => {
+        const fetchLikedShorts = async () => {
+            const accessToken = sessionStorage.getItem("accessToken");
+
+            if (!accessToken) {
+                console.error("Access token is missing.");
+                return;
+            }
+
+            try {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/shorts`,
+                    {
+                        headers: {
+                            Authorization: accessToken,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+
+                console.log("Response Data:", response.data);
+
+                const likedShortsData = response.data.map((item) => ({
+                    id: item.id,
+                    shortsCode: item.shortsCode,
+                    thumbnailUrl: item.shortsThumbnail,
+                    shortsUrl: item.shortsUrl,
+                }));
+
+                setLikedShorts(likedShortsData);
+            } catch (error) {
+                console.error("Error fetching liked shorts:", error);
+            }
+        };
+
+        fetchLikedShorts();
+    }, []);
+
+    const convertToEmbedUrl = (url) => {
+        const match = url.match(/(?:\?v=|\/shorts\/)([a-zA-Z0-9_-]{11})/);
+        if (match && match[1]) {
+            return `https://www.youtube.com/embed/${match[1]}`;
+        }
+        return url;
+    };
 
     const handleVideoClick = (url) => {
         setVideoSrc(url);
@@ -189,6 +236,10 @@ function LikeContainer() {
         });
     };
 
+    const handleProductClick = (productCode) => {
+        navigate(`/pages/shop/detail/${productCode}`); // 상세 페이지 이동
+    };
+
     return (
         <div className="order-container">
             <Sidebar handleDeleteAccount={handleDeleteAccount} handleLogout={handleLogout} />
@@ -219,19 +270,27 @@ function LikeContainer() {
                     <div className="product-wish-images">
                         {wishlistProducts.map((product, index) => (
                             <div key={index} className="product-item">
-                                <img src={product.productImage} alt={`Product ${product.productCode}`} />
+                                <img src={product.productImage} alt={`Product ${product.productCode}`} onClick={() => handleProductClick(product.productCode)} style={{ cursor: 'pointer' }} />
                                 <p>{product.productName}</p>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="short-wish-content">
+                    <div className="product-wish-images">
                         <div className="video-wish-gallery">
-                            {[1, 2, 3, 4, 5, 6].map((video, index) => (
-                                <div key={index} className="video-wish-item" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
-                                    <img src={short} alt={`Reel ${index + 1}`} />
-                                </div>
-                            ))}
+                            {likedShorts.length > 0 ? (
+                                likedShorts.map((short, index) => (
+                                    <div
+                                        key={short.id}
+                                        className="video-wish-item"
+                                        onClick={() => handleVideoClick(convertToEmbedUrl(short.shortsUrl))}
+                                    >
+                                        <img src={short.thumbnailUrl} alt={`Short ${index + 1}`} />
+                                    </div>
+                                ))
+                            ) : (
+                                <p>위시리스트에 저장된 숏폼이 없습니다.</p>
+                            )}
                         </div>
                         <ShortModal showModal={showModal} videoSrc={videoSrc} onClose={handleCloseModal} />
                     </div>

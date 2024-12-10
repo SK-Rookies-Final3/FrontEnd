@@ -81,7 +81,6 @@ const ShopDetail = () => {
     };
 
     useEffect(() => {
-
         const fetchWishlistStatus = async () => {
             const accessToken = sessionStorage.getItem("accessToken");
 
@@ -101,10 +100,13 @@ const ShopDetail = () => {
                     }
                 );
 
-                // 위시리스트에 포함된 productCode 확인
-                const wishlistProductCodes = response.data.map((item) => String(item.productCode));
-                console.log("Wishlist Items:", wishlistProductCodes);
-                setWishlistItems(wishlistProductCodes);
+                const wishlistData = response.data.map((item) => ({ id: item.id, productCode: String(item.productCode) }));
+                setWishlistItems(wishlistData);
+
+                // 현재 productCode가 위시리스트에 있으면 버튼 활성화
+                if (wishlistData.some((item) => item.productCode === String(productCode))) {
+                    setWishlistClicked(true);
+                }
             } catch (error) {
                 console.error("Error fetching wishlist:", error);
             }
@@ -115,18 +117,19 @@ const ShopDetail = () => {
 
     const handleWishlistToggle = async () => {
         const accessToken = sessionStorage.getItem("accessToken");
-
+    
         if (!accessToken) {
             console.error("Access token is missing.");
             return;
         }
-
+    
         try {
-            console.log("Product Code:", productCode);
-            if (wishlistItems.includes(String(productCode))) {
+            const item = wishlistItems.find((item) => item.productCode === String(productCode));
+    
+            if (item) {
                 // 위시리스트에서 제거
                 await axios.delete(
-                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products/${productCode}`,
+                    `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products/${item.id}`,
                     {
                         headers: {
                             Authorization: accessToken,
@@ -135,10 +138,11 @@ const ShopDetail = () => {
                     }
                 );
                 console.log(`Product ${productCode} successfully removed from the wishlist.`);
-                setWishlistItems((prev) => prev.filter((code) => code !== String(productCode)));
+                setWishlistItems((prev) => prev.filter((wish) => wish.id !== item.id));
+                setWishlistClicked(false); // 버튼 비활성화
             } else {
                 // 위시리스트에 추가
-                await axios.post(
+                const response = await axios.post(
                     `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products`,
                     {
                         productCode,
@@ -152,13 +156,13 @@ const ShopDetail = () => {
                         },
                     }
                 );
-                setWishlistItems((prev) => [...prev, String(productCode)]);
+                console.log(`Product ${productCode} successfully added to the wishlist.`);
+                setWishlistItems((prev) => [...prev, { id: response.data.id, productCode: String(productCode) }]);
+                setWishlistClicked(true); // 버튼 활성화
             }
         } catch (error) {
             console.error("Error updating wishlist:", error);
         }
-
-
 
         // 별점 평균 계산 함수
         const calculateAverageRating = () => {
@@ -1219,12 +1223,12 @@ const ShopDetail = () => {
 
             <div className="wishlist-cart-container">
                 <button
-                    className={`wishlist-button ${wishlistItems.includes(productCode) ? "product-wish" : ""}`}
+                    className={`wishlist-button ${wishlistClicked ? "product-wish" : ""}`}
                     onClick={handleWishlistToggle}
-                    aria-pressed={wishlistItems.includes(productCode)}
-                    aria-label={wishlistItems.includes(productCode) ? "Remove from Wishlist" : "Add to Wishlist"}
+                    aria-pressed={wishlistClicked}
+                    aria-label={wishlistClicked ? "Remove from Wishlist" : "Add to Wishlist"}
                 >
-                    {wishlistItems.includes(productCode) ? (
+                    {wishlistClicked ? (
                         <span className="added">Added</span>
                     ) : (
                         <span className="add-to-wishlist">Add to Wishlist</span>

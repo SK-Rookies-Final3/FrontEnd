@@ -264,7 +264,7 @@ export default function Business_ProductAdd() {
     }
 
     try {
-      const response = await axios.post(`http://lambda.dotblossom.today/api/mongo`,
+      const response = await axios.post(`https://lambda.dotblossom.today/api/mongo`,
         body,
         {
           headers: {

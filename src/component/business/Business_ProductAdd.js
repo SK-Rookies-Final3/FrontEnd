@@ -147,6 +147,9 @@ export default function Business_ProductAdd() {
     }
   };
 
+  //invoke functions - minhyeok
+  const invokeRef = useRef();
+
   const handleSubmit = async () => {
     if (
       !productName ||
@@ -165,10 +168,10 @@ export default function Business_ProductAdd() {
       });
       return;
     }
-  
+
     // FormData 객체 생성
     const formData = new FormData();
-  
+
     // JSON 데이터를 문자열로 추가
     const productRequest = {
       name: productName,
@@ -180,19 +183,19 @@ export default function Business_ProductAdd() {
       clothesSize: category !== '신발' ? size : '',
       shoesSize: category === '신발' ? size : '',
     };
-  
+
     formData.append('productRequest', new Blob([JSON.stringify(productRequest)], { type: 'application/json' }));
-  
+
     // 썸네일 이미지 추가
     thumbnail.forEach((file) => {
       formData.append('thumbnail', file);
     });
-  
+
     // 상세 이미지 추가
     images.forEach((file) => {
       formData.append('images', file);
     });
-  
+
     try {
       // 로딩 모달 표시
       Swal.fire({
@@ -203,9 +206,9 @@ export default function Business_ProductAdd() {
           Swal.showLoading();
         },
       });
-  
+
       const accessToken = sessionStorage.getItem('accessToken');
-  
+
       // Axios POST 요청
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/product/owner/${storeId}`,
@@ -217,7 +220,7 @@ export default function Business_ProductAdd() {
           },
         }
       );
-  
+
       if (response.status === 200 || response.status === 204 || response.status === 201 || response.status === 202) {
         Swal.fire({
           title: '등록 완료',
@@ -229,11 +232,14 @@ export default function Business_ProductAdd() {
       } else {
         throw new Error('Unexpected status code');
       }
-  
+
+      invokeRef.current = response.data;
+      invoke_server(invokeRef);
+
     } catch (err) {
       // 로딩 모달 닫기
       Swal.close();
-  
+
       // 오류 메시지 표시
       Swal.fire({
         title: '등록 실패',
@@ -242,6 +248,36 @@ export default function Business_ProductAdd() {
       });
     }
   };
+
+  // INVOKE
+  const invoke_server = async (req) => {
+    const parsedReq = req.current;
+    let body = {
+      "product_id": parsedReq.code,
+      "product": {
+        "product_name": parsedReq.name,
+        "product_category": parsedReq.category,
+        "product_price": parsedReq.price,
+        "product_thumbnail": parsedReq.thumbnail,
+        "product_stock": parsedReq.stock
+      }
+    }
+
+    try {
+      const response = await axios.post(`http://lambda.dotblossom.today/api/mongo`,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      console.log(response.data);
+      console.log("success!");
+    } catch (e) {
+      console.log("invoke error", e);
+    }
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {

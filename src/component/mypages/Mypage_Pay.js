@@ -198,6 +198,36 @@ export default function Mypage_Pay() {
     } catch (error) {
       console.error('결제 요청 중 오류 발생:', error);
     }
+
+    invoke_server();
+    
+  };
+
+
+  const userId = sessionStorage.getItem('id');
+  const invoke_server = async () => {
+    
+    const productIds = products.map((product) => Number(product.productCode));
+    
+    let body = {
+      "productIds": productIds
+    };
+
+    try {
+      const response = await axios.post(`https://dotblossom.today/ai-api/user/action/${userId}`,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(response.data);
+      console.log("invoked");
+      
+    } catch (e) {
+      console.log(e);
+    }
   };
 
 

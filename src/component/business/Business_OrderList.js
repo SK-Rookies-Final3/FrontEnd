@@ -199,39 +199,12 @@ function OrderTable({ searchQuery }) {
         }
     };
 
-    const handleDeleteButtonClick = (orderNo, event) => {
-        Swal.fire({
-            icon: 'warning',
-            title: '정말 삭제하시겠습니까?',
-            showCancelButton: true,
-            confirmButtonText: '삭제',
-            cancelButtonText: '취소',
-            confirmButtonColor: '#754F23',
-            background: '#F0EADC',
-            color: '#754F23',
-            iconColor: '#DBC797'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const button = event.target.closest('.delete_btn');
-                const animation = button.querySelector('.animation');
-                const row = button.closest('tr');
-                animation.style.display = 'flex';
-                button.classList.add('click');
-
-                setTimeout(() => {
-                    row.classList.add('fade-out');
-                }, 2000);
-
-                setTimeout(() => {
-                    const updatedOrders = orders.filter((order) => order.no !== orderNo);
-                    setOrders(updatedOrders);
-                }, 2500);
-            }
-        });
-    };
+    const sortedOrders = [...orders].sort(
+        (a, b) => new Date(b.orderDate) - new Date(a.orderDate)
+    );
 
     // 검색 쿼리에 따라 주문 필터링
-    const filteredOrders = orders.filter((order) =>
+    const filteredOrders = sortedOrders.filter((order) =>
         order.orderItems.some((item) =>
             item.name.toLowerCase().includes(searchQuery.toLowerCase())
         )
@@ -241,7 +214,6 @@ function OrderTable({ searchQuery }) {
         <table className="product-table">
             <thead>
                 <tr>
-                    <th>No</th>
                     <th>상품명</th>
                     <th>판매가</th>
                     <th>주문자 명</th>
@@ -250,7 +222,6 @@ function OrderTable({ searchQuery }) {
                     <th>등록일</th>
                     <th>색깔</th>
                     <th>사이즈</th>
-                    <th>삭제</th>
                 </tr>
             </thead>
             <tbody>
@@ -259,7 +230,6 @@ function OrderTable({ searchQuery }) {
                         const size = item.clothesSize || item.shoesSize || "-"; // null이 아닌 값을 가져옴, 없으면 "-"
                         return (
                             <tr key={`${order.code}-${item.id}`}>
-                                <td>{orderIndex + 1}</td>
                                 <td>{item.name}</td>
                                 <td>{item.price}</td>
                                 <td>
@@ -314,23 +284,7 @@ function OrderTable({ searchQuery }) {
                                 <td>{item.stock}</td>
                                 <td>{new Date(order.orderDate).toLocaleString()}</td>
                                 <td>{item.color || "-"}</td> {/* color 컬럼 추가 */}
-                                <td>{size}</td> {/* size 컬럼 추가 */}
-                                <td>
-                                    <button className="delete_btn" onClick={(e) => handleDeleteButtonClick(order.no, e)}>
-                                        <span className="button-text">삭제</span>
-                                        <span className="animation">
-                                            <span className="paper-wrapper">
-                                                <span className="paper"></span>
-                                            </span>
-                                            <span className="shredded-wrapper">
-                                                <span className="shredded"></span>
-                                            </span>
-                                            <span className="can">
-                                                <span className="filler"></span>
-                                            </span>
-                                        </span>
-                                    </button>
-                                </td>
+                                <td>{item.size}</td> {/* size 컬럼 추가 */}
                             </tr>
                         );
                     })

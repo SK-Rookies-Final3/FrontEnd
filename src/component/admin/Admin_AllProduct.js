@@ -58,7 +58,7 @@ function AdminProduct() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product/`, {
+                const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/product`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `${sessionStorage.getItem("accessToken")}`

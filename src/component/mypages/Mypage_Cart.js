@@ -159,6 +159,10 @@ function Mypage_Cart() {
 
                             // 탭 삭제 및 상태 업데이트
                             setSavedTabs(prev => prev.filter(tab => tab.id !== tabId));
+
+                            // customCartData에서도 해당 탭 제거
+                            setCustomCartData(prev => prev.filter(cart => cart.tabId !== tabId));
+
                             setActiveTab(null);
                             setTargets([]);
                         } catch (error) {
@@ -408,15 +412,6 @@ function Mypage_Cart() {
         if (activeTab) {
             payload.tabId = activeTab.id;
         }
-
-        Swal.fire({
-            title: "AI가 멋진 제목을 지어드릴게요!",
-            text: "커스텀 장바구니를 저장 중...",
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
 
         try {
 

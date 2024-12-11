@@ -223,21 +223,43 @@ function Home() {
     
             try {
                 const url = accessToken && userId
-                    // ? `https://dotblossom.today/ai-api/preference/${userId}`
-                    ? `https://dotblossom.today/ai-api/preference/10`
+                    ? `https://dotblossom.today/ai-api/preference/${userId}`
                     : `https://dotblossom.today/ai-api/preference/default`;
     
                 const headers = accessToken ? { Authorization: `${accessToken}` } : {};
     
                 const response = await axios.get(url, { headers });
-    
+                console.log("Request URL:", url);
                 console.log("Full API Response:", response.data);
     
-                if (accessToken) {
+                if (accessToken && userId) {
                     // 로그인 시
                     const userPreference = response.data[0]?.payload || [];
-                    setShortsData(userPreference);
-                    setProductsData(userPreference);
+                    if (userPreference.length > 0) {
+                        setShortsData(userPreference);
+                        setProductsData(userPreference);
+                    } else {
+                        // 데이터가 없을 경우 기본 데이터로 설정
+                        setShortsData(
+                            Array(3).fill({
+                                shorts: {
+                                    youtube_thumbnail_url: short,
+                                    youtube_url: 'https://www.youtube.com/watch?v=r-Yd8foFCZk'
+                                }
+                            }).slice(0, 3)
+                        );
+    
+                        setProductsData(
+                            Array(3).fill({
+                                product: {
+                                    product_name: "기본 상품",
+                                    product_price: 0,
+                                    product_thumbnail: product
+                                },
+                                product_id: 'default'
+                            }).slice(0, 3)
+                        );
+                    }
                 } else {
                     // 비로그인 시
                     const defaultPreference = response.data[0]?.default_preference_id || [];
@@ -246,6 +268,26 @@ function Home() {
                 }
             } catch (error) {
                 console.error("Error fetching shorts data:", error);
+                // 에러 발생 시 기본 데이터 3개로 설정
+                setShortsData(
+                    Array(3).fill({
+                        shorts: {
+                            youtube_thumbnail_url: short,
+                            youtube_url: 'https://www.youtube.com/watch?v=r-Yd8foFCZk'
+                        }
+                    }).slice(0, 3)
+                );
+    
+                setProductsData(
+                    Array(3).fill({
+                        product: {
+                            product_name: "기본 상품",
+                            product_price: 0,
+                            product_thumbnail: product
+                        },
+                        product_id: 'default'
+                    }).slice(0, 3)
+                );
             }
         };
     
@@ -308,8 +350,8 @@ function Home() {
                             </div>
                             <div className="white-clip"></div>
                             <div className="content">
-                                <div className="video-card" onClick={() => handleVideoClick(convertToEmbedUrl(item.shorts.youtube_url))}>
-                                    <img src={item.shorts.youtube_thumbnail_url} alt={`Video ${index + 1}`} className="video-thumbnail" />
+                                <div className="video-card" onClick={() => handleVideoClick(convertToEmbedUrl(item.shorts?.youtube_url || ''))}>
+                                    <img src={item.shorts?.youtube_thumbnail_url || short} alt={`Video ${index + 1}`} className="video-thumbnail" />
                                 </div>
                             </div>
                         </div>
@@ -329,19 +371,19 @@ function Home() {
                     {productsData.map((item, index) => (
                         <div className="card item" key={index}>
                             <div className="imgBx">
-                                <img src={item.product.product_thumbnail} alt={`Product ${index + 1}`} className="image-thumbnail" />
+                                <img src={item.product?.product_thumbnail || product} alt={`Product ${index + 1}`} className="image-thumbnail" />
                             </div>
                             <div className="contentBx">
-                                <h2>{item.product.product_name}</h2>
+                                <h2>{item.product?.product_name || "기본 상품"}</h2>
                                 <div className="price">
                                     <h3>Price :</h3>
-                                    <span>{item.product.product_price.toLocaleString()}원</span>
+                                    <span>{item.product?.product_price?.toLocaleString() || "0"}원</span>
                                 </div>
                                 <a
                                     href="#"
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        navigate(`/pages/shop/detail/${item.product_id}`);
+                                        navigate(`/pages/shop/detail/${item.product_id || 'default'}`);
                                     }}
                                 >
                                     Buy Now
@@ -349,14 +391,6 @@ function Home() {
                             </div>
                         </div>
                     ))}
-
-                    <button className="view-all-button" onClick={handleViewAllClick}>
-                        <span className="button_all_icon-wrapper">
-                            <VscArrowRight className="button_all_icon-svg" />
-                            <VscArrowRight className="button_all_icon-svg button_all_icon-svg--copy" />
-                        </span>
-                        VIEW-ALL
-                    </button>
                 </div>
             </div>
 

@@ -99,7 +99,7 @@ function CompanyTable({ searchQuery }) {
                 console.log('Owner IDs:', ownerIds);
 
                 // 기업 데이터 가져오기
-                const companiesResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store/`, {
+                const companiesResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store `, {
                     headers: {
                         Authorization: `${accessToken}`
                     }

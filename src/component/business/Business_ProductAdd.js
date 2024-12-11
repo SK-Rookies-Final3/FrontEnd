@@ -165,10 +165,10 @@ export default function Business_ProductAdd() {
       });
       return;
     }
-
+  
     // FormData 객체 생성
     const formData = new FormData();
-
+  
     // JSON 데이터를 문자열로 추가
     const productRequest = {
       name: productName,
@@ -180,19 +180,19 @@ export default function Business_ProductAdd() {
       clothesSize: category !== '신발' ? size : '',
       shoesSize: category === '신발' ? size : '',
     };
-
+  
     formData.append('productRequest', new Blob([JSON.stringify(productRequest)], { type: 'application/json' }));
-
+  
     // 썸네일 이미지 추가
-    thumbnail.forEach((file, index) => {
+    thumbnail.forEach((file) => {
       formData.append('thumbnail', file);
     });
-
+  
     // 상세 이미지 추가
-    images.forEach((file, index) => {
+    images.forEach((file) => {
       formData.append('images', file);
     });
-
+  
     try {
       // 로딩 모달 표시
       Swal.fire({
@@ -203,9 +203,9 @@ export default function Business_ProductAdd() {
           Swal.showLoading();
         },
       });
-
+  
       const accessToken = sessionStorage.getItem('accessToken');
-
+  
       // Axios POST 요청
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/product/owner/${storeId}`,
@@ -217,25 +217,23 @@ export default function Business_ProductAdd() {
           },
         }
       );
-
-      // 로딩 모달 닫기
-      Swal.close();
-
-      // Response 로그 출력
-      console.log('응답 데이터:', response.data);
-
-      // 성공 메시지 표시
-      Swal.fire({
-        title: '등록 완료',
-        text: '상품이 성공적으로 등록되었습니다.',
-        icon: 'success',
-      }).then(() => {
-        navigate('/business/product');
-      });
+  
+      if (response.status === 200) {
+        Swal.fire({
+          title: '등록 완료',
+          text: '상품이 성공적으로 등록되었습니다.',
+          icon: 'success',
+        }).then(() => {
+          navigate('/business/product');
+        });
+      } else {
+        throw new Error('Unexpected status code');
+      }
+  
     } catch (err) {
       // 로딩 모달 닫기
       Swal.close();
-
+  
       // 오류 메시지 표시
       Swal.fire({
         title: '등록 실패',

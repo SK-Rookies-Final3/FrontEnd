@@ -25,6 +25,9 @@ function Home() {
     const [videoSrc, setVideoSrc] = useState('');
     const navigate = useNavigate();
 
+    const [shortsData, setShortsData] = useState([]);
+    const [productsData, setProductsData] = useState([]);
+
     // 타이핑 effect short
     const [displayedText, setDisplayedText] = useState('');
     const texts = ["당신에게 꼭 맞는 AI 추천 숏폼을 지금 만나보세요!", "Discover AI-recommended shorts tailored just for you!  "];
@@ -212,11 +215,63 @@ function Home() {
         navigate('/pages/shop');
     };
 
+    // ai를 통한 추천
+    useEffect(() => {
+        const fetchShortsData = async () => {
+            const accessToken = sessionStorage.getItem("accessToken");
+            const userId = sessionStorage.getItem("id");
+    
+            try {
+                const url = accessToken && userId
+                    // ? `https://dotblossom.today/ai-api/preference/${userId}`
+                    ? `https://dotblossom.today/ai-api/preference/10`
+                    : `https://dotblossom.today/ai-api/preference/default`;
+    
+                const headers = accessToken ? { Authorization: `${accessToken}` } : {};
+    
+                const response = await axios.get(url, { headers });
+    
+                console.log("Full API Response:", response.data);
+    
+                if (accessToken) {
+                    // 로그인 시
+                    const userPreference = response.data[0]?.payload || [];
+                    setShortsData(userPreference);
+                    setProductsData(userPreference);
+                } else {
+                    // 비로그인 시
+                    const defaultPreference = response.data[0]?.default_preference_id || [];
+                    setShortsData(defaultPreference);
+                    setProductsData(defaultPreference);
+                }
+            } catch (error) {
+                console.error("Error fetching shorts data:", error);
+            }
+        };
+    
+        fetchShortsData();
+    }, []);
+
+    const convertToEmbedUrl = (url) => {
+        const match = url.match(/(?:\?v=|\/shorts\/)([a-zA-Z0-9_-]{11})/);
+        if (match && match[1]) {
+            return `https://www.youtube.com/embed/${match[1]}`;
+        }
+        return url;
+    };
+
     return (
         <div className='home-container'>
             <div className='home_top-container sections'>
                 <div className="text-container">
-                    <h1 className="main-title">Crafting Elegance<br />One Story at a Time</h1>
+                    <h1 className="main-title">
+                        <svg viewBox="0 0 1320 300" className="svg-title">
+                            <text x="50%" y="50%" textAnchor="middle">
+                                <tspan x="50%" dy="-20">Crafting Elegance</tspan>
+                                <tspan x="50%" dy="100">One Story at a Time</tspan>
+                            </text>
+                        </svg>
+                    </h1>
                     <p className="sub-title">우아함과 이야기의 결합을 통해 브랜드의 세련된 감성을 전달합니다</p>
                     <p className="sub-title">
                         저희는 단순히 제품을 제공하는 것이 아니라, <strong>고객의 삶에 우아함과 의미를 더하는 특별한 경험을 만들어갑니다.</strong><br />
@@ -246,23 +301,19 @@ function Home() {
                 </div>
                 <div className="typed-text">_ {displayedText}</div>
                 <div className="short-form-videos">
-
-                    {/* 비디오 카드 */}
-                    {[1, 2, 3].map((item, index) => (
+                    {shortsData.map((item, index) => (
                         <div className="has-glow item" key={index}>
                             <div className="glow">
                                 <div className="glow-bg"></div>
                             </div>
                             <div className="white-clip"></div>
                             <div className="content">
-                                <div className="video-card" onClick={() => handleVideoClick('https://www.youtube.com/embed/khHcpvsUdK8')}>
-                                    <img src={short} alt={`Video${item}`} className="video-thumbnail" />
-                                    <p className="sub-form-title">아디다스 캠퍼스 00's 언박싱</p>
+                                <div className="video-card" onClick={() => handleVideoClick(convertToEmbedUrl(item.shorts.youtube_url))}>
+                                    <img src={item.shorts.youtube_thumbnail_url} alt={`Video ${index + 1}`} className="video-thumbnail" />
                                 </div>
                             </div>
                         </div>
                     ))}
-
                 </div>
 
 
@@ -275,18 +326,26 @@ function Home() {
                 <h2 className="form-title">Recommended Products</h2>
                 <div className="typed-text">_ {newDisplayedText}</div>
                 <div className="product-form-container">
-                    {[1, 2, 3].map((item, index) => (
+                    {productsData.map((item, index) => (
                         <div className="card item" key={index}>
                             <div className="imgBx">
-                                <img src={product} alt={`Product${item}`} className="image-thumbnail" />
+                                <img src={item.product.product_thumbnail} alt={`Product ${index + 1}`} className="image-thumbnail" />
                             </div>
                             <div className="contentBx">
-                                <h2>비비안웨스트우드</h2>
+                                <h2>{item.product.product_name}</h2>
                                 <div className="price">
                                     <h3>Price :</h3>
-                                    <span>150,000</span>
+                                    <span>{item.product.product_price.toLocaleString()}원</span>
                                 </div>
-                                <a href="#">Buy Now</a>
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        navigate(`/pages/shop/detail/${item.product_id}`);
+                                    }}
+                                >
+                                    Buy Now
+                                </a>
                             </div>
                         </div>
                     ))}

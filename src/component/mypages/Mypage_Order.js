@@ -96,7 +96,11 @@ function OrderContainer() {
 
                 const data = await response.json();
                 console.log("응답 데이터:", data);
-                setOrders(data); // 주문 데이터를 상태에 저장
+                const sortedOrders = data.sort(
+                    (a, b) => new Date(b.orderDate) - new Date(a.orderDate)
+                );
+
+                setOrders(sortedOrders);
 
             } catch (err) {
                 console.error('주문 조회를 가져오는 데 실패했습니다:', err);

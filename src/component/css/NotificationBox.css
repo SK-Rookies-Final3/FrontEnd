@@ -88,10 +88,10 @@
   .noti-panel {
     position: absolute;
     z-index: 2;
-    height: 300px;
-    width: 300px;
+    height: 160px;
+    width: 320px;
     top: 50px;
-    left: 50px;
+    left: 40px;
     background: #fff;
     border-radius: 3px;
     overflow: hidden;

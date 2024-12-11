@@ -1,8 +1,15 @@
 import "./css/NotificationBox.css";
 import { useEffect, useState } from "react";
 import { EventSourcePolyfill } from "event-source-polyfill";
+import axios from "axios";
+
 export default function NotificationModal({ onClose }) {
     const [notifications, setNotications] = useState([]);
+    const [users, setUsers] = useState([]);
+    const accessToken = sessionStorage.getItem('accessToken');
+    const id = sessionStorage.getItem('id');
+    const [currentNickname, setCurrentNickname] = useState('');
+    const [welcomeTime, setWelcomeTime] = useState(''); 
 
     const formatDatetime = (t) => {
         const date = new Date(t);
@@ -71,40 +78,42 @@ export default function NotificationModal({ onClose }) {
 
     }, []);
 
+    const formatDate = (date) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' }; // 예: 2024년 4월 27일
+        return date.toLocaleDateString('ko-KR', options);
+    };
 
-
+    // 사용자 데이터 가져오기
+    useEffect(() => {
+        if (accessToken) {
+            axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user/master`, {
+                headers: {
+                    Authorization: `${accessToken}`
+                }
+            })
+                .then(response => {
+                    console.log(response.data);
+                    if (response.data) {
+                        setUsers(response.data);
+                        // 현재 사용자의 nickname 찾기
+                        const currentUser = response.data.find(user => String(user.id) === String(id));
+                        if (currentUser) {
+                            setCurrentNickname(currentUser.nickname);
+                            // 로그인 시점의 날짜를 포맷하여 welcomeTime 상태에 설정
+                            setWelcomeTime(formatDate(new Date()));
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.log("데이터를 가져오는 중 오류가 발생했습니다.", error);
+                });
+        }
+    }, [accessToken, id]);
 
     return (
         <>
             <div className="notification-modal">
-                {/* <div className="notification-header">
-                    <div className="header-text">알림</div>
-                    <button onClick={onClose} className="close-modal">X</button>
-                </div>
-                <hr className="notification-line" />
-                {notifications.length > 0 ? (
-                    <ul>
-                        {notifications.map((notify) =>
-                            notify.eventType === "postLike" ? (
-                                <li key={notify.id}>
-                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="userprofile" />
-                                    {notify.senderName} 이 회원님의 POST를 좋아해요.
-                                    <span style={{ fontSize: 12 }}>{notify.eventCreatedTime}</span>
-                                </li>
-                            ) : (
-                                <li key={notify.id}>
-                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="userprofile" />
-                                    {notify.senderName} 이 회원님을 팔로우하기 시작했어요.
-                                    <span style={{ fontSize: 12 }}>{notify.eventCreatedTime}</span>
-                                </li>
-                            )
-                        )}
-                    </ul>
-                ) : (
-                    <div className="modal-empty">no notifications!</div>
-                )} */}
-
-
+                
                 <div class="noti-panel">
                     <div class="noti-header">
                         <span class="noti-title">Notifications</span>
@@ -114,10 +123,10 @@ export default function NotificationModal({ onClose }) {
                         <div class="noti-line"></div>
                         <div class="notification">
                             <div class="noti-circle"></div>
-                            <span class="noti-time">9:24 AM</span>
-                            <p class="noti-p"><b class="noti-b">John Walker</b> posted a photo on your wall.</p>
+                            <span class="noti-time">{welcomeTime}</span>
+                            <p class="noti-p"><b class="noti-b">{currentNickname}님</b> 숏폼 광고 의류 이커머스 Shotpingoo에 오신 것을 환영합니다.🥰</p>
                         </div>
-                        <div class="notification">
+                        {/* <div class="notification">
                             <div class="noti-circle"></div>
                             <span class="noti-time">8:19 AM</span>
                             <p class="noti-p"><b class="noti-b">Alice Parker</b> commented your last post.</p>
@@ -126,7 +135,7 @@ export default function NotificationModal({ onClose }) {
                             <div class="noti-circle"></div>
                             <span class="noti-time">Yesterday</span>
                             <p class="noti-p"><b class="noti-b">Luke Wayne</b> added you as friend.</p>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 

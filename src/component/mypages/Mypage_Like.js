@@ -269,16 +269,21 @@ function LikeContainer() {
                 {activeTab === "상품" ? (
                     <div className="product-wish-images">
                         {wishlistProducts.map((product, index) => (
-                            <div key={index} className="product-item">
-                                <img src={product.productImage} alt={`Product ${product.productCode}`} onClick={() => handleProductClick(product.productCode)} style={{ cursor: 'pointer' }} />
+                            <div key={index} className="brand-card">
+                                <div className="brand-card-img-top">
+                                    <img src={product.productImage} alt={`Product ${product.productCode}`} onClick={() => handleProductClick(product.productCode)} style={{ cursor: 'pointer' }} />
+                                </div>
+                                <div className="brand-card-body" >
+
                                 <p>{product.productName}</p>
+                                </div>
                             </div>
                         ))}
                     </div>
                 ) : (
                     <div className="shorts-wish-images">
                         <div className="video-wish-gallery">
-                            {likedShorts.length > 0 ? (
+                            {likedShorts.length > 0 &&
                                 likedShorts.map((short, index) => (
                                     <div
                                         key={short.id}
@@ -287,10 +292,7 @@ function LikeContainer() {
                                     >
                                         <img src={short.thumbnailUrl} alt={`Short ${index + 1}`} />
                                     </div>
-                                ))
-                            ) : (
-                                <p>위시리스트에 저장된 숏폼이 없습니다.</p>
-                            )}
+                                ))}
                         </div>
                         <ShortModal showModal={showModal} videoSrc={videoSrc} onClose={handleCloseModal} />
                     </div>

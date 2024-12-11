@@ -218,7 +218,7 @@ export default function Business_ProductAdd() {
         }
       );
   
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 204 || response.status === 201 || response.status === 202) {
         Swal.fire({
           title: '등록 완료',
           text: '상품이 성공적으로 등록되었습니다.',

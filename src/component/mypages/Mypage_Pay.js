@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/Mypage_Pay.css';
 import kakaopay from '../../img/kakaopay.png';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -21,10 +21,10 @@ export default function Mypage_Pay() {
     document.head.appendChild(jquery);
     document.head.appendChild(iamport);
     return () => {
-    document.head.removeChild(jquery);
-    document.head.removeChild(iamport);
+      document.head.removeChild(jquery);
+      document.head.removeChild(iamport);
     };
-}, []);
+  }, []);
 
   const handleAddressSearch = () => {
     new window.daum.Postcode({
@@ -88,6 +88,17 @@ export default function Mypage_Pay() {
   };
 
   const addOrder = async () => {
+
+    // 입력 값 확인 (주소, 수령인, 연락처)
+    if (!address.trim() || !receiver.trim() || phone.replace(/\D/g, '').length !== 11) {
+      Swal.fire({
+        icon: 'error',
+        title: '입력 오류',
+        html: '주소, 수령인, 연락처를 정확히 입력해 주세요.<br>연락처는 11자리여야 합니다.',
+      });
+      return;
+    }
+
     const totalPrice = products.reduce((sum, product) => sum + product.price * product.stock, 0);
 
     try {
@@ -136,7 +147,7 @@ export default function Mypage_Pay() {
                   },
                 }
               );
-  
+
               if (rsp.paid_amount) {
                 Swal.fire({
                   title: "결제 성공",
@@ -148,7 +159,7 @@ export default function Mypage_Pay() {
                     // 장바구니에서 항목 삭제
                     const itemIds = products.map((product) => product.id);
                     await removeItemsFromCart(itemIds);
-              
+
                     // 결제 후 장바구니 페이지로 이동
                     navigate('/mypages/cart');
                   } catch (error) {
@@ -188,7 +199,7 @@ export default function Mypage_Pay() {
       console.error('결제 요청 중 오류 발생:', error);
     }
   };
-  
+
 
   return (
     <div className='pay-container'>

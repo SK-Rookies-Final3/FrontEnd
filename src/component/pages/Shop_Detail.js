@@ -247,7 +247,7 @@ const ShopDetail = () => {
         }
 
         const requestData = {
-            shortsCode: short.shortsCode,
+            shortsCode: short.id,
             shortsThumbnail: short.thumbnailUrl,
             shortsUrl: short.shortsUrl,
         };

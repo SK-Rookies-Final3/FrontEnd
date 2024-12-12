@@ -1,0 +1,52 @@
+/* 전체 레이아웃을 위한 컨테이너 */
+.business-containers {
+    display: flex;
+    width: 90%;
+    background-color: #F0EADC;
+}
+
+/* 통계 콘텐츠 스타일링 */
+.statistics-content {
+    margin-top: 50px;
+    padding: 40px 30px;
+    flex: 1;
+    background-color: #EAE1D3;
+    min-height: 100vh;
+    border-radius: 20px;
+}
+
+.statistics-content h2 {
+    margin-bottom: 30px;
+    font-size: 24px;
+    color: #333333;
+    border-bottom: 2px solid #754F23;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.statistics-content h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #555555;
+}
+
+.statistics-content .chart-container {
+    width: 100%;
+    height: 480px;
+    /* margin-bottom: 100px; */
+}
+
+.statistics-content p {
+    font-size: 18px;
+    color: #666666;
+}
+
+/* 꺾은선 그래프 강조 (현재 사용 안 함) */
+.recharts-line {
+    stroke-width: 3px;
+}
+
+.recharts-line-dot {
+    stroke: #fff;
+    stroke-width: 2px;
+}

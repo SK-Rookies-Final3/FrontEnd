@@ -30,8 +30,29 @@ import Loading from './component/Loading';
 import AboutUs from './component/AboutUs';
 import Unauthorized from './component/Unauthorized';
 import PrivateRoute from './component/PrivateRoute';
+import ReactGA from 'react-ga';
+import { createBrowserHistory } from 'history';
 
 function App() {
+
+  const history = createBrowserHistory()
+  React.useEffect(() => {
+    ReactGA.initialize(9828751130, { debug: true })
+    
+    // 메인 페이지 초기 로드 트래킹
+    if (window.location.pathname === "/") {
+      ReactGA.set({ page: "/" });
+      ReactGA.pageview("/");
+    }
+  
+    history.listen((location) => {
+      if (location.pathname === "/") {
+        ReactGA.set({ page: location.pathname });
+        ReactGA.pageview(location.pathname);
+      }
+    });
+  }, [])
+
   return (
     <Router>
       <div className="App">

@@ -215,27 +215,39 @@ function Home() {
         navigate('/pages/shop');
     };
 
+    const handleEmptyThumbnail = (imageUrl) => {
+        // 불필요한 괄호 제거 정규 표현식
+        const cleanedUrl = imageUrl.replace(/^\[|\]$/g, '');
+
+
+
+        return cleanedUrl;
+    };
+
     // ai를 통한 추천
     useEffect(() => {
         const fetchShortsData = async () => {
             const accessToken = sessionStorage.getItem("accessToken");
             const userId = sessionStorage.getItem("id");
-    
+
             try {
                 const url = accessToken && userId
-                    ? `https://dotblossom.today/ai-api/preference/${userId}`
+                    ? `https://dotblossom.today/ai-api/preference/101`
                     : `https://dotblossom.today/ai-api/preference/default`;
-    
+
                 const headers = accessToken ? { Authorization: `${accessToken}` } : {};
-    
+
                 const response = await axios.get(url, { headers });
                 console.log("Request URL:", url);
                 console.log("Full API Response:", response.data);
-    
+
                 if (accessToken && userId) {
                     // 로그인 시
                     const userPreference = response.data[0]?.payload || [];
                     if (userPreference.length > 0) {
+                        userPreference[0].product.product_thumbnail = handleEmptyThumbnail(userPreference[0].product.product_thumbnail);
+                        console.log("test", userPreference[0].product.product_thumbnail);
+
                         setShortsData(userPreference);
                         setProductsData(userPreference);
                     } else {
@@ -248,7 +260,7 @@ function Home() {
                                 }
                             }).slice(0, 3)
                         );
-    
+
                         setProductsData(
                             Array(3).fill({
                                 product: {
@@ -263,6 +275,11 @@ function Home() {
                 } else {
                     // 비로그인 시
                     const defaultPreference = response.data[0]?.default_preference_id || [];
+
+                    defaultPreference[0].product.product_thumbnail = handleEmptyThumbnail(defaultPreference[0].product.product_thumbnail);
+                    console.log("test", defaultPreference[0].product.product_thumbnail);
+
+
                     setShortsData(defaultPreference);
                     setProductsData(defaultPreference);
                 }
@@ -277,7 +294,7 @@ function Home() {
                         }
                     }).slice(0, 3)
                 );
-    
+
                 setProductsData(
                     Array(3).fill({
                         product: {
@@ -290,7 +307,7 @@ function Home() {
                 );
             }
         };
-    
+
         fetchShortsData();
     }, []);
 

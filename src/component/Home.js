@@ -232,7 +232,7 @@ function Home() {
 
             try {
                 const url = accessToken && userId
-                    ? `https://dotblossom.today/ai-api/preference/101`
+                    ? `https://dotblossom.today/ai-api/preference/${userId}`
                     : `https://dotblossom.today/ai-api/preference/default`;
 
                 const headers = accessToken ? { Authorization: `${accessToken}` } : {};

@@ -340,7 +340,7 @@ function Home() {
                 </div>
                 <div className="image-container">
                     <div className="image-container2" />
-                    {/* <img src={personImage} alt="Person" className="person-image" /> */}
+                    <img src={personImage} alt="Person" className="person-image" />
                 </div>
             </div>
 

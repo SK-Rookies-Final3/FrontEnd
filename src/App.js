@@ -37,7 +37,7 @@ function App() {
 
   const history = createBrowserHistory()
   React.useEffect(() => {
-    ReactGA.initialize(9828751130, { debug: true })
+    ReactGA.initialize('G-J3S2D3P4GW');
     
     // 메인 페이지 초기 로드 트래킹
     if (window.location.pathname === "/") {

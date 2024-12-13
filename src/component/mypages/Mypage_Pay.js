@@ -72,9 +72,9 @@ export default function Mypage_Pay() {
       });
 
       await Promise.all(deletePromises);
-      console.log('Successfully deleted items:', itemIds);
+      // console.log('Successfully deleted items:', itemIds);
     } catch (error) {
-      console.error('장바구니 항목 삭제 실패:', error);
+      // console.error('장바구니 항목 삭제 실패:', error);
       Swal.fire({
         title: '장바구니 삭제 실패',
         text: error.response?.data?.message || '장바구니 항목 삭제 중 오류가 발생했습니다.',
@@ -104,7 +104,7 @@ export default function Mypage_Pay() {
     try {
       const { IMP } = window;
       IMP.init('imp03224481'); // 가맹점 식별 코드
-      console.log(totalPrice + totalPrice.type)
+      // console.log(totalPrice + totalPrice.type)
       IMP.request_pay(
         {
           pg: 'kakaopay.TC0ONETIME',
@@ -127,16 +127,16 @@ export default function Mypage_Pay() {
                 size: product.size,
                 thumbnail: product.thumbnail,
               }));
-              console.log("===================")
-              console.log(orderItemList)
+              // console.log("===================")
+              // console.log(orderItemList)
 
               // OrderRequest 생성
               const requestData = {
                 impUid: rsp.imp_uid,
                 orderItemList: orderItemList,
               };
-              console.log("===================")
-              console.log(requestData)
+              // console.log("===================")
+              // console.log(requestData)
               const verifyResponse = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order`,
                 requestData,
@@ -163,7 +163,7 @@ export default function Mypage_Pay() {
                     // 결제 후 장바구니 페이지로 이동
                     navigate('/mypages/cart');
                   } catch (error) {
-                    console.error('장바구니 항목 삭제 중 오류 발생:', error);
+                    // console.error('장바구니 항목 삭제 중 오류 발생:', error);
                     Swal.fire({
                       icon: 'error',
                       title: '장바구니 항목 삭제 실패',
@@ -179,7 +179,7 @@ export default function Mypage_Pay() {
                 });
               }
             } catch (error) {
-              console.error('결제 검증 중 오류 발생:', error);
+              // console.error('결제 검증 중 오류 발생:', error);
               Swal.fire({
                 icon: 'error',
                 title: '결제 검증 중 오류 발생',
@@ -196,7 +196,7 @@ export default function Mypage_Pay() {
         }
       );
     } catch (error) {
-      console.error('결제 요청 중 오류 발생:', error);
+      // console.error('결제 요청 중 오류 발생:', error);
     }
 
     invoke_server();
@@ -222,11 +222,11 @@ export default function Mypage_Pay() {
           },
         }
       );
-      console.log(response.data);
-      console.log("invoked");
+      // console.log(response.data);
+      // console.log("invoked");
       
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   };
 

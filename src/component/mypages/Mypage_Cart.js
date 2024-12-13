@@ -77,12 +77,12 @@ function Mypage_Cart() {
                 });
 
                 const data = response.data;
-                console.log("일반 장바구니 : ", data); // 데이터 로그 찍기
+                // console.log("일반 장바구니 : ", data); // 데이터 로그 찍기
 
                 // 데이터 상태에 저장
                 setStock(data);
             } catch (error) {
-                console.error("Failed to fetch cart items:", error);
+                // console.error("Failed to fetch cart items:", error);
                 Swal.fire({
                     title: "장바구니 데이터를 가져오는 데 실패했습니다.",
                     text: error.response?.data?.message || error.message || "",
@@ -111,14 +111,14 @@ function Mypage_Cart() {
                     throw new Error(`Failed to fetch product details: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log(data);
+                // console.log(data);
 
                 setProductStock((prevStock) => ({
                     ...prevStock,
                     [itemId]: data.stock,
                 }));
             } catch (error) {
-                console.error('Error fetching product details:', error);
+                // console.error('Error fetching product details:', error);
             }
         };
 
@@ -166,7 +166,7 @@ function Mypage_Cart() {
                             setActiveTab(null);
                             setTargets([]);
                         } catch (error) {
-                            console.error("Failed to delete custom cart item:", error);
+                            // console.error("Failed to delete custom cart item:", error);
                             Swal.fire({
                                 title: "삭제 실패",
                                 text: error.response?.data?.message || error.message || "",
@@ -328,11 +328,11 @@ function Mypage_Cart() {
             });
 
             const data = response.data;
-            console.log("커스텀장바구니 : ", data);
+            // console.log("커스텀장바구니 : ", data);
             // 커스텀 장바구니 데이터 상태에 저장
             setCustomCartData(data);
         } catch (error) {
-            console.error("Failed to fetch custom cart items:", error);
+            // console.error("Failed to fetch custom cart items:", error);
             Swal.fire({
                 title: "커스텀 장바구니 데이터를 가져오는 데 실패했습니다.",
                 text: error.response?.data?.message || error.message || "",
@@ -365,7 +365,7 @@ function Mypage_Cart() {
                 "custom_cart_product_data": [cart_payload]
             }
         }
-        console.log(body)
+        // console.log(body)
         try {
             const response = await axios.post(
                 `https://lambda.dotblossom.today/api/cart/custom/generate`,
@@ -376,7 +376,7 @@ function Mypage_Cart() {
             }
             );
 
-            console.log("cart Response:", response.data);
+            // console.log("cart Response:", response.data);
             customCartName = response.data.response_text;
             if (customCartName == null) {
                 customCartName = "string01"
@@ -426,7 +426,7 @@ function Mypage_Cart() {
                 }
             );
 
-            console.log("Custom cart save response:", response.data);
+            // console.log("Custom cart save response:", response.data);
 
             await fetchCustomCartItems();
 
@@ -434,7 +434,7 @@ function Mypage_Cart() {
             setTargets([]);
             setActiveTab(null);
         } catch (error) {
-            console.error("Failed to save custom cart items:", error);
+            // console.error("Failed to save custom cart items:", error);
             Swal.fire({
                 title: "커스텀 장바구니 저장 실패",
                 text: error.response?.data?.message || error.message || "",
@@ -460,11 +460,11 @@ function Mypage_Cart() {
                 });
 
                 const data = response.data;
-                console.log("커스텀장바구니 : ", data);
+                // console.log("커스텀장바구니 : ", data);
                 // 커스텀 장바구니 데이터 상태에 저장
                 setCustomCartData(data);
             } catch (error) {
-                console.error("Failed to fetch custom cart items:", error);
+                // console.error("Failed to fetch custom cart items:", error);
                 Swal.fire({
                     title: "커스텀 장바구니 데이터를 가져오는 데 실패했습니다.",
                     text: error.response?.data?.message || error.message || "",
@@ -492,7 +492,7 @@ function Mypage_Cart() {
 
         setActiveTab(tab);
         setTargets(mappedTargets);
-        console.log("newTab targets:", mappedTargets);
+        // console.log("newTab targets:", mappedTargets);
     };
 
     const closeActiveTab = () => {
@@ -552,9 +552,9 @@ function Mypage_Cart() {
                 [id]: newAmount,
             }));
 
-            console.log(`Item ${id} quantity ${newAmount} updated successfully:`, response.data);
+            // console.log(`Item ${id} quantity ${newAmount} updated successfully:`, response.data);
         } catch (error) {
-            console.error(`수량 변경 실패 id - ${id} / quantity - ${newAmount} : `, error);
+            // console.error(`수량 변경 실패 id - ${id} / quantity - ${newAmount} : `, error);
             Swal.fire({
                 title: "수량 변경 실패",
                 text: error.response?.data?.message || error.message || "",
@@ -593,7 +593,7 @@ function Mypage_Cart() {
 
             // 모든 DELETE 요청 완료 대기
             const deletedIds = await Promise.all(deletePromises);
-            console.log("Successfully deleted items:", deletedIds);
+            // console.log("Successfully deleted items:", deletedIds);
 
             // Fade-out 애니메이션 트리거
             setDeletingItems(deletedIds);
@@ -608,7 +608,7 @@ function Mypage_Cart() {
 
             return deletedIds;
         } catch (error) {
-            console.error("장바구니 항목 삭제 실패", error);
+            // console.error("장바구니 항목 삭제 실패", error);
             throw error; // 에러를 상위로 전달
         }
     };
@@ -671,7 +671,7 @@ function Mypage_Cart() {
             try {
                 await removeItemsFromCart([itemId]);
             } catch (error) {
-                console.error("Failed to delete item:", error);
+                // console.error("Failed to delete item:", error);
             }
         }
     };
@@ -725,7 +725,7 @@ function Mypage_Cart() {
             orderItemList: orderItemList,
         };
 
-        console.log("Order Request Data:", requestData);
+        // console.log("Order Request Data:", requestData);
 
         try {
             const response = await axios.post(
@@ -739,7 +739,7 @@ function Mypage_Cart() {
                 }
             );
 
-            console.log("Order Response:", response.data);
+            // console.log("Order Response:", response.data);
 
             Swal.fire({
                 title: "주문이 완료되었습니다!",
@@ -754,7 +754,7 @@ function Mypage_Cart() {
             await removeItemsFromCart(selectedItems);
 
         } catch (error) {
-            console.error("주문 오류:", error);
+            // console.error("주문 오류:", error);
             Swal.fire({
                 title: "주문 오류",
                 text: error.response?.data?.message || "주문 중 오류가 발생했습니다.",

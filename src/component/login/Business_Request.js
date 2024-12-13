@@ -45,7 +45,7 @@ const Business_Request = () => {
         
         try {
             const accessToken = sessionStorage.getItem('accessToken');
-            console.log("accessToken:", accessToken);
+            // console.log("accessToken:", accessToken);
             
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/store/owner/register`,
@@ -57,7 +57,7 @@ const Business_Request = () => {
                 }
             );
     
-            console.log("Response:", response.data);
+            // console.log("Response:", response.data);
             
             Swal.fire({
                 icon: 'success',
@@ -72,7 +72,7 @@ const Business_Request = () => {
             })
             navigate("/");
         } catch (error) {
-            console.error("Error:", error);
+            // console.error("Error:", error);
             Swal.fire({
                 icon: 'error',
                 title: '사업자 승인 요청 실패!',

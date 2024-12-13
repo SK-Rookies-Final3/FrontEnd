@@ -78,7 +78,7 @@ function LikeContainer() {
                     }
                 })
                 .catch(error => {
-                    console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
+                    // console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
                 });
 
             axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/products`, {
@@ -87,7 +87,7 @@ function LikeContainer() {
                 }
             })
                 .then(response => {
-                    console.log(response.data)
+                    // console.log(response.data)
                     if (response.data) {
                         // 중복 제거
                         const uniqueProducts = response.data.filter((product, index, self) =>
@@ -97,7 +97,7 @@ function LikeContainer() {
                     }
                 })
                 .catch(error => {
-                    console.error("위시리스트를 가져오는 중 오류가 발생했습니다.", error);
+                    // console.error("위시리스트를 가져오는 중 오류가 발생했습니다.", error);
                 });
         }
     }, []);
@@ -107,7 +107,7 @@ function LikeContainer() {
             const accessToken = sessionStorage.getItem("accessToken");
 
             if (!accessToken) {
-                console.error("Access token is missing.");
+                // console.error("Access token is missing.");
                 return;
             }
 
@@ -122,7 +122,7 @@ function LikeContainer() {
                     }
                 );
 
-                console.log("Response Data:", response.data);
+                // console.log("Response Data:", response.data);
 
                 const likedShortsData = response.data.map((item) => ({
                     id: item.id,
@@ -133,7 +133,7 @@ function LikeContainer() {
 
                 setLikedShorts(likedShortsData);
             } catch (error) {
-                console.error("Error fetching liked shorts:", error);
+                // console.error("Error fetching liked shorts:", error);
             }
         };
 
@@ -173,7 +173,7 @@ function LikeContainer() {
                 sessionStorage.removeItem("accessToken");
                 sessionStorage.removeItem("role");
                 sessionStorage.removeItem("id");
-                console.log("로그아웃되었습니다.");
+                // console.log("로그아웃되었습니다.");
                 navigate('/');
             }
         });
@@ -220,7 +220,7 @@ function LikeContainer() {
                         throw new Error('회원 탈퇴 실패');
                     }
                 } catch (error) {
-                    console.error("회원 탈퇴 실패:", error);
+                    // console.error("회원 탈퇴 실패:", error);
                     Swal.fire({
                         icon: 'error',
                         title: '회원 탈퇴 실패',

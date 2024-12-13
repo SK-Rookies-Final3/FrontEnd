@@ -80,8 +80,8 @@ function OrderTable({ searchQuery }) {
         const fetchOrders = async () => {
             try {
 
-                console.log("/////////Token////////");
-                console.log(`${sessionStorage.getItem("accessToken")}`);
+                // console.log("/////////Token////////");
+                // console.log(`${sessionStorage.getItem("accessToken")}`);
                 const response = await fetch(
                     `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/owner`,
                     {
@@ -97,10 +97,10 @@ function OrderTable({ searchQuery }) {
                 }
 
                 const data = await response.json();
-                console.log("응답 데이터 (주문):", data);
+                // console.log("응답 데이터 (주문):", data);
                 setOrders(data); // 주문 데이터를 상태에 저장
             } catch (err) {
-                console.error('주문 조회를 가져오는 데 실패했습니다:', err);
+                // console.error('주문 조회를 가져오는 데 실패했습니다:', err);
             }
         };
 
@@ -126,10 +126,10 @@ function OrderTable({ searchQuery }) {
                 }
 
                 const data = await response.json();
-                console.log("응답 데이터 (사용자):", data);
+                // console.log("응답 데이터 (사용자):", data);
                 setUsers(data); // 사용자 데이터를 상태에 저장
             } catch (err) {
-                console.error('사용자 정보를 가져오는 데 실패했습니다:', err);
+                // console.error('사용자 정보를 가져오는 데 실패했습니다:', err);
             }
         };
 
@@ -179,7 +179,7 @@ function OrderTable({ searchQuery }) {
 
             setActiveDropdown(null);
         } catch (err) {
-            console.error('상태 변경에 실패했습니다:', err);
+            // console.error('상태 변경에 실패했습니다:', err);
             Swal.fire({
                 icon: 'error',
                 title: '상태 변경에 실패했습니다.',

@@ -83,7 +83,7 @@ function AdminProduct() {
 
                 setProducts(mappedProducts);
             } catch (err) {
-                console.error('제품을 가져오는 데 실패했습니다:', err);
+                // console.error('제품을 가져오는 데 실패했습니다:', err);
             }
         };
 

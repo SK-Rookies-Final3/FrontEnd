@@ -45,7 +45,7 @@ const Admin_Login = () => {
             );
 
             if (response.status === 200) {
-                console.log("로그인 성공:", response.data);
+                // console.log("로그인 성공:", response.data);
 
                 const { accessToken, role } = response.data.body;
 
@@ -85,7 +85,7 @@ const Admin_Login = () => {
                 throw new Error("로그인 실패");
             }
         } catch (error) {
-            console.error("로그인 실패:", error);
+            // console.error("로그인 실패:", error);
 
             // 서버에서 반환된 에러 코드에 따른 메시지 처리
             if (error.response && error.response.status === 400) {

@@ -59,7 +59,7 @@ const User_Login = () => {
             );
 
             if (response.status === 200) {
-                console.log("로그인 성공:", response.data);
+                // console.log("로그인 성공:", response.data);
 
                 const { accessToken, role, id } = response.data.body;
 
@@ -100,7 +100,7 @@ const User_Login = () => {
                 throw new Error("로그인 실패");
             }
         } catch (error) {
-            console.error("로그인 실패:", error);
+            // console.error("로그인 실패:", error);
 
             // 서버에서 반환된 에러 코드에 따른 메시지 처리
             if (error.response && error.response.status === 400) {
@@ -175,7 +175,7 @@ const User_Login = () => {
             return;
         }
 
-        console.log(`${process.env.REACT_APP_API_BASE_URL}`)
+        // console.log(`${process.env.REACT_APP_API_BASE_URL}`)
         try {
             const token = sessionStorage.getItem('token');
             const response = await axios.post(
@@ -190,7 +190,7 @@ const User_Login = () => {
             );
 
             if (response.status === 200) {
-                console.log("회원가입 성공:", response.data);
+                // console.log("회원가입 성공:", response.data);
 
                 Swal.fire({
                     icon: 'success',
@@ -209,7 +209,7 @@ const User_Login = () => {
                 });
             }
         } catch (error) {
-            console.error("회원가입 실패:", error);
+            // console.error("회원가입 실패:", error);
 
             // 서버에서 반환된 에러 코드에 따른 메시지 처리
             if (error.response && error.response.status === 400) {

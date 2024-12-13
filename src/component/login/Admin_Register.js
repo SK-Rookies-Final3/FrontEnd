@@ -53,7 +53,7 @@ const Admin_Login = () => {
           );
 
           if (response.status === 200) {
-              console.log("회원가입 성공:", response.data);
+            //   console.log("회원가입 성공:", response.data);
 
               Swal.fire({
                   icon: 'success',
@@ -72,7 +72,7 @@ const Admin_Login = () => {
               navigate('/djemals/login')
           }
       } catch (error) {
-          console.error("회원가입 실패:", error);
+        //   console.error("회원가입 실패:", error);
 
           // 서버에서 반환된 에러 코드에 따른 메시지 처리
           if (error.response && error.response.status === 400) {

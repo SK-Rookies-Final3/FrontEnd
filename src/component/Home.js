@@ -62,7 +62,7 @@ function Home() {
                     }
                 })
                 .catch(error => {
-                    console.error("닉네임을 가져오는 중 오류가 발생했습니다.", error);
+                    // console.error("닉네임을 가져오는 중 오류가 발생했습니다.", error);
                 });
         }
     }, []);
@@ -238,15 +238,15 @@ function Home() {
                 const headers = accessToken ? { Authorization: `${accessToken}` } : {};
 
                 const response = await axios.get(url, { headers });
-                console.log("Request URL:", url);
-                console.log("Full API Response:", response.data);
+                // console.log("Request URL:", url);
+                // console.log("Full API Response:", response.data);
 
                 if (accessToken && userId) {
                     // 로그인 시
                     const userPreference = response.data[0]?.payload || [];
                     if (userPreference.length > 0) {
                         userPreference[0].product.product_thumbnail = handleEmptyThumbnail(userPreference[0].product.product_thumbnail);
-                        console.log("test", userPreference[0].product.product_thumbnail);
+                        // console.log("test", userPreference[0].product.product_thumbnail);
 
                         setShortsData(userPreference);
                         setProductsData(userPreference);
@@ -277,14 +277,14 @@ function Home() {
                     const defaultPreference = response.data[0]?.default_preference_id || [];
 
                     defaultPreference[0].product.product_thumbnail = handleEmptyThumbnail(defaultPreference[0].product.product_thumbnail);
-                    console.log("test", defaultPreference[0].product.product_thumbnail);
+                    // console.log("test", defaultPreference[0].product.product_thumbnail);
 
 
                     setShortsData(defaultPreference);
                     setProductsData(defaultPreference);
                 }
             } catch (error) {
-                console.error("Error fetching shorts data:", error);
+                // console.error("Error fetching shorts data:", error);
                 // 에러 발생 시 기본 데이터 3개로 설정
                 setShortsData(
                     Array(3).fill({

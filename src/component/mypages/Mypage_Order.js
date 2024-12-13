@@ -73,15 +73,15 @@ function OrderContainer() {
                     }
                 })
                 .catch(error => {
-                    console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
+                    // console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
                 });
         }
     }, []);
 
     useEffect(() => {
         const fetchProducts = async () => {
-            console.log("////////사용자 토큰////////");
-            console.log(`${sessionStorage.getItem("accessToken")}`);
+            // console.log("////////사용자 토큰////////");
+            // console.log(`${sessionStorage.getItem("accessToken")}`);
             try {
                 const response = await fetch(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/client`, {
                     method: 'GET',
@@ -95,7 +95,7 @@ function OrderContainer() {
                 }
 
                 const data = await response.json();
-                console.log("응답 데이터:", data);
+                // console.log("응답 데이터:", data);
                 const sortedOrders = data.sort(
                     (a, b) => new Date(b.orderDate) - new Date(a.orderDate)
                 );
@@ -103,7 +103,7 @@ function OrderContainer() {
                 setOrders(sortedOrders);
 
             } catch (err) {
-                console.error('주문 조회를 가져오는 데 실패했습니다:', err);
+                // console.error('주문 조회를 가져오는 데 실패했습니다:', err);
             }
         };
 
@@ -125,7 +125,7 @@ function OrderContainer() {
                 sessionStorage.removeItem("accessToken");
                 sessionStorage.removeItem("role");
                 sessionStorage.removeItem("id");
-                console.log("로그아웃되었습니다.");
+                // console.log("로그아웃되었습니다.");
                 navigate('/');
             }
         });
@@ -172,7 +172,7 @@ function OrderContainer() {
                         throw new Error('회원 탈퇴 실패');
                     }
                 } catch (error) {
-                    console.error("회원 탈퇴 실패:", error);
+                    // console.error("회원 탈퇴 실패:", error);
                     Swal.fire({
                         icon: 'error',
                         title: '회원 탈퇴 실패',

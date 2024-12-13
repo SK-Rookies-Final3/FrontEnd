@@ -90,13 +90,13 @@ function CompanyTable({ searchQuery }) {
                     }
                 });
                 const userList = usersResponse.data;
-                console.log('Fetched Users:', userList);
+                // console.log('Fetched Users:', userList);
 
                 const ownerIds = userList
                     .filter(user => user.role === 'OWNER')
                     .map(owner => owner.id);
 
-                console.log('Owner IDs:', ownerIds);
+                // console.log('Owner IDs:', ownerIds);
 
                 // 기업 데이터 가져오기
                 const companiesResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL_APIgateway}/open-api/brand/store `, {
@@ -104,13 +104,13 @@ function CompanyTable({ searchQuery }) {
                         Authorization: `${accessToken}`
                     }
                 });
-                console.log('Fetched Companies:', companiesResponse.data);
+                // console.log('Fetched Companies:', companiesResponse.data);
 
                 if (companiesResponse.data) {
                     // OWNER의 id와 일치하는 기업만 필터링
                     const filteredCompanies = companiesResponse.data.filter(company => ownerIds.includes(company.userId));
 
-                    console.log('Filtered Companies:', filteredCompanies);
+                    // console.log('Filtered Companies:', filteredCompanies);
 
                     setCompanies(filteredCompanies.map((company) => ({
                         id: company.id,
@@ -125,15 +125,15 @@ function CompanyTable({ searchQuery }) {
                     })));
                 }
             } catch (error) {
-                console.error("데이터를 가져오는 중 오류가 발생했습니다.", error);
+                // console.error("데이터를 가져오는 중 오류가 발생했습니다.", error);
                 if (error.response) {
-                    console.error("응답 데이터:", error.response.data);
-                    console.error("응답 상태:", error.response.status);
-                    console.error("응답 헤더:", error.response.headers);
+                    // console.error("응답 데이터:", error.response.data);
+                    // console.error("응답 상태:", error.response.status);
+                    // console.error("응답 헤더:", error.response.headers);
                 } else if (error.request) {
-                    console.error("요청:", error.request);
+                    // console.error("요청:", error.request);
                 } else {
-                    console.error("오류 메시지:", error.message);
+                    // console.error("오류 메시지:", error.message);
                 }
                 Swal.fire('오류 발생', '데이터를 가져오는 중 문제가 발생했습니다.', 'error');
             } finally {
@@ -178,11 +178,11 @@ function CompanyTable({ searchQuery }) {
                     )
                 );
 
-                console.log('Updated Companies after Approval:', companies);
+                // console.log('Updated Companies after Approval:', companies);
 
             } catch (error) {
                 Swal.fire('오류 발생', '승인 중 문제가 발생했습니다.', 'error');
-                console.error(error);
+                // console.error(error);
             }
         }
     };
@@ -220,11 +220,11 @@ function CompanyTable({ searchQuery }) {
                     )
                 );
 
-                console.log('Updated Companies after Rejection:', companies);
+                // console.log('Updated Companies after Rejection:', companies);
 
             } catch (error) {
                 Swal.fire('오류 발생', '거절 중 문제가 발생했습니다.', 'error');
-                console.error(error);
+                // console.error(error);
             }
         }
     };

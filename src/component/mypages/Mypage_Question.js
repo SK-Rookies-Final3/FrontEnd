@@ -74,7 +74,7 @@ function QuestionContainer() {
                     }
                 })
                 .catch(error => {
-                    console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
+                    // console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error);
                 });
         }
     }, []);
@@ -94,7 +94,7 @@ function QuestionContainer() {
                 sessionStorage.removeItem("accessToken");
                 sessionStorage.removeItem("role");
                 sessionStorage.removeItem("id");
-                console.log("로그아웃되었습니다.");
+                // console.log("로그아웃되었습니다.");
                 navigate('/');
             }
         });
@@ -141,7 +141,7 @@ function QuestionContainer() {
                         throw new Error('회원 탈퇴 실패');
                     }
                 } catch (error) {
-                    console.error("회원 탈퇴 실패:", error);
+                    // console.error("회원 탈퇴 실패:", error);
                     Swal.fire({
                         icon: 'error',
                         title: '회원 탈퇴 실패',

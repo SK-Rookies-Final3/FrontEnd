@@ -74,14 +74,14 @@ function ChangeContainer() {
                         setWeight(response.data.body.weight);
                         setAddress(response.data.body.address);
                     } else {
-                        console.log("응답에 닉네임 데이터가 없습니다.");
+                        // console.log("응답에 닉네임 데이터가 없습니다.");
                     }
                 })
                 .catch(error => {
-                    console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error.response?.data || error.message);
+                    // console.log("닉네임을 가져오는 중 오류가 발생했습니다.", error.response?.data || error.message);
                 });
         } else {
-            console.log("사용자 인증 토큰을 찾을 수 없습니다.");
+            // console.log("사용자 인증 토큰을 찾을 수 없습니다.");
         }
     }, []);
 
@@ -151,7 +151,7 @@ function ChangeContainer() {
             address: address || "대한민국"
         };
 
-        console.log("Sending request data:", requestData);
+        // console.log("Sending request data:", requestData);
 
         try {
             await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/api/user/update`, requestData, {
@@ -180,7 +180,7 @@ function ChangeContainer() {
                 background: '#F0EADC',
                 iconColor: '#DBC797'
             });
-            console.log(error);
+            // console.log(error);
         }
     };
 

@@ -60,7 +60,7 @@ export default function Business_ProductAdd() {
           setStoreId(userStores[0].id);
         }
       } catch (err) {
-        console.error(err);
+        // console.error(err);
         Swal.fire({
           title: '스토어 정보 오류',
           text: '스토어 정보를 가져오는 중 오류가 발생했습니다.',
@@ -272,10 +272,10 @@ export default function Business_ProductAdd() {
           },
         },
       );
-      console.log(response.data);
-      console.log("success!");
+      // console.log(response.data);
+      // console.log("success!");
     } catch (e) {
-      console.log("invoke error", e);
+      // console.log("invoke error", e);
     }
   }
 

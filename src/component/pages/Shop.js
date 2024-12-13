@@ -39,9 +39,9 @@ export default function Shop() {
       });
       setProducts(sortedProducts); 
       setFilteredProducts(sortedProducts); 
-      console.log(sortedProducts)
+      // console.log(sortedProducts)
     } catch (error) {
-      console.error('Failed to fetch products:', error);
+      // console.error('Failed to fetch products:', error);
     }
   };
 

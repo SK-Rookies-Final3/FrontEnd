@@ -106,11 +106,11 @@ function ProductTable({ searchQuery }) {
 
                 if (matchedStore) {
                     setStoreId(matchedStore.id);
-                    console.log('매칭된 Store ID:', matchedStore.id);
+                    // console.log('매칭된 Store ID:', matchedStore.id);
                 } else {
-                    console.warn('매칭되는 Store가 없습니다.');
-                    console.log('sessionStorage ID:', userId);
-                    console.log('Store User IDs:', stores.map(store => store.userId));
+                    // console.warn('매칭되는 Store가 없습니다.');
+                    // console.log('sessionStorage ID:', userId);
+                    // console.log('Store User IDs:', stores.map(store => store.userId));
                     Swal.fire({
                         title: '경고',
                         text: '매칭되는 Store를 찾을 수 없습니다.',
@@ -119,7 +119,7 @@ function ProductTable({ searchQuery }) {
                     });
                 }
             } catch (error) {
-                console.error('Store 정보를 가져오는 데 실패했습니다:', error);
+                // console.error('Store 정보를 가져오는 데 실패했습니다:', error);
                 Swal.fire({
                     title: '오류',
                     text: 'Store 정보를 가져오는 데 실패했습니다.',
@@ -149,9 +149,9 @@ function ProductTable({ searchQuery }) {
                 const data = await response.json();
                 setProducts(data);
 
-                console.log('상품 응답 데이터:', data);
+                // console.log('상품 응답 데이터:', data);
             } catch (error) {
-                console.error('상품을 불러오는 데 실패했습니다 or 상품이 없습니다.', error);
+                // console.error('상품을 불러오는 데 실패했습니다 or 상품이 없습니다.', error);
             }
         };
 
@@ -210,7 +210,7 @@ function ProductTable({ searchQuery }) {
                         setProducts(updatedProducts);
                     }, 2500);
                 } catch (error) {
-                    console.error('상품 삭제에 실패했습니다:', error);
+                    // console.error('상품 삭제에 실패했습니다:', error);
                 }
             }
         });

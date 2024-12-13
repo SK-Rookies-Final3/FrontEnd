@@ -75,7 +75,7 @@ const ShopDetail = () => {
             setReviews(mappedReviews);
 
         } catch (error) {
-            console.error("Error fetching reviews:", error);
+            // console.error("Error fetching reviews:", error);
             setReviews([]);
         }
     };
@@ -85,7 +85,7 @@ const ShopDetail = () => {
             const accessToken = sessionStorage.getItem("accessToken");
 
             if (!accessToken) {
-                console.error("Access token is missing.");
+                // console.error("Access token is missing.");
                 return;
             }
 
@@ -108,7 +108,7 @@ const ShopDetail = () => {
                     setWishlistClicked(true);
                 }
             } catch (error) {
-                console.error("Error fetching wishlist:", error);
+                // console.error("Error fetching wishlist:", error);
             }
         };
 
@@ -119,7 +119,7 @@ const ShopDetail = () => {
         const accessToken = sessionStorage.getItem("accessToken");
 
         if (!accessToken) {
-            console.error("Access token is missing.");
+            // console.error("Access token is missing.");
             return;
         }
 
@@ -137,7 +137,7 @@ const ShopDetail = () => {
                         },
                     }
                 );
-                console.log(`Product ${productCode} successfully removed from the wishlist.`);
+                // console.log(`Product ${productCode} successfully removed from the wishlist.`);
                 setWishlistItems((prev) => prev.filter((wish) => wish.id !== item.id));
                 setWishlistClicked(false); // 버튼 비활성화
             } else {
@@ -156,18 +156,18 @@ const ShopDetail = () => {
                         },
                     }
                 );
-                console.log(`Product ${productCode} successfully added to the wishlist.`);
+                // console.log(`Product ${productCode} successfully added to the wishlist.`);
                 setWishlistItems((prev) => [...prev, { id: response.data.id, productCode: String(productCode) }]);
                 setWishlistClicked(true); // 버튼 활성화
             }
         } catch (error) {
-            console.error("Error updating wishlist:", error);
+            // console.error("Error updating wishlist:", error);
         }
 
         // 별점 평균 계산 함수
         const calculateAverageRating = () => {
             if (!Array.isArray(reviews) || reviews.length === 0) {
-                console.log("Reviews 배열이 비어 있거나 배열이 아님:", reviews);
+                // console.log("Reviews 배열이 비어 있거나 배열이 아님:", reviews);
                 return 0;
             }
 
@@ -187,7 +187,7 @@ const ShopDetail = () => {
     // 별점 평균 계산 함수
     const calculateAverageRating = () => {
         if (!Array.isArray(reviews) || reviews.length === 0) {
-            console.log("Reviews 배열이 비어 있거나 배열이 아님:", reviews);
+            // console.log("Reviews 배열이 비어 있거나 배열이 아님:", reviews);
             return 0;
         }
 
@@ -206,7 +206,7 @@ const ShopDetail = () => {
             const accessToken = sessionStorage.getItem("accessToken");
     
             if (!accessToken) {
-                console.error("Access token is missing.");
+                // console.error("Access token is missing.");
                 return;
             }
     
@@ -221,7 +221,7 @@ const ShopDetail = () => {
                     }
                 );
     
-                console.log("Response Data:", response.data);
+                // console.log("Response Data:", response.data);
     
                 // `id`와 `shortsCode` 함께 저장
                 const likedShortsData = response.data.map((item) => ({
@@ -231,7 +231,7 @@ const ShopDetail = () => {
     
                 setLikedShorts(likedShortsData);
             } catch (error) {
-                console.error("Error fetching liked shorts:", error);
+                // console.error("Error fetching liked shorts:", error);
             }
         };
     
@@ -242,7 +242,7 @@ const ShopDetail = () => {
         const accessToken = sessionStorage.getItem("accessToken");
 
         if (!accessToken) {
-            console.error("Access token is missing.");
+            // console.error("Access token is missing.");
             return;
         }
 
@@ -257,7 +257,7 @@ const ShopDetail = () => {
 
             if (likedItem) {
                 // 좋아요 해제: `id` 사용
-                console.log(`Removing shortsCode: ${short.id} from wishlist`);
+                // console.log(`Removing shortsCode: ${short.id} from wishlist`);
 
                 await axios.delete(
                     `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/shorts/${likedItem.id}`,
@@ -270,10 +270,10 @@ const ShopDetail = () => {
                 );
 
                 setLikedShorts((prev) => prev.filter((item) => item.shortsCode !== short.id));
-                console.log(`Shorts ${short.id} successfully removed from the wishlist.`);
+                // console.log(`Shorts ${short.id} successfully removed from the wishlist.`);
             } else {
                 // 좋아요 추가
-                console.log(`Adding shortsCode: ${short.id} to wishlist`);
+                // console.log(`Adding shortsCode: ${short.id} to wishlist`);
 
                 const response = await axios.post(
                     `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/wishlist/shorts`,
@@ -287,14 +287,14 @@ const ShopDetail = () => {
                 );
 
                 setLikedShorts((prev) => [...prev, { id: response.data.id, shortsCode: short.id }]);
-                console.log(`Shorts ${short.id} successfully added to the wishlist.`);
+                // console.log(`Shorts ${short.id} successfully added to the wishlist.`);
             }
         } catch (error) {
             console.error("Error updating liked shorts:", error);
             if (error.response) {
-                console.error("Error Response Data:", error.response.data);
-                console.error("Error Response Status:", error.response.status);
-                console.error("Error Response Headers:", error.response.headers);
+                // console.error("Error Response Data:", error.response.data);
+                // console.error("Error Response Status:", error.response.status);
+                // console.error("Error Response Headers:", error.response.headers);
             }
         }
     };
@@ -304,7 +304,7 @@ const ShopDetail = () => {
             const accessToken = sessionStorage.getItem("accessToken");
 
             if (!accessToken) {
-                console.error("Access token is missing.");
+                // console.error("Access token is missing.");
                 return;
             }
 
@@ -318,10 +318,10 @@ const ShopDetail = () => {
                 if (response.data && response.data.body) {
                     setUsername(response.data.body.username); // API에서 username 가져오기
                 } else {
-                    console.error("Failed to fetch username: No data found in response.");
+                    // console.error("Failed to fetch username: No data found in response.");
                 }
             } catch (error) {
-                console.error("Error fetching username:", error);
+                // console.error("Error fetching username:", error);
             }
         };
 
@@ -342,11 +342,11 @@ const ShopDetail = () => {
                     throw new Error(`Failed to fetch product details: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log(data)
+                // console.log(data)
 
                 setProduct(data);
             } catch (error) {
-                console.error('Error fetching product details:', error);
+                // console.error('Error fetching product details:', error);
             }
         };
         fetchProductDetails();
@@ -365,7 +365,7 @@ const ShopDetail = () => {
                 const avg = calculateAverageRating();
                 return avg;
             } catch (error) {
-                console.error("평균 별점 계산 중 오류 발생:", error);
+                // console.error("평균 별점 계산 중 오류 발생:", error);
                 return 0;
             }
         });
@@ -392,10 +392,10 @@ const ShopDetail = () => {
                         }
                     }
                 );
-                console.log("ai:", response.data);
+                // console.log("ai:", response.data);
                 setShortsData(response.data); // Save Shorts data to state
             } catch (error) {
-                console.error("Error fetching shorts data:", error);
+                // console.error("Error fetching shorts data:", error);
             }
         };
 
@@ -409,7 +409,7 @@ const ShopDetail = () => {
                 const avg = calculateAverageRating();
                 return avg;
             } catch (error) {
-                console.error("평균 별점 계산 중 오류 발생:", error);
+                // console.error("평균 별점 계산 중 오류 발생:", error);
                 return 0;
             }
         });
@@ -530,7 +530,7 @@ const ShopDetail = () => {
             productImage: product.thumbnail[0]
         };
 
-        console.log("Cart Request Data:", requestData);
+        // console.log("Cart Request Data:", requestData);
 
         try {
             const response = await axios.post(
@@ -544,7 +544,7 @@ const ShopDetail = () => {
                 }
             );
 
-            console.log("Cart Response:", response.data);
+            // console.log("Cart Response:", response.data);
 
             Swal.fire({
                 title: "장바구니에 추가되었습니다!",
@@ -558,7 +558,7 @@ const ShopDetail = () => {
             setCartClicked(true);
             setTimeout(() => setCartClicked(false), 2000);
         } catch (error) {
-            console.error("장바구니 추가 오류:", error);
+            // console.error("장바구니 추가 오류:", error);
             Swal.fire({
                 title: "장바구니 추가 실패",
                 text: error.response?.data?.message || "장바구니에 추가하는 중 오류가 발생했습니다.",
@@ -712,7 +712,7 @@ const ShopDetail = () => {
             const accessToken = sessionStorage.getItem("accessToken");
 
             if (!accessToken) {
-                console.error("Access token is missing.");
+                // console.error("Access token is missing.");
                 return;
             }
 
@@ -726,10 +726,10 @@ const ShopDetail = () => {
                 if (response.data && response.data.body) {
                     setUsername(response.data.body.username); // API에서 username 가져오기
                 } else {
-                    console.error("Failed to fetch username: No data found in response.");
+                    // console.error("Failed to fetch username: No data found in response.");
                 }
             } catch (error) {
-                console.error("Error fetching username:", error);
+                // console.error("Error fetching username:", error);
             }
         };
 
@@ -740,7 +740,7 @@ const ShopDetail = () => {
         const fetchOrders = async () => {
             const accessToken = sessionStorage.getItem("accessToken");
             if (!accessToken) {
-                console.error("Access token is missing.");
+                // console.error("Access token is missing.");
                 return;
             }
             try {
@@ -757,7 +757,7 @@ const ShopDetail = () => {
                 // console.log("주문 데이터:", data);
                 setOrders(data);
             } catch (err) {
-                console.error('주문 조회를 가져오는 데 실패했습니다:', err);
+                // console.error('주문 조회를 가져오는 데 실패했습니다:', err);
             }
         };
         fetchOrders();
@@ -838,15 +838,15 @@ const ShopDetail = () => {
         });
 
         // FormData 확인 로그 추가
-        console.log("FormData 확인:");
+        // console.log("FormData 확인:");
         for (let pair of formData.entries()) {
-            console.log(`${pair[0]}:`, pair[1]); // 기본 로그 출력
+            // console.log(`${pair[0]}:`, pair[1]); // 기본 로그 출력
 
             // Blob인 경우 내용을 출력
             if (pair[1] instanceof Blob) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    console.log(`Blob(${pair[0]}) 내용:`, e.target.result);
+                    // console.log(`Blob(${pair[0]}) 내용:`, e.target.result);
                 };
                 reader.readAsText(pair[1]);
             }
@@ -866,7 +866,7 @@ const ShopDetail = () => {
                 }
             );
 
-            console.log("리뷰 작성 성공:", response.data);
+            // console.log("리뷰 작성 성공:", response.data);
             await fetchReviews();
 
             // 초기화
@@ -878,7 +878,7 @@ const ShopDetail = () => {
             setFileNames([]);
             setThumbnails([]);
         } catch (error) {
-            console.error("리뷰 작성 실패:", error);
+            // console.error("리뷰 작성 실패:", error);
 
             Swal.fire({
                 title: "리뷰 작성에 실패했습니다.",
@@ -912,7 +912,7 @@ const ShopDetail = () => {
                         });
                         return;
                     }
-                    console.log(`Deleting Review with URL: ${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${reviewId}`);
+                    // console.log(`Deleting Review with URL: ${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/brand/review/${reviewId}`);
 
                     // userId 제거 후 백엔드에 삭제 요청
                     const response = await axios.delete(
@@ -939,7 +939,7 @@ const ShopDetail = () => {
                         setReviews((prevReviews) => prevReviews.filter((review) => review.reviewCode !== reviewId));
                     }
                 } catch (error) {
-                    console.error("리뷰 삭제 실패:", error);
+                    // console.error("리뷰 삭제 실패:", error);
                     Swal.fire({
                         title: "리뷰 삭제에 실패했습니다.",
                         text: error.response?.data?.message || "다시 시도해주세요.",

@@ -60,13 +60,13 @@ function AdminList() {
                 }
             })
                 .then(response => {
-                    console.log(response.data);
+                    // console.log(response.data);
                     if (response.data) {
                         setUsers(response.data);
                     }
                 })
                 .catch(error => {
-                    console.log("데이터를 가져오는 중 오류가 발생했습니다.", error);
+                    // console.log("데이터를 가져오는 중 오류가 발생했습니다.", error);
                 });
         }
     }, []);
@@ -106,7 +106,7 @@ function UserTable({ users, searchQuery, filterRole, setUsers }) {
     const handleDeleteButtonClick = async (username, event, targetId) => {
         const token = sessionStorage.getItem('accessToken');
         if (!token) {
-            console.log("토큰이 없습니다.");
+            // console.log("토큰이 없습니다.");
             return;
         }
 
@@ -147,10 +147,10 @@ function UserTable({ users, searchQuery, filterRole, setUsers }) {
                         setUsers(updatedUsers);
                     }, 2500);
                 } else {
-                    console.log("사용자 삭제에 실패했습니다.");
+                    // console.log("사용자 삭제에 실패했습니다.");
                 }
             } catch (error) {
-                console.log("API 요청 중 오류가 발생했습니다:", error);
+                // console.log("API 요청 중 오류가 발생했습니다:", error);
             }
         }
     };

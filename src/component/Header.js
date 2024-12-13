@@ -194,7 +194,7 @@ export default function Header() {
               const accessToken = sessionStorage.getItem("accessToken");
               const role = sessionStorage.getItem("role");
               const userId = sessionStorage.getItem("id");
-              console.log(userId)
+              // console.log(userId)
 
               if (!accessToken) {
                 navigate("/user/login");
@@ -217,7 +217,7 @@ export default function Header() {
 
                     const data = await response.json();
                     const status = data;
-                    console.log("status:", status);
+                    // console.log("status:", status);
 
                     if (status === 0) {
                       Swal.fire({

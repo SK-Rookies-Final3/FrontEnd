@@ -74,10 +74,10 @@ function AdminStatistics() {
                     }
                 );
 
-                console.log('API Response:', response.data);
+                // console.log('API Response:', response.data);
                 setAnalyticsData(response.data.rows || []);
             } catch (error) {
-                console.error('Error fetching analytics data:', error.response ? error.response.data : error.message);
+                // console.error('Error fetching analytics data:', error.response ? error.response.data : error.message);
                 Swal.fire('에러', '데이터를 불러오는 중 오류가 발생했습니다.', 'error');
             }
         };

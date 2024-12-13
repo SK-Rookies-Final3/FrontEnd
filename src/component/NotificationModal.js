@@ -33,12 +33,12 @@ export default function NotificationModal({ onClose }) {
         );
 
         eventSource.onopen = async () => {
-            await console.log("sse opened!");
+            // await console.log("sse opened!");
         };
 
         eventSource.addEventListener("notification", (e) => {
             let res = JSON.parse(e.data);
-            console.log(res);
+            // console.log(res);
 
             res.eventCreatedTime = formatDatetime(res.eventCreatedTime);
 
@@ -47,8 +47,8 @@ export default function NotificationModal({ onClose }) {
             const resArray = Array.isArray(res) ? res : [res];
 
             setNotications((notifications) => [...notifications, ...resArray]);
-            console.log(notifications);
-            console.log(e.lastEventId);
+            // console.log(notifications);
+            // console.log(e.lastEventId);
 
 
 
@@ -92,7 +92,7 @@ export default function NotificationModal({ onClose }) {
                 }
             })
                 .then(response => {
-                    console.log(response.data);
+                    // console.log(response.data);
                     if (response.data) {
                         setUsers(response.data);
                         // 현재 사용자의 nickname 찾기
@@ -105,7 +105,7 @@ export default function NotificationModal({ onClose }) {
                     }
                 })
                 .catch(error => {
-                    console.log("데이터를 가져오는 중 오류가 발생했습니다.", error);
+                    // console.log("데이터를 가져오는 중 오류가 발생했습니다.", error);
                 });
         }
     }, [accessToken, id]);

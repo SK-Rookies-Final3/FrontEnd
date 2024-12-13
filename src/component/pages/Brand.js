@@ -25,7 +25,7 @@ export default function Brand() {
         setProducts(sortedProducts);
         setFilteredProducts(sortedProducts);
       } catch (error) {
-        console.error('API Error:', error);
+        // console.error('API Error:', error);
       }
     };
     fetchData();

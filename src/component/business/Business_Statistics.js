@@ -64,8 +64,8 @@ function BusinessStatistics() {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                console.log("/////////Token////////");
-                console.log(`${sessionStorage.getItem("accessToken")}`);
+                // console.log("/////////Token////////");
+                // console.log(`${sessionStorage.getItem("accessToken")}`);
                 const response = await fetch(
                     `${process.env.REACT_APP_API_BASE_URL_APIgateway}/api/order/owner`,
                     {
@@ -82,10 +82,10 @@ function BusinessStatistics() {
                 }
 
                 const data = await response.json();
-                console.log("응답 데이터 (주문):", data);
+                // console.log("응답 데이터 (주문):", data);
                 processProductData(data);
             } catch (err) {
-                console.error('주문 조회를 가져오는 데 실패했습니다:', err);
+                // console.error('주문 조회를 가져오는 데 실패했습니다:', err);
             }
         };
 
@@ -132,7 +132,7 @@ function BusinessStatistics() {
 
         // 집계된 데이터를 배열로 변환하고 총 매출 기준 내림차순 정렬
         const productChartData = Object.values(productAggregatedData).sort((a, b) => b.totalRevenue - a.totalRevenue);
-        console.log("집계된 productCode별 차트 데이터:", productChartData);
+        // console.log("집계된 productCode별 차트 데이터:", productChartData);
         setProductData(productChartData);
     };
 

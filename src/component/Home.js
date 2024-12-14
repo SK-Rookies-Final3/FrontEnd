@@ -217,10 +217,15 @@ function Home() {
 
     const handleEmptyThumbnail = (imageUrl) => {
         if (!imageUrl) return '';
-        if (Array.isArray(imageUrl)) {
-            return imageUrl[0]?.replace(/^\[|\]$/g, '') || '';
+        if (typeof imageUrl === 'string') {
+            const cleanedUrls = imageUrl.replace(/^\[|\]$/g, '').split(',');
+            return cleanedUrls[0]?.trim() || '';
         }
-        return imageUrl.replace(/^\[|\]$/g, '');
+        if (Array.isArray(imageUrl)) {
+            return imageUrl[0]?.replace(/^\[|\]$/g, '').trim() || '';
+        }
+    
+        return '';
     };
 
     // ai를 통한 추천

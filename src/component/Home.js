@@ -216,12 +216,11 @@ function Home() {
     };
 
     const handleEmptyThumbnail = (imageUrl) => {
-        // 불필요한 괄호 제거 정규 표현식
-        const cleanedUrl = imageUrl.replace(/^\[|\]$/g, '');
-
-
-
-        return cleanedUrl;
+        if (!imageUrl) return '';
+        if (Array.isArray(imageUrl)) {
+            return imageUrl[0]?.replace(/^\[|\]$/g, '') || '';
+        }
+        return imageUrl.replace(/^\[|\]$/g, '');
     };
 
     // ai를 통한 추천
@@ -245,9 +244,11 @@ function Home() {
                     // 로그인 시
                     const userPreference = response.data[0]?.payload || [];
                     if (userPreference.length > 0) {
-                        userPreference[0].product.product_thumbnail = handleEmptyThumbnail(userPreference[0].product.product_thumbnail);
-                        // console.log("test", userPreference[0].product.product_thumbnail);
-
+                        userPreference.forEach(item => {
+                            if (item.product && item.product.product_thumbnail) {
+                                item.product.product_thumbnail = handleEmptyThumbnail(item.product.product_thumbnail);
+                            }
+                        });
                         setShortsData(userPreference);
                         setProductsData(userPreference);
                     } else {
@@ -276,9 +277,11 @@ function Home() {
                     // 비로그인 시
                     const defaultPreference = response.data[0]?.default_preference_id || [];
 
-                    defaultPreference[0].product.product_thumbnail = handleEmptyThumbnail(defaultPreference[0].product.product_thumbnail);
-                    // console.log("test", defaultPreference[0].product.product_thumbnail);
-
+                    defaultPreference.forEach(item => {
+                        if (item.product && item.product.product_thumbnail) {
+                            item.product.product_thumbnail = handleEmptyThumbnail(item.product.product_thumbnail);
+                        }
+                    });
 
                     setShortsData(defaultPreference);
                     setProductsData(defaultPreference);
@@ -388,7 +391,7 @@ function Home() {
                     {productsData.map((item, index) => (
                         <div className="card item" key={index}>
                             <div className="imgBx">
-                                <img src={item.product?.product_thumbnail || product} alt={`Product ${index + 1}`} className="image-thumbnail" />
+                                <img src={item.product?.product_thumbnail || product} alt={`Product ${index + 1}`} className="image-thumbnail" onError={(e) => { e.target.src = product; }} />
                             </div>
                             <div className="contentBx">
                                 <h2>{item.product?.product_name || "기본 상품"}</h2>

@@ -68,7 +68,7 @@ function AdminStatistics() {
                     },
                     {
                         headers: {
-                            Authorization: `Bearer ya29.a0ARW5m748ZC-7YAoiYb8Y4SGQQnRTsYhDiKf2ExEbzfpjIre0XLeNsMNsDu7f9S-BCQKBgn1crhE1F_j8slYF2FMJ_yi5U0oS8Wgp5-E3Km6U6abQOgqaYPbSyGxZSyS6ojz_LMAjq5JpF-6YZ3tn7FN_HCkCg3Vlr88EKsjdaCgYKAUQSARESFQHGX2Mi_vVViVXRFbs0kJPixHBTXQ0175`,
+                            Authorization: `Bearer ${process.env.REACT_APP_API_BASE_URL_Googleanalyticsdata}`,
                             'Content-Type': 'application/json',
                         },
                     }

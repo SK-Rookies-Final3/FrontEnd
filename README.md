@@ -33,6 +33,7 @@
 ![장바구니1](https://github.com/user-attachments/assets/05b649bf-b1ca-42fa-8828-a9313cdf3681)
 
 ### 주소 검색이 가능하며 카카오페이로 가상결제가 가능합니다.
+![결제](https://github.com/user-attachments/assets/76fe786b-4163-448e-be2c-156a55ab9cb5)
 
 
 외 세부 기능들
@@ -42,7 +43,7 @@
 
 
 ## Languages&Tools
-### ✔️Frond-end (React, Bootstrap, npm, html, css, javascript, figma, github, notion, jira
+### ✔️Frond-end (React, Bootstrap, npm, html, css, javascript, figma, github, notion, jira)
 <p align="center">
   <a href="https://skillicons.dev">
     <img src="https://skillicons.dev/icons?i=react,bootstrap,npm,html,css,js,figma,github,notion,jira" />

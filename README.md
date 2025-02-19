@@ -35,15 +35,16 @@
 ### 주소 검색이 가능하며 카카오페이로 가상결제가 가능합니다.
 
 
+외 세부 기능들
 - 마이페이지 : 롤 값에 따라 페이지 다름, 정보 수정, 주문 조회, 위시리스트(상품, 숏츠), 로그아웃, 회원 탈퇴
 - 비즈니스 페이지 : 내 가게 상품 등록, 상품 조회, 통계, 로그아웃
 - 어드민 페이지 : 전체 사용자 목록 조회(강제 탈퇴), 기업 승인 및 거절, 전체 가게 물품 목록 조회, 통계, 로그아웃
 
 
 ## Languages&Tools
-### ✔️Frond-end
+### ✔️Frond-end (React, Bootstrap, npm, html, css, javascript, figma, github, notion, jira
 <p align="center">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=react,bootstrap,npm,html,css,js,figma,github,notion" />
+    <img src="https://skillicons.dev/icons?i=react,bootstrap,npm,html,css,js,figma,github,notion,jira" />
   </a>
 </p>

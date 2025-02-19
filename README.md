@@ -51,9 +51,10 @@
 ### 장바구니
 #### 장바구니에 담은 상품으로 직접 커스텀(저장, 수정 시 커스텀 컨셉에 맞게 AI가 이름 작성)
 ![장바구니](https://github.com/user-attachments/assets/c7ca511d-5d01-41b0-b06b-58b24eab0a56)
-![장바구니1](https://github.com/user-attachments/assets/c06b39cf-600e-4f18-8037-91654dbf96e7)
+https://github.com/user-attachments/assets/aed16e87-a47a-4bd7-9e1f-dbe2c586cbab
 
-- 알림 기능
+
+
 - 마이페이지 : 롤 값에 따라 페이지 다름, 정보 수정, 주문 조회, 위시리스트(상품, 숏츠), 로그아웃, 회원 탈퇴
 - 장바구니 : 커스텀 장바구니
 - 주소 검색 및 결제 기능

@@ -28,7 +28,8 @@
 ### 장바구니
 #### 장바구니에 담은 상품으로 직접 커스텀(저장, 수정 시 커스텀 컨셉에 맞게 AI가 이름 작성)
 ![장바구니](https://github.com/user-attachments/assets/c7ca511d-5d01-41b0-b06b-58b24eab0a56)
-https://github.com/user-attachments/assets/aed16e87-a47a-4bd7-9e1f-dbe2c586cbab
+![장바구니1](https://github.com/user-attachments/assets/78bab5fc-119f-4323-a9d8-89b44bee7290)
+
 
 
 

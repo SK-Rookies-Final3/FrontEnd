@@ -33,14 +33,26 @@
 
 ### 메인페이지
 #### AI로 유저에 따른 숏츠와 상품 추천 & 회원가입 안했을시 말풍선 팝업 & 유저에 따라 다른 헤더 네비게이트
+![메인](https://github.com/user-attachments/assets/e862590b-4820-48a2-99a5-a475d373a3aa)
 
 ### 회원가입
 #### 일반 유저/비즈니스 유저 회원가입 및 로그인
 ![회원가입 로그인](https://github.com/user-attachments/assets/c11d0d6b-75a5-4283-8f72-c2b212e708f8)
 
-- 숍페이지 : 상품 좋아요, 카테고리에 맞는 상품들 출력
-- 브랜드페이지 : 카테고리에 맞는 브랜드 상품들 출력
-- 디테일 : 상품에 맞는 숏츠 보여줌, 리뷰 작성 및 평균, 상품 좋아요 및 장바구니 추가, 숏츠 좋아요
+### 브랜드페이지
+#### 카테고리에 맞는 브랜드 상품들 출력
+![브랜드](https://github.com/user-attachments/assets/b5a96598-95f3-45c5-8fcc-9f2a85dccb74)
+
+
+### 디테일페이지
+#### 좋아요, 상품에 맞는 숏폼, 장바구니 담기
+- ![숍](https://github.com/user-attachments/assets/13866ebf-d607-4223-9fe4-ff15952edda5)
+
+### 장바구니
+#### 장바구니에 담은 상품으로 직접 커스텀(저장, 수정 시 커스텀 컨셉에 맞게 AI가 이름 작성)
+![장바구니](https://github.com/user-attachments/assets/c7ca511d-5d01-41b0-b06b-58b24eab0a56)
+![장바구니1](https://github.com/user-attachments/assets/c06b39cf-600e-4f18-8037-91654dbf96e7)
+
 - 알림 기능
 - 마이페이지 : 롤 값에 따라 페이지 다름, 정보 수정, 주문 조회, 위시리스트(상품, 숏츠), 로그아웃, 회원 탈퇴
 - 장바구니 : 커스텀 장바구니
